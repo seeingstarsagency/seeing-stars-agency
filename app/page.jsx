@@ -199,14 +199,15 @@ export default function Home() {
               <h3>Star Treatment</h3>
               <p>
                 Everything, start to finish: Launchpad, Astro, a full Comet campaign and three months of
-                Orbit. Payable in installments.
+                Orbit.
               </p>
             </div>
-            <div style={{ flex: "1 1 220px" }}>
-              <div style={{ fontSize: 16 }}>Contact us for pricing</div>
-              <a href="#contact" className="btn btn--accent" style={{ marginTop: 14, minHeight: 48, borderColor: "var(--accent)" }}>
-                I want the Star Treatment
+            <div style={{ flex: "1 1 220px", display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+              <a href="#contact" className="btn btn--accent" style={{ minHeight: 48, borderColor: "var(--accent)", textAlign: "center", lineHeight: 1.25, flexDirection: "column", justifyContent: "center" }}>
+                <span>I want the</span>
+                <span>Star Treatment</span>
               </a>
+              <div style={{ fontSize: 16 }}>Contact us for pricing</div>
             </div>
           </Reveal>
 
