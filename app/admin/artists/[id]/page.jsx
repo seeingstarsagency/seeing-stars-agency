@@ -6,6 +6,8 @@ import { ProgressSummary, StepsTable } from "../../../progress";
 import { fmtDate } from "../../../ui";
 import UploadForm from "./UploadForm";
 import { browserConfig } from "../../../../lib/env";
+import { SECTIONS, answerLabel } from "../../../../lib/questions";
+import { AnswersList } from "../../../form-fields";
 import {
   updateArtist, updateSteps, addNextStep, toggleNextStep, addNote, addMilestone,
   toggleMilestone, deleteItem, resendInvite,
@@ -153,6 +155,18 @@ export default async function ArtistAdmin({ params, searchParams }) {
           </form>
         </section>
       </div>
+
+      <section className="panel" id="intake">
+        <h2 className="h2" style={{ marginBottom: 12 }}>Launchpad questionnaire</h2>
+        {artist.intake_done_at ? (
+          <>
+            <p style={{ margin: "0 0 16px", fontSize: 15 }}>Filled in by the artist on {fmtDate(artist.intake_done_at, "en")}. Their answers set the "Already had it" steps above.</p>
+            <AnswersList sections={SECTIONS} answers={artist.intake_answers || {}} lang="en" answerLabel={answerLabel} />
+          </>
+        ) : (
+          <p style={{ margin: 0, fontSize: 15 }}>Not filled in yet. The artist will see it first when they log in to their dashboard.</p>
+        )}
+      </section>
 
       <section className="panel panel--lilac">
         <h2 className="h2">Artist details</h2>

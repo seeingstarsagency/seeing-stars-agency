@@ -63,7 +63,7 @@ export default function Home() {
             </p>
             <div className="hero__ctas rise d5">
               <a href="/questionnaire" className="btn btn--accent">
-                Start here
+                Find your package
               </a>
               <a href="#packages" className="btn">
                 See packages
@@ -265,7 +265,7 @@ export default function Home() {
             </p>
             <div className="contact__ctas">
               <a href="/questionnaire" className="btn btn--accent">
-                Start with the questionnaire
+                Find your package
               </a>
               <a href={`mailto:${CONTACT.email}`} className="btn btn--dark">
                 Book a free call

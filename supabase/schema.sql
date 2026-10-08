@@ -26,8 +26,12 @@ create table if not exists public.artists (
   release_date date,
   intake_id uuid references public.intake_submissions(id) on delete set null,
   user_id uuid unique references auth.users(id) on delete set null,
-  closed_at date
+  closed_at date,
+  intake_answers jsonb,          -- Launchpad questionnaire, filled in by the artist in their dashboard
+  intake_done_at timestamptz
 );
+alter table public.artists add column if not exists intake_answers jsonb;
+alter table public.artists add column if not exists intake_done_at timestamptz;
 
 alter table public.intake_submissions
   drop constraint if exists intake_submissions_artist_fk;

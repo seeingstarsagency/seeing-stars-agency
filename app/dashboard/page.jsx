@@ -49,6 +49,8 @@ export default async function Dashboard({ searchParams }) {
   }
 
   const { artist, rows, next, notes, milestones, files } = data;
+  // First visit: the artist fills in the Launchpad questionnaire before anything else.
+  if (!isAdmin && !artist.intake_done_at) redirect("/dashboard/intake");
   const recs = recommendations(rows, artist.packages || []);
   const reportHref = isAdmin ? `/report?artist=${artist.id}` : "/report";
 
@@ -68,6 +70,9 @@ export default async function Dashboard({ searchParams }) {
           </div>
           <a href={reportHref} className="btn btn--sm">{t.seeReport}</a>
         </div>
+
+        {sp?.welcome && <div className="alert alert--ok" role="status">{t.iDone}</div>}
+        {isAdmin && !artist.intake_done_at && <div className="alert" role="status">Preview: this artist hasn't filled in the Launchpad questionnaire yet. They'll see it first when they log in.</div>}
 
         <ProgressSummary rows={rows} lang={lang} />
 

@@ -2,17 +2,21 @@
 
 import { redirect } from "next/navigation";
 import { supabaseAdmin } from "../../lib/supabase";
-import { readAnswers } from "../../lib/questions";
+import { FINDER, readAnswers, recommendPackages } from "../../lib/questions";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export async function submitQuestionnaire(formData) {
+// Public "find your package" form: saves the lead and shows the recommendation.
+export async function submitFinder(formData) {
+  const answers = readAnswers(formData, FINDER);
+  const recommended = recommendPackages(answers);
+  const result = `/questionnaire/thanks?p=${recommended.join(",")}&n=${encodeURIComponent(answers.artist_name.slice(0, 60))}`;
+
   // Bots fill the hidden field; people don't.
-  if (String(formData.get("company") || "")) redirect("/questionnaire/thanks");
+  if (String(formData.get("company") || "")) redirect(result);
 
   const lang = formData.get("lang") === "es" ? "es" : "en";
-  const answers = readAnswers(formData);
-  if (!answers.artist_name || !answers.legal_name || !EMAIL.test(answers.email)) redirect("/questionnaire?error=required");
+  if (!answers.artist_name || !EMAIL.test(answers.email)) redirect("/questionnaire?error=required");
 
   let ok = true;
   try {
@@ -20,11 +24,11 @@ export async function submitQuestionnaire(formData) {
       lang,
       artist_name: answers.artist_name.slice(0, 200),
       email: answers.email.toLowerCase().slice(0, 200),
-      answers,
+      answers: { ...answers, recommended },
     });
     if (error) ok = false;
   } catch {
     ok = false;
   }
-  redirect(ok ? "/questionnaire/thanks" : "/questionnaire?error=save");
+  redirect(ok ? result : "/questionnaire?error=save");
 }

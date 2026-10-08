@@ -10,7 +10,7 @@ export default async function Admin({ searchParams }) {
   const { supabase } = await requireAdminPage();
   const sp = await searchParams;
   const [{ data: artists }, { data: steps }, { data: subs }, { data: waiting }] = await Promise.all([
-    supabase.from("artists").select("id, name, packages, release_date, closed_at, user_id").order("created_at", { ascending: false }),
+    supabase.from("artists").select("id, name, packages, release_date, closed_at, user_id, intake_done_at").order("created_at", { ascending: false }),
     supabase.from("artist_steps").select("artist_id, status, start_status"),
     supabase.from("intake_submissions").select("id, created_at, artist_name, email, lang, answers").eq("status", "new").order("created_at", { ascending: false }),
     supabase.from("next_steps").select("artist_id, owner, body").eq("done", false),
@@ -35,17 +35,17 @@ export default async function Admin({ searchParams }) {
       </div>
 
       <div className="stats">
-        <div className="stat" style={{ background: "#FFF6D6" }}><div className="stat__v">{subs?.length || 0}</div><div>New questionnaires</div></div>
+        <div className="stat" style={{ background: "#FFF6D6" }}><div className="stat__v">{subs?.length || 0}</div><div>New requests</div></div>
         <div className="stat" style={{ background: "#E3F1F8" }}><div className="stat__v">{active.length}</div><div>Active artists</div></div>
         <div className="stat" style={{ background: "#FCE4EF" }}><div className="stat__v">{active.filter((a) => (waitBy[a.id] || []).some((n) => n.owner === "artist")).length}</div><div>Waiting on the artist</div></div>
         <div className="stat" style={{ background: "#E4EAF7" }}><div className="stat__v">{active.filter((a) => a.release_date?.startsWith(thisMonth)).length}</div><div>Releases this month</div></div>
       </div>
 
       <section className="panel panel--yellow">
-        <h2 className="h2">New questionnaires</h2>
-        <p style={{ margin: "0 0 16px", fontSize: 14 }}>Review the answers and create the artist's account in one click.</p>
+        <h2 className="h2">New requests · Find your package</h2>
+        <p style={{ margin: "0 0 16px", fontSize: 14 }}>People who used "Find your package" on the website. When someone hires you, create their account: they'll fill in the Launchpad questionnaire inside their dashboard.</p>
         {!subs?.length ? (
-          <p style={{ margin: 0 }}>No new questionnaires.</p>
+          <p style={{ margin: 0 }}>No new requests.</p>
         ) : (
           <div className="cards">
             {subs.map((s) => (
@@ -55,8 +55,9 @@ export default async function Admin({ searchParams }) {
                   <span style={{ fontSize: 13 }}>{fmtDate(s.created_at, "en")}</span>
                 </div>
                 <div style={{ fontSize: 14 }}>{s.answers?.city || "—"} · {s.lang.toUpperCase()}</div>
-                {s.answers?.doubts && <div className="muted" style={{ fontSize: 14 }}>"{s.answers.doubts.slice(0, 140)}"</div>}
-                <a href={`/admin/submissions/${s.id}`} style={{ fontWeight: 600, fontSize: 14 }}>View answers and create account →</a>
+                {s.answers?.recommended?.length > 0 && <div style={{ fontSize: 14 }}>Recommended: <strong>{s.answers.recommended.join(" + ")}</strong></div>}
+                {s.answers?.message && <div className="muted" style={{ fontSize: 14 }}>"{s.answers.message.slice(0, 140)}"</div>}
+                <a href={`/admin/submissions/${s.id}`} style={{ fontWeight: 600, fontSize: 14 }}>View answers →</a>
               </div>
             ))}
           </div>
@@ -66,7 +67,7 @@ export default async function Admin({ searchParams }) {
       <section className="panel">
         <h2 className="h2" style={{ marginBottom: 16 }}>Artists</h2>
         {!artists?.length ? (
-          <p style={{ margin: 0 }}>No artists yet. Create one from a questionnaire or with "+ New artist".</p>
+          <p style={{ margin: 0 }}>No artists yet. Create one from a request or with "+ New artist".</p>
         ) : (
           <div className="tablewrap">
             <table className="table" style={{ minWidth: 760 }}>
@@ -82,7 +83,7 @@ export default async function Admin({ searchParams }) {
                   const waitUs = w.find((n) => n.owner === "agency");
                   return (
                     <tr key={a.id}>
-                      <td style={{ fontWeight: 600 }}>{a.name}{a.closed_at && <span className="muted"> · closed</span>}{!a.user_id && <span className="muted"> · no account</span>}</td>
+                      <td style={{ fontWeight: 600 }}>{a.name}{a.user_id && !a.intake_done_at && <span className="muted"> · questionnaire pending</span>}{a.closed_at && <span className="muted"> · closed</span>}{!a.user_id && <span className="muted"> · no account</span>}</td>
                       <td>{(a.packages || []).join(" + ") || "—"}</td>
                       <td style={{ minWidth: 160 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
