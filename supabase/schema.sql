@@ -137,6 +137,16 @@ begin
   end loop;
 end $$;
 
+-- ============ ACCESS FOR THE WEBSITE ============
+-- Logged-in users may reach these tables; the security rules above decide which rows.
+-- Visitors who are not logged in get nothing (the questionnaire is saved by the server).
+grant usage on schema public to authenticated, service_role;
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant all on all tables in schema public to service_role;
+grant execute on function public.is_admin() to authenticated;
+grant execute on function public.my_artist_id() to authenticated;
+revoke all on all tables in schema public from anon;
+
 -- ============ FILE STORAGE ============
 -- Private bucket. Downloads go through the website, which checks who is asking.
 insert into storage.buckets (id, name, public)
