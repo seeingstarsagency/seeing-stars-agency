@@ -6,8 +6,6 @@ import {
   PILLARS,
   PACKAGES,
   BUNDLES,
-  STEPS,
-  TERMS,
 } from "./content";
 
 const markColors = [COLORS.yellow, COLORS.pink, COLORS.blue];
@@ -28,7 +26,6 @@ export default function Home() {
           <a href="#services">Services</a>
           <a href="#packages">Packages</a>
           <a href="#bundles">Bundles</a>
-          <a href="#how">How it works</a>
           <a href="/login">Client login</a>
         </nav>
         <a href="#contact" className="btn btn--dark btn--sm">
@@ -213,30 +210,6 @@ export default function Home() {
           <p style={{ margin: "24px 0 0", fontSize: 16 }}>
             <strong>Already worked with us?</strong> Ask about our returning-artist rate for Orbit.
           </p>
-        </section>
-
-        {/* How it works */}
-        <section id="how" className="wrap section" style={{ paddingTop: 96 }}>
-          <Reveal>
-            <div className="hand" style={{ color: "var(--rose)" }}>simple and in writing</div>
-            <h2 className="section__title" style={{ marginBottom: 48 }}>How it works</h2>
-          </Reveal>
-          <ol className="steps">
-            {STEPS.map((s, i) => (
-              <Reveal as="li" key={s.title} delay={i * 120}>
-                <div className="step__num" style={{ color: s.color }}>{i + 1}</div>
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
-              </Reveal>
-            ))}
-          </ol>
-          <div className="terms">
-            {TERMS.map(([b, t]) => (
-              <div key={b}>
-                <strong>{b}</strong> {t}
-              </div>
-            ))}
-          </div>
         </section>
 
         {/* Contact */}
