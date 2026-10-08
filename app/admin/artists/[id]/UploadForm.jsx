@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabaseBrowser } from "../../../../lib/supabase-browser";
 import { getUploadTicket, registerFile } from "../../actions";
 
-export default function UploadForm({ artistId }) {
+export default function UploadForm({ artistId, sb }) {
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
 
@@ -20,7 +20,7 @@ export default function UploadForm({ artistId }) {
       setBusy(false);
       return setMsg("No se pudo preparar la subida: " + ticket.error);
     }
-    const { error } = await supabaseBrowser().storage.from("artist-files").uploadToSignedUrl(ticket.path, ticket.token, file, { contentType: file.type || undefined });
+    const { error } = await supabaseBrowser(sb).storage.from("artist-files").uploadToSignedUrl(ticket.path, ticket.token, file, { contentType: file.type || undefined });
     if (error) {
       setBusy(false);
       return setMsg("Falló la subida: " + error.message);

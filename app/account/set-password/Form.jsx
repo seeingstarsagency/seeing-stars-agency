@@ -8,7 +8,7 @@ const TXT = {
   es: { title: "Elige tu contraseña", save: "Guardar contraseña", short: "Usa al menos 8 caracteres.", err: "No se pudo guardar. Abre de nuevo el enlace de tu correo." },
 };
 
-export default function SetPasswordForm({ lang }) {
+export default function SetPasswordForm({ lang, sb }) {
   const t = TXT[lang];
   const [pw, setPw] = useState("");
   const [msg, setMsg] = useState(null);
@@ -18,7 +18,7 @@ export default function SetPasswordForm({ lang }) {
     e.preventDefault();
     if (pw.length < 8) return setMsg(t.short);
     setBusy(true);
-    const { error } = await supabaseBrowser().auth.updateUser({ password: pw });
+    const { error } = await supabaseBrowser(sb).auth.updateUser({ password: pw });
     setBusy(false);
     if (error) return setMsg(t.err);
     window.location.href = "/auth/redirect";

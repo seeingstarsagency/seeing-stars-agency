@@ -26,15 +26,16 @@ Supabase → **Authentication**:
   ```
 
 ## 3. Keys in Vercel
-Vercel → project → **Settings → Environment Variables**. Add these four (Production and Preview):
+Vercel → project → **Settings → Environment Variables**. Add these four:
 
 | Name | Where to find it |
 |---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API → Project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Same page → anon / publishable key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Same page → service_role / secret key (**secret, paste only here**) |
-| `NEXT_PUBLIC_SITE_URL` | `https://www.seeingstarsagency.com` |
+| `SUPABASE_URL` | Supabase → Project Settings → API Keys / Connect → Project URL |
+| `SUPABASE_ANON_KEY` | Publishable key (or legacy "anon") |
+| `SUPABASE_SERVICE_ROLE_KEY` | Secret key (or legacy "service_role") — **secret, paste only here** |
+| `SITE_URL` | `https://www.seeingstarsagency.com` |
 
+(The `NEXT_PUBLIC_…` versions of these names also work.)
 Then **Deployments → ⋯ on the latest → Redeploy**, so the site picks up the keys.
 
 ## 4. Make yourself the admin

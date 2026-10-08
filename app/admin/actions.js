@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getViewer, supabaseAdmin } from "../../lib/supabase";
 import { STEPS, PACKAGES, startingPoint } from "../../lib/steps";
+import { SITE_URL } from "../../lib/env";
 
 async function requireAdmin() {
   const v = await getViewer();
@@ -12,7 +13,7 @@ async function requireAdmin() {
 }
 
 const str = (fd, k, max = 300) => String(fd.get(k) ?? "").trim().slice(0, max);
-const siteUrl = () => (process.env.NEXT_PUBLIC_SITE_URL || "https://www.seeingstarsagency.com").replace(/\/$/, "");
+const siteUrl = SITE_URL;
 const today = () => new Date().toISOString().slice(0, 10);
 
 async function invite(email, lang) {

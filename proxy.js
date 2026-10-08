@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { SUPABASE_URL, SUPABASE_PUBLIC_KEY } from "./lib/env";
 
 // Keeps the login session fresh and protects private pages.
 export async function proxy(request) {
   let response = NextResponse.next({ request });
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = SUPABASE_URL();
+  const anon = SUPABASE_PUBLIC_KEY();
   if (!url || !anon) return response;
 
   const supabase = createServerClient(url, anon, {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { supabaseBrowser } from "../../lib/supabase-browser";
 
-export default function LoginForm({ t }) {
+export default function LoginForm({ t, sb }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState(null);
@@ -15,7 +15,7 @@ export default function LoginForm({ t }) {
     e.preventDefault();
     setBusy(true);
     setMsg(null);
-    const { error } = await supabaseBrowser().auth.signInWithPassword({ email, password });
+    const { error } = await supabaseBrowser(sb).auth.signInWithPassword({ email, password });
     setBusy(false);
     if (error) return setMsg({ bad: true, text: t.lBad });
     window.location.href = "/auth/redirect";
@@ -25,11 +25,11 @@ export default function LoginForm({ t }) {
     if (!email) return setMsg({ bad: true, text: t.email + "?" });
     setBusy(true);
     setMsg(null);
-    const sb = supabaseBrowser().auth;
+    const auth = supabaseBrowser(sb).auth;
     const { error } =
       kind === "reset"
-        ? await sb.resetPasswordForEmail(email, { redirectTo: `${origin}/auth/confirm?next=/account/set-password` })
-        : await sb.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: `${origin}/auth/confirm?next=/auth/redirect` } });
+        ? await auth.resetPasswordForEmail(email, { redirectTo: `${origin}/auth/confirm?next=/account/set-password` })
+        : await auth.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: `${origin}/auth/confirm?next=/auth/redirect` } });
     setBusy(false);
     // Same message either way, so nobody can test which emails have accounts.
     setMsg({ bad: false, text: t.lSent });

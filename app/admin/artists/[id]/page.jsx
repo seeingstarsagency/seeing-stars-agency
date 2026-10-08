@@ -5,6 +5,7 @@ import { PACKAGES, STATUS } from "../../../../lib/steps";
 import { ProgressSummary, StepsTable } from "../../../progress";
 import { fmtDate } from "../../../ui";
 import UploadForm from "./UploadForm";
+import { browserConfig } from "../../../../lib/env";
 import {
   updateArtist, updateSteps, addNextStep, toggleNextStep, addNote, addMilestone,
   toggleMilestone, deleteItem, resendInvite,
@@ -106,7 +107,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
               </li>
             ))}
           </ul>
-          <UploadForm artistId={artist.id} />
+          <UploadForm artistId={artist.id} sb={browserConfig()} />
         </section>
       </div>
 
