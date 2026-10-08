@@ -211,9 +211,6 @@ export default function Home() {
             </div>
           </Reveal>
 
-          <p style={{ margin: "24px 0 0", fontSize: 16 }}>
-            <strong>Already worked with us?</strong> Ask about our returning-artist rate for Orbit.
-          </p>
         </section>
 
         {/* Contact */}
