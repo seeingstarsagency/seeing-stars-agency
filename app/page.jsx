@@ -25,10 +25,10 @@ export default function Home() {
           </span>
         </a>
         <nav className="nav" aria-label="Main">
-          <a href="#services">Services</a>
-          <a href="#packages">Packages</a>
-          <a href="#bundles">Bundles</a>
-          <a href="/login">Client login</a>
+          <span className="nav-item"><a href="#services">Services</a></span>
+          <span className="nav-item"><a href="#packages">Packages</a></span>
+          <span className="nav-item"><a href="#bundles">Bundles</a></span>
+          <span className="nav-item"><a href="/login">Client login</a></span>
         </nav>
         <a href="#contact" className="btn btn--dark btn--sm">
           Get in contact!

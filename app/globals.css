@@ -56,8 +56,31 @@ img, svg { display: block; }
   padding-top: 24px;
 }
 .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--display); font-size: 22px; font-weight: 900; }
-.nav { display: flex; gap: 28px; font-size: 16px; }
-.nav a { text-decoration: none; }
+.nav { display: flex; gap: 18px; font-size: 16px; align-items: center; }
+/* Each menu item is a scrap of paper with a paperclip */
+.nav a {
+  position: relative; display: inline-block; text-decoration: none; color: var(--ink);
+  padding: 9px 18px 10px;
+  background-color: #EAE4D7;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .4 0 0 0 0 .3 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(100deg, rgba(255,255,255,.35), rgba(0,0,0,.04) 45%, rgba(255,255,255,.2) 70%, rgba(0,0,0,.05));
+  clip-path: polygon(0 4%, 22% 0, 51% 3%, 78% 0, 100% 5%, 99% 52%, 100% 96%, 70% 100%, 38% 97%, 9% 100%, 1% 94%, 0 50%);
+  transform: rotate(-1.5deg);
+  transition: transform .25s cubic-bezier(.3, 1.6, .5, 1);
+}
+.nav-item:nth-child(2n) a { transform: rotate(1.4deg); }
+.nav-item:nth-child(3n) a { transform: rotate(-.6deg); }
+.nav-item { position: relative; display: inline-block; }
+.nav-item::after {
+  content: ""; position: absolute; right: 6px; bottom: -5px; width: 30px; height: 12px; pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 12'%3E%3Cpath d='M29 3H7a3.5 3.5 0 0 0 0 7h17a2 2 0 0 0 0-4H9' fill='none' stroke='%234a4a4f' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / contain;
+  transition: transform .25s ease;
+}
+.nav-item:hover a { animation: paperwiggle .5s ease-in-out; transform: translateY(-3px) rotate(-3deg); }
+.nav-item:nth-child(2n):hover a { transform: translateY(-3px) rotate(3deg); }
+.nav-item:hover::after { transform: translateY(-3px) rotate(-6deg); }
+@keyframes paperwiggle { 0% { rotate: 0deg; } 30% { rotate: -4deg; } 60% { rotate: 3deg; } 100% { rotate: 0deg; } }
+@media (prefers-reduced-motion: reduce) { .nav-item:hover a { animation: none; } }
 
 /* Buttons */
 .btn {
