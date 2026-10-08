@@ -32,7 +32,7 @@ export default function Home() {
           <a href="/login">Client login</a>
         </nav>
         <a href="#contact" className="btn btn--dark btn--sm">
-          Book a free call
+          Contact us
         </a>
       </header>
 
@@ -260,7 +260,7 @@ export default function Home() {
               Ready to <span className="it">see stars?</span>
             </h2>
             <p>
-              Tell us about your music. The first call is free, and you'll leave with at least one thing you can
+              Tell us about your music by email. We reply within 2 business days, and you'll leave with at least one thing you can
               fix today.
             </p>
             <div className="contact__ctas">
@@ -268,7 +268,7 @@ export default function Home() {
                 Find your package
               </a>
               <a href={`mailto:${CONTACT.email}`} className="btn btn--dark">
-                Book a free call
+                Email us
               </a>
               <a href={CONTACT.instagramUrl} className="btn" target="_blank" rel="noopener noreferrer">
                 {CONTACT.instagramHandle}

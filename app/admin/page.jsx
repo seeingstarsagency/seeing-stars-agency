@@ -54,7 +54,7 @@ export default async function Admin({ searchParams }) {
                   <strong>{s.artist_name}</strong>
                   <span style={{ fontSize: 13 }}>{fmtDate(s.created_at, "en")}</span>
                 </div>
-                <div style={{ fontSize: 14 }}>{s.answers?.city || "—"} · {s.lang.toUpperCase()}</div>
+                <div style={{ fontSize: 14 }}>{[s.answers?.city, s.answers?.state, s.answers?.country].filter(Boolean).join(", ") || "—"} · {s.lang.toUpperCase()}</div>
                 {s.answers?.recommended?.length > 0 && <div style={{ fontSize: 14 }}>Recommended: <strong>{s.answers.recommended.join(" + ")}</strong></div>}
                 {s.answers?.message && <div className="muted" style={{ fontSize: 14 }}>"{s.answers.message.slice(0, 140)}"</div>}
                 <a href={`/admin/submissions/${s.id}`} style={{ fontWeight: 600, fontSize: 14 }}>View answers →</a>

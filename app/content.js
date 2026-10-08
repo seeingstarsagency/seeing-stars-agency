@@ -81,7 +81,7 @@ export const PACKAGES = [
     tagline: "Get your music set up to earn.",
     color: COLORS.blue,
     items: [
-      "Intake questionnaire and kickoff call or meeting",
+      "Intake questionnaire and a review of your answers",
       "Review of your distributor, Copyright, PRO, SoundExchange and MLC accounts",
       "One single uploaded and registered everywhere",
       "Spotify and social profiles refreshed",
@@ -122,7 +122,7 @@ export const PACKAGES = [
     color: COLORS.pink,
     note: "Monthly · 3-month minimum",
     items: [
-      "A 60-minute monthly check-in",
+      "A monthly progress update by email",
       "A clear next-steps checklist",
       "Up to 2 new songs registered each month",
       "Bio, profiles and EPK kept current",
@@ -155,8 +155,8 @@ export const BUNDLES = [
 
 export const STEPS = [
   {
-    title: "Free discovery call",
-    text: "We talk about your music, your goals and what you already have set up.",
+    title: "Tell us about your music",
+    text: "Find your package on our site or email us. We review your music, your goals and what you already have set up.",
     color: COLORS.yellow,
   },
   {
