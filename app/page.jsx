@@ -77,9 +77,8 @@ export default function Home() {
             <div className="note-wrap pop">
               <div className="note float wobble">
                 <p>
-                  <b>Your music deserves</b> to be heard, credited and paid. We take care of all three.
+                  <b>Artists helping artists</b> find their way.
                 </p>
-                <p className="note__sign">Artists helping artists find their way.</p>
               </div>
             </div>
           </div>
