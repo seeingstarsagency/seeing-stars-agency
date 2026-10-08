@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  metadataBase: new URL("https://seeingstarsagency.com"),
+  metadataBase: new URL("https://www.seeingstarsagency.com"),
   title: "Seeing Stars Agency | Brand and business support for emerging artists",
   description:
     "Seeing Stars Agency helps emerging artists build a brand people remember and handles the business behind the music: registrations, releases, branding and campaigns.",
@@ -9,7 +9,7 @@ export const metadata = {
     title: "Seeing Stars Agency",
     description:
       "Brand and business support for emerging artists, so every play pays.",
-    url: "https://seeingstarsagency.com",
+    url: "https://www.seeingstarsagency.com",
     siteName: "Seeing Stars Agency",
     type: "website",
   },
