@@ -117,9 +117,6 @@ export default function Home() {
                 <p>{p.text}</p>
               </Reveal>
             ))}
-                </ul>
-              </Reveal>
-            ))}
           </div>
         </section>
 
