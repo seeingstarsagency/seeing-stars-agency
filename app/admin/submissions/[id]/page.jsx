@@ -21,25 +21,25 @@ export default async function Submission({ params, searchParams }) {
 
   return (
     <AdminShell>
-      <a href="/admin">← Volver</a>
+      <a href="/admin">← Back</a>
       <div>
-        <div className="kicker">cuestionario · {fmtDate(sub.created_at, "es")} · {sub.lang.toUpperCase()}</div>
+        <div className="kicker">questionnaire · {fmtDate(sub.created_at, "en")} · {sub.lang.toUpperCase()}</div>
         <h1 className="h1">{sub.artist_name}</h1>
         <p className="lead">{sub.email}</p>
       </div>
-      {sp?.error && <div className="alert">Falta el nombre o el correo.</div>}
+      {sp?.error && <div className="alert">Name or email is missing.</div>}
 
       <div className="row">
         <section className="panel" style={{ flexBasis: 520 }}>
-          <h2 className="h2" style={{ marginBottom: 16 }}>Respuestas</h2>
+          <h2 className="h2" style={{ marginBottom: 16 }}>Answers</h2>
           {SECTIONS.map((s) => (
             <div key={s.key} style={{ marginBottom: 20 }}>
-              <div className="tag" style={{ marginBottom: 8 }}>{s.es}</div>
+              <div className="tag" style={{ marginBottom: 8 }}>{s.en}</div>
               <dl className="kv">
                 {s.fields.map((f) => (
                   <div key={f.name} style={{ display: "contents" }}>
-                    <dt>{f.es}</dt>
-                    <dd>{answerLabel(f, a[f.name], "es")}</dd>
+                    <dt>{f.en}</dt>
+                    <dd>{answerLabel(f, a[f.name], "en")}</dd>
                   </div>
                 ))}
               </dl>
@@ -49,15 +49,15 @@ export default async function Submission({ params, searchParams }) {
 
         <div className="stack" style={{ gap: 28 }}>
           <section className="panel panel--blue">
-            <h2 className="h2">Punto de partida</h2>
-            <p style={{ margin: "0 0 12px", fontSize: 15 }}>Según sus respuestas, ya tiene <strong>{had} de {STEPS.length}</strong> pasos.</p>
+            <h2 className="h2">Starting point</h2>
+            <p style={{ margin: "0 0 12px", fontSize: 15 }}>Based on their answers, they already have <strong>{had} of {STEPS.length}</strong> steps.</p>
             <ul className="checks">
               {start.map((r) => {
                 const s = STEPS.find((x) => x.key === r.step_key);
                 return (
                   <li key={r.step_key}>
                     <span className="box" style={{ background: r.start_status === "had" ? "#9A96A8" : "#fff" }}>{r.start_status === "had" ? "✓" : ""}</span>
-                    <span>{s.es}</span>
+                    <span>{s.en}</span>
                   </li>
                 );
               })}
@@ -65,7 +65,7 @@ export default async function Submission({ params, searchParams }) {
           </section>
 
           <section className="panel panel--yellow">
-            <h2 className="h2">Crear cuenta</h2>
+            <h2 className="h2">Create account</h2>
             <form action={createArtist} className="stack" style={{ gap: 16, marginTop: 12 }}>
               <input type="hidden" name="submission_id" value={sub.id} />
               <NewArtistFields
@@ -79,13 +79,13 @@ export default async function Submission({ params, searchParams }) {
                   packages: wanted,
                 }}
               />
-              <button type="submit" className="btn btn--dark" style={{ alignSelf: "flex-start" }}>Crear artista</button>
+              <button type="submit" className="btn btn--dark" style={{ alignSelf: "flex-start" }}>Create artist</button>
             </form>
           </section>
 
           <form action={archiveSubmission}>
             <input type="hidden" name="id" value={sub.id} />
-            <button type="submit" className="small-btn small-btn--danger">Archivar sin crear cuenta</button>
+            <button type="submit" className="small-btn small-btn--danger">Archive without creating an account</button>
           </form>
         </div>
       </div>

@@ -1,4 +1,4 @@
-// Admin pages are only for Seeing Stars Agency, so they're in Spanish.
+// Admin pages are only for Seeing Stars Agency, in English.
 import { redirect } from "next/navigation";
 import { getViewer } from "../../lib/supabase";
 import { StarIcon } from "../ui";
@@ -21,10 +21,10 @@ export function AdminShell({ children }) {
             <span className="badge">Admin</span>
           </a>
           <div className="apphead__right">
-            <a href="/admin">Artistas</a>
-            <a href="/admin/artists/new">+ Nuevo artista</a>
-            <a href="/" target="_blank" rel="noopener noreferrer">Ver web</a>
-            <form action="/auth/logout" method="post"><button type="submit" className="linkbtn">Salir</button></form>
+            <a href="/admin">Artists</a>
+            <a href="/admin/artists/new">+ New artist</a>
+            <a href="/" target="_blank" rel="noopener noreferrer">View site</a>
+            <form action="/auth/logout" method="post"><button type="submit" className="linkbtn">Log out</button></form>
           </div>
         </div>
       </header>
@@ -34,9 +34,9 @@ export function AdminShell({ children }) {
 }
 
 export const OK_MSG = {
-  created: "Artista creado. No se envió invitación.",
-  invited: "Listo: le enviamos al artista un correo para crear su contraseña.",
-  invite_failed: "El artista se creó, pero la invitación falló (¿ese correo ya tiene cuenta?). Puedes reenviarla abajo.",
-  saved: "Cambios guardados.",
-  uploaded: "Archivo subido.",
+  created: "Artist created. No invitation was sent.",
+  invited: "Done: we emailed the artist a link to create their password.",
+  invite_failed: "The artist was created, but the invitation failed (does that email already have an account?). You can resend it below.",
+  saved: "Changes saved.",
+  uploaded: "File uploaded.",
 };

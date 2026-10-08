@@ -9,16 +9,16 @@ export default async function NewArtist({ searchParams }) {
   const sp = await searchParams;
   return (
     <AdminShell>
-      <a href="/admin">← Volver</a>
+      <a href="/admin">← Back</a>
       <div>
-        <div className="kicker">sin cuestionario</div>
-        <h1 className="h1">Nuevo artista</h1>
-        <p className="lead">Todos los pasos empezarán como pendientes. Si el artista ya tenía algo, márcalo como "Ya lo tenías" en su ficha.</p>
+        <div className="kicker">without questionnaire</div>
+        <h1 className="h1">New artist</h1>
+        <p className="lead">All steps will start as pending. If the artist already had something, mark it as "Already had" on their page.</p>
       </div>
-      {sp?.error && <div className="alert">Falta el nombre o el correo.</div>}
+      {sp?.error && <div className="alert">Name or email is missing.</div>}
       <form action={createArtist} className="panel panel--yellow stack" style={{ gap: 16 }}>
         <NewArtistFields />
-        <button type="submit" className="btn btn--dark" style={{ alignSelf: "flex-start" }}>Crear artista</button>
+        <button type="submit" className="btn btn--dark" style={{ alignSelf: "flex-start" }}>Create artist</button>
       </form>
     </AdminShell>
   );

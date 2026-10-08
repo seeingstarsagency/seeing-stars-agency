@@ -28,35 +28,35 @@ export default async function Admin({ searchParams }) {
       {sp?.error && <div className="alert">{sp.error}</div>}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-end", justifyContent: "space-between" }}>
         <div>
-          <div className="kicker">solo tú ves esto</div>
-          <h1 className="h1">Tus artistas</h1>
+          <div className="kicker">only you can see this</div>
+          <h1 className="h1">Your artists</h1>
         </div>
-        <a href="/admin/artists/new" className="btn btn--accent btn--sm">+ Nuevo artista</a>
+        <a href="/admin/artists/new" className="btn btn--accent btn--sm">+ New artist</a>
       </div>
 
       <div className="stats">
-        <div className="stat" style={{ background: "#FFF6D6" }}><div className="stat__v">{subs?.length || 0}</div><div>Cuestionarios nuevos</div></div>
-        <div className="stat" style={{ background: "#E3F1F8" }}><div className="stat__v">{active.length}</div><div>Artistas activos</div></div>
-        <div className="stat" style={{ background: "#FCE4EF" }}><div className="stat__v">{active.filter((a) => (waitBy[a.id] || []).some((n) => n.owner === "artist")).length}</div><div>Esperando al artista</div></div>
-        <div className="stat" style={{ background: "#E4EAF7" }}><div className="stat__v">{active.filter((a) => a.release_date?.startsWith(thisMonth)).length}</div><div>Lanzamientos este mes</div></div>
+        <div className="stat" style={{ background: "#FFF6D6" }}><div className="stat__v">{subs?.length || 0}</div><div>New questionnaires</div></div>
+        <div className="stat" style={{ background: "#E3F1F8" }}><div className="stat__v">{active.length}</div><div>Active artists</div></div>
+        <div className="stat" style={{ background: "#FCE4EF" }}><div className="stat__v">{active.filter((a) => (waitBy[a.id] || []).some((n) => n.owner === "artist")).length}</div><div>Waiting on the artist</div></div>
+        <div className="stat" style={{ background: "#E4EAF7" }}><div className="stat__v">{active.filter((a) => a.release_date?.startsWith(thisMonth)).length}</div><div>Releases this month</div></div>
       </div>
 
       <section className="panel panel--yellow">
-        <h2 className="h2">Cuestionarios nuevos</h2>
-        <p style={{ margin: "0 0 16px", fontSize: 14 }}>Revisa las respuestas y crea la cuenta del artista con un clic.</p>
+        <h2 className="h2">New questionnaires</h2>
+        <p style={{ margin: "0 0 16px", fontSize: 14 }}>Review the answers and create the artist's account in one click.</p>
         {!subs?.length ? (
-          <p style={{ margin: 0 }}>No hay cuestionarios nuevos.</p>
+          <p style={{ margin: 0 }}>No new questionnaires.</p>
         ) : (
           <div className="cards">
             {subs.map((s) => (
               <div key={s.id} className="panel stack" style={{ padding: 18, borderWidth: 1.5, gap: 8 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
                   <strong>{s.artist_name}</strong>
-                  <span style={{ fontSize: 13 }}>{fmtDate(s.created_at, "es")}</span>
+                  <span style={{ fontSize: 13 }}>{fmtDate(s.created_at, "en")}</span>
                 </div>
                 <div style={{ fontSize: 14 }}>{s.answers?.genre || "—"} · {s.lang.toUpperCase()}</div>
                 {s.answers?.goal && <div className="muted" style={{ fontSize: 14 }}>"{s.answers.goal.slice(0, 140)}"</div>}
-                <a href={`/admin/submissions/${s.id}`} style={{ fontWeight: 600, fontSize: 14 }}>Ver respuestas y crear cuenta →</a>
+                <a href={`/admin/submissions/${s.id}`} style={{ fontWeight: 600, fontSize: 14 }}>View answers and create account →</a>
               </div>
             ))}
           </div>
@@ -64,14 +64,14 @@ export default async function Admin({ searchParams }) {
       </section>
 
       <section className="panel">
-        <h2 className="h2" style={{ marginBottom: 16 }}>Artistas</h2>
+        <h2 className="h2" style={{ marginBottom: 16 }}>Artists</h2>
         {!artists?.length ? (
-          <p style={{ margin: 0 }}>Todavía no hay artistas. Crea uno desde un cuestionario o con "+ Nuevo artista".</p>
+          <p style={{ margin: 0 }}>No artists yet. Create one from a questionnaire or with "+ New artist".</p>
         ) : (
           <div className="tablewrap">
             <table className="table" style={{ minWidth: 760 }}>
               <thead>
-                <tr><th>Artista</th><th>Paquete</th><th>Avance</th><th>Lanzamiento</th><th>Esperando a</th><th></th></tr>
+                <tr><th>Artist</th><th>Package</th><th>Progress</th><th>Release</th><th>Waiting on</th><th></th></tr>
               </thead>
               <tbody>
                 {artists.map((a) => {
@@ -82,7 +82,7 @@ export default async function Admin({ searchParams }) {
                   const waitUs = w.find((n) => n.owner === "agency");
                   return (
                     <tr key={a.id}>
-                      <td style={{ fontWeight: 600 }}>{a.name}{a.closed_at && <span className="muted"> · cerrado</span>}{!a.user_id && <span className="muted"> · sin cuenta</span>}</td>
+                      <td style={{ fontWeight: 600 }}>{a.name}{a.closed_at && <span className="muted"> · closed</span>}{!a.user_id && <span className="muted"> · no account</span>}</td>
                       <td>{(a.packages || []).join(" + ") || "—"}</td>
                       <td style={{ minWidth: 160 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -92,9 +92,9 @@ export default async function Admin({ searchParams }) {
                           <span style={{ fontSize: 13 }}>{s.now}/{s.total}</span>
                         </div>
                       </td>
-                      <td>{fmtDate(a.release_date, "es")}</td>
-                      <td style={{ fontSize: 14 }}>{waitArtist ? `Artista · ${waitArtist.body.slice(0, 40)}` : waitUs ? `Nosotros · ${waitUs.body.slice(0, 40)}` : "—"}</td>
-                      <td><a href={`/admin/artists/${a.id}`} style={{ fontWeight: 600 }}>Abrir</a></td>
+                      <td>{fmtDate(a.release_date, "en")}</td>
+                      <td style={{ fontSize: 14 }}>{waitArtist ? `Artist · ${waitArtist.body.slice(0, 40)}` : waitUs ? `Us · ${waitUs.body.slice(0, 40)}` : "—"}</td>
+                      <td><a href={`/admin/artists/${a.id}`} style={{ fontWeight: 600 }}>Open</a></td>
                     </tr>
                   );
                 })}
