@@ -12,11 +12,12 @@ function Field({ f, lang }) {
     return (
       <div className="field" style={{ gridColumn: "1 / -1" }}>
         <fieldset>
-          <legend>{label}</legend>
+          <legend>{label}{f.required ? " *" : ""}</legend>
+          {f.note && <p className="qnote">{pick(lang, f.note)}</p>}
           <div className="opts">
             {f.options.map((op) => (
               <label key={op.value} className="opt">
-                <input type={f.type} name={f.name} value={op.value} /> {pick(lang, op)}
+                <input type={f.type} name={f.name} value={op.value} required={(f.type === "radio" && f.required) || undefined} /> {pick(lang, op)}
               </label>
             ))}
           </div>
@@ -26,7 +27,7 @@ function Field({ f, lang }) {
   }
   const common = { id, name: f.name, className: "input", required: f.required || undefined };
   return (
-    <div className="field" style={f.type === "textarea" ? { gridColumn: "1 / -1" } : undefined}>
+    <div className="field" style={f.type === "textarea" || f.wide ? { gridColumn: "1 / -1" } : undefined}>
       <label htmlFor={id}>{label}{f.required ? " *" : ""}</label>
       {f.type === "select" ? (
         <select {...common} defaultValue={f.name === "preferred_lang" ? lang : ""}>

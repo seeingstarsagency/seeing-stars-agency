@@ -17,7 +17,7 @@ export default async function Submission({ params, searchParams }) {
   const a = sub.answers || {};
   const start = startingPoint(a);
   const had = start.filter((r) => r.start_status === "had").length;
-  const wanted = (a.help_with || []).filter((p) => p !== "unsure");
+  const wanted = ["Launchpad"];
 
   return (
     <AdminShell>
@@ -73,7 +73,7 @@ export default async function Submission({ params, searchParams }) {
                   name: sub.artist_name,
                   email: sub.email,
                   legal_name: a.legal_name,
-                  lang: a.preferred_lang || sub.lang,
+                  lang: sub.lang,
                   single_title: a.single_title,
                   release_date: a.next_release,
                   packages: wanted,

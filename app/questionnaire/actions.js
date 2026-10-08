@@ -12,7 +12,7 @@ export async function submitQuestionnaire(formData) {
 
   const lang = formData.get("lang") === "es" ? "es" : "en";
   const answers = readAnswers(formData);
-  if (!answers.artist_name || !EMAIL.test(answers.email)) redirect("/questionnaire?error=required");
+  if (!answers.artist_name || !answers.legal_name || !EMAIL.test(answers.email)) redirect("/questionnaire?error=required");
 
   let ok = true;
   try {
