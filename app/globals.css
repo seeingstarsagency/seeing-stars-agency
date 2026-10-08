@@ -406,3 +406,5 @@ button.btn { cursor: pointer; }
 .countdown__date { font-size: 13px; opacity: .75; margin-top: 6px; }
 .countdown__today { font-family: var(--display); font-size: 22px; font-weight: 800; color: var(--yellow); margin-top: 4px; }
 @media (max-width: 640px) { .countdown { flex-basis: 100%; } }
+
+.section__lead.section__lead--small { font-size: 16px; }

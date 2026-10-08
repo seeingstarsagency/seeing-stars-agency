@@ -98,12 +98,7 @@ export default function Home() {
         {/* Services */}
         <section id="services" className="wrap section">
           <Reveal>
-            <div className="hand" style={{ color: "var(--sky)" }}>Your music is the starting point.</div>
-            <h2 className="section__title">
-              Four things every artist needs.
-              <br />
-              <span className="soft">Let&apos;s build what comes next.</span>
-            </h2>
+            <h2 className="section__title">Four things every artist needs.</h2>
             <p className="section__lead">
               From the creative vision to the business details, we help you build a solid foundation for your
               music career.
@@ -131,9 +126,13 @@ export default function Home() {
             style={{ right: 24, top: 70, opacity: 0.9 }}
           />
           <Reveal>
-            <div className="hand" style={{ color: "var(--rose)" }}>pick your star</div>
-            <h2 className="section__title">Packages</h2>
-            <p className="section__lead">
+            <div className="hand" style={{ color: "var(--rose)" }}>Your music is the starting point.</div>
+            <h2 className="section__title">
+              Packages
+              <br />
+              <span className="soft">Let&apos;s build what comes next.</span>
+            </h2>
+            <p className="section__lead section__lead--small">
               Start with what you need most. Every package comes with clear deliverables and a timeline in
               writing. Contact us for pricing.
             </p>
