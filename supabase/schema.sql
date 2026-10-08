@@ -32,6 +32,7 @@ create table if not exists public.artists (
 );
 alter table public.artists add column if not exists intake_answers jsonb;
 alter table public.artists add column if not exists intake_done_at timestamptz;
+alter table public.artists add column if not exists photo_path text;   -- profile photo in the artist-files bucket
 
 alter table public.intake_submissions
   drop constraint if exists intake_submissions_artist_fk;
@@ -88,6 +89,16 @@ create table if not exists public.artist_files (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.songs (
+  id uuid primary key default gen_random_uuid(),
+  artist_id uuid not null references public.artists(id) on delete cascade,
+  title text not null,
+  release_date date,
+  link text,
+  created_at timestamptz not null default now()
+);
+create index if not exists songs_artist on public.songs(artist_id);
+
 create index if not exists artist_steps_artist on public.artist_steps(artist_id);
 create index if not exists next_steps_artist on public.next_steps(artist_id);
 create index if not exists notes_artist on public.notes(artist_id);
@@ -123,6 +134,7 @@ alter table public.next_steps enable row level security;
 alter table public.notes enable row level security;
 alter table public.milestones enable row level security;
 alter table public.artist_files enable row level security;
+alter table public.songs enable row level security;
 
 drop policy if exists "admin all" on public.intake_submissions;
 create policy "admin all" on public.intake_submissions for all using (public.is_admin()) with check (public.is_admin());
@@ -138,7 +150,7 @@ create policy "admin all" on public.artists for all using (public.is_admin()) wi
 do $$
 declare t text;
 begin
-  foreach t in array array['artist_steps','next_steps','notes','milestones','artist_files'] loop
+  foreach t in array array['artist_steps','next_steps','notes','milestones','artist_files','songs'] loop
     execute format('drop policy if exists "read own" on public.%I', t);
     execute format('create policy "read own" on public.%I for select using (artist_id = public.my_artist_id())', t);
     execute format('drop policy if exists "admin all" on public.%I', t);

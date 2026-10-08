@@ -5,6 +5,33 @@ export function Field({ f: field, lang, value, optional = false }) {
   const f = optional ? { ...field, required: false } : field;
   const label = pick(lang, f);
   const id = `q-${f.name}`;
+  if (f.type === "links") {
+    const saved = Object.fromEntries((Array.isArray(value) ? value : []).map((x) => [x.key, x]));
+    return (
+      <div className="field" style={{ gridColumn: "1 / -1" }}>
+        <fieldset>
+          <legend>{label}</legend>
+          <div className="linkrows">
+            {f.items.map((it) => {
+              const v = saved[it.key];
+              const base = `${f.name}__${it.key}`;
+              return (
+                <div key={it.key} className="linkrow">
+                  <label className="opt linkrow__check">
+                    <input type="checkbox" name={base} defaultChecked={Boolean(v)} /> {pick(lang, it)}
+                  </label>
+                  {it.custom && (
+                    <input name={`${base}_name`} className="input linkrow__name" defaultValue={v?.name && v.name !== it.en ? v.name : undefined} placeholder={lang === "es" ? "¿Cuál? (ej. Threads, X)" : "Which one? (e.g. Threads, X)"} aria-label={lang === "es" ? "Nombre de la red social" : "Network name"} maxLength={60} />
+                  )}
+                  <input name={`${base}_url`} type="text" inputMode="url" className="input linkrow__url" defaultValue={v?.url || undefined} placeholder={lang === "es" ? `Enlace de ${pick(lang, it)}` : `${pick(lang, it)} link`} aria-label={lang === "es" ? `Enlace de ${pick(lang, it)}` : `${pick(lang, it)} link`} maxLength={300} />
+                </div>
+              );
+            })}
+          </div>
+        </fieldset>
+      </div>
+    );
+  }
   if (f.type === "radio" || f.type === "checkbox") {
     const chosen = Array.isArray(value) ? value : value ? [value] : [];
     return (

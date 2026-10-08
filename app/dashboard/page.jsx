@@ -3,6 +3,9 @@ import { getViewer } from "../../lib/supabase";
 import { loadArtist } from "../../lib/artist-data";
 import { getLang, T, PKG_BLURB, pick } from "../../lib/i18n";
 import { recommendations } from "../../lib/steps";
+import { ALL_FIELDS, answerLabel } from "../../lib/questions";
+import { browserConfig } from "../../lib/env";
+import PhotoUpload from "../PhotoUpload";
 import { AppHeader, LogoutButton, fmtDate } from "../ui";
 import { ProgressSummary, StepsTable } from "../progress";
 
@@ -48,27 +51,95 @@ export default async function Dashboard({ searchParams }) {
     );
   }
 
-  const { artist, rows, next, notes, milestones, files } = data;
+  const { artist, rows, next, notes, milestones, files, songs, photoUrl } = data;
   // First visit: the artist fills in the Launchpad questionnaire before anything else.
   if (!isAdmin && !artist.intake_done_at) redirect("/dashboard/intake");
   const recs = recommendations(rows, artist.packages || []);
+
+  // Profile details from the Launchpad questionnaire.
+  const ans = artist.intake_answers || {};
+  const field = (name) => ALL_FIELDS.find((f) => f.name === name);
+  const label = (name) => (ans[name] ? answerLabel(field(name), ans[name], lang) : null);
+  const location = [ans.city, ans.state, ans.country].filter(Boolean).join(", ");
+  const COLORS = { instagram: "#F4A6C9", tiktok: "#9CCBE0", youtube: "#F2C94C", other: "#C9B8F0", spotify: "#8FD19E", apple: "#F28C8C" };
+  const links = [
+    ...(Array.isArray(ans.socials) ? ans.socials.filter((x) => x.url) : []),
+    ...(ans.spotify_url ? [{ key: "spotify", name: "Spotify", url: ans.spotify_url }] : []),
+    ...(ans.apple_url ? [{ key: "apple", name: "Apple Music", url: ans.apple_url }] : []),
+  ]
+    .filter((l) => /^https?:\/\//i.test(l.url))
+    .map((l) => ({ ...l, color: COLORS[l.key] || COLORS.other }));
+  const about = [
+    [t.fLegal, ans.legal_name || artist.legal_name],
+    [t.fEmail, artist.email],
+    [t.fPhone, ans.phone],
+    [t.fLocation, location],
+    [t.fDistributor, label("distributor")],
+    [t.fPro, label("pro_choice")],
+    [t.fMaster, label("master_owner")],
+    [t.fAuthors, label("authorship")],
+  ].filter(([, v]) => v);
   const reportHref = isAdmin ? `/report?artist=${artist.id}` : "/report";
 
   return (
     <div className="app">
       {header}
       <main className="container">
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-end", justifyContent: "space-between" }}>
-          <div>
+        <section className="profile">
+          <PhotoUpload sb={browserConfig()} photoUrl={photoUrl} name={artist.name} label={photoUrl ? t.changePhoto : t.addPhoto} busyLabel={t.uploading} errorLabel={t.photoError} editable={!isAdmin} />
+          <div className="profile__main">
             <div className="kicker">{t.hi}, {artist.name.split(" ")[0]}</div>
-            <h1 className="h1">{t.yourDashboard}</h1>
-            <p className="lead">
-              {t.package}: <strong>{(artist.packages || []).join(" + ") || "—"}</strong>
-              {artist.single_title && <> · {t.single}: <em>{artist.single_title}</em></>}
-              {artist.release_date && <> · {t.releaseDate}: <strong>{fmtDate(artist.release_date, lang)}</strong></>}
-            </p>
+            <h1 className="h1 profile__name">{artist.name}</h1>
+            {(ans.legal_name || location) && (
+              <p className="profile__meta">{[ans.legal_name || artist.legal_name, location].filter(Boolean).join(" · ")}</p>
+            )}
+            <div className="chips">
+              {(artist.packages || []).map((p) => <span key={p} className="chip">{p}</span>)}
+              {artist.single_title && <span className="chip chip--light">{t.single}: <em>{artist.single_title}</em></span>}
+              {artist.release_date && <span className="chip chip--light">{t.releaseDate}: {fmtDate(artist.release_date, lang)}</span>}
+            </div>
+            {links.length > 0 && (
+              <div className="sociallinks">
+                {links.map((l) => (
+                  <a key={l.key + l.url} href={l.url} target="_blank" rel="noopener noreferrer" className="sociallink">
+                    <span className="sociallink__dot" style={{ background: l.color }} aria-hidden="true" />{l.name}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
-          <a href={reportHref} className="btn btn--sm">{t.seeReport}</a>
+          <a href={reportHref} className="btn btn--sm profile__report">{t.seeReport}</a>
+        </section>
+
+        <div className="row">
+          <section className="panel panel--yellow" id="songs">
+            <h2 className="h2" style={{ marginBottom: 14 }}>{t.yourSongs}</h2>
+            {songs.length === 0 ? (
+              <p style={{ margin: 0 }}>{t.noSongs}</p>
+            ) : (
+              <ul className="songlist">
+                {songs.map((s) => (
+                  <li key={s.id}>
+                    <span className="songlist__icon" aria-hidden="true">♪</span>
+                    <span style={{ flexGrow: 1 }}><strong>{s.title}</strong>{s.release_date && <span className="muted"> · {fmtDate(s.release_date, lang)}</span>}</span>
+                    {s.link && <a href={s.link} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>{t.listen}</a>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section className="panel panel--lilac" id="about">
+            <h2 className="h2" style={{ marginBottom: 14 }}>{t.aboutYou}</h2>
+            <dl className="kv">
+              {about.map(([k, v]) => (
+                <div key={k} style={{ display: "contents" }}>
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
         </div>
 
         {sp?.welcome && <div className="alert alert--ok" role="status">{t.iDone}</div>}

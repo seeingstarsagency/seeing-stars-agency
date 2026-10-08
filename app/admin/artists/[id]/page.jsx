@@ -5,12 +5,13 @@ import { PACKAGES, STATUS } from "../../../../lib/steps";
 import { ProgressSummary, StepsTable } from "../../../progress";
 import { fmtDate } from "../../../ui";
 import UploadForm from "./UploadForm";
+import PhotoUpload from "../../../PhotoUpload";
 import { browserConfig } from "../../../../lib/env";
 import { SECTIONS, answerLabel } from "../../../../lib/questions";
 import { AnswersList } from "../../../form-fields";
 import {
   updateArtist, updateSteps, addNextStep, toggleNextStep, addNote, addMilestone,
-  toggleMilestone, deleteItem, resendInvite,
+  toggleMilestone, deleteItem, resendInvite, addSong,
 } from "../../actions";
 
 function Del({ artistId, table, id }) {
@@ -32,17 +33,20 @@ export default async function ArtistAdmin({ params, searchParams }) {
   const sp = await searchParams;
   const data = await loadArtist(supabase, id);
   if (!data) notFound();
-  const { artist, rows, next, notes, milestones, files } = data;
+  const { artist, rows, next, notes, milestones, files, songs, photoUrl } = data;
   const hidden = <input type="hidden" name="artist_id" value={artist.id} />;
 
   return (
     <AdminShell>
       <a href="/admin">← Back</a>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-end", justifyContent: "space-between" }}>
-        <div>
+        <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
+          <PhotoUpload artistId={artist.id} sb={browserConfig()} photoUrl={photoUrl} name={artist.name} label="Change photo" busyLabel="Uploading…" errorLabel="Could not upload the photo (images up to 10 MB)." size={96} />
+          <div>
           <div className="kicker">{artist.email}</div>
           <h1 className="h1">{artist.name}</h1>
           <p className="lead">{artist.user_id ? "Has an account" : "No account yet"} · Language: {artist.lang.toUpperCase()}</p>
+          </div>
         </div>
         <div className="inline">
           <a href={`/dashboard?artist=${artist.id}`} className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>View their dashboard</a>
@@ -112,6 +116,26 @@ export default async function ArtistAdmin({ params, searchParams }) {
           <UploadForm artistId={artist.id} sb={browserConfig()} />
         </section>
       </div>
+
+      <section className="panel panel--yellow" id="songs">
+        <h2 className="h2">Songs</h2>
+        <p style={{ margin: "0 0 12px", fontSize: 15 }}>These show on the artist&apos;s profile. The single from their questionnaire is added automatically.</p>
+        <ul className="checks" style={{ margin: "0 0 16px" }}>
+          {songs.map((s) => (
+            <li key={s.id} style={{ alignItems: "center" }}>
+              <span style={{ flexGrow: 1 }}><strong>{s.title}</strong>{s.release_date && <> · {fmtDate(s.release_date, "en")}</>}{s.link && <> · <a href={s.link} target="_blank" rel="noopener noreferrer">link</a></>}</span>
+              <Del artistId={artist.id} table="songs" id={s.id} />
+            </li>
+          ))}
+        </ul>
+        <form action={addSong} className="inline">
+          {hidden}
+          <input name="title" className="input" placeholder="Song title" aria-label="Song title" required />
+          <input name="release_date" type="date" className="input" aria-label="Release date" style={{ flex: "0 1 180px" }} />
+          <input name="link" className="input" placeholder="Spotify / YouTube link (optional)" aria-label="Link" />
+          <button type="submit" className="small-btn small-btn--dark">Add</button>
+        </form>
+      </section>
 
       <div className="row">
         <section className="panel panel--blue" id="timeline">

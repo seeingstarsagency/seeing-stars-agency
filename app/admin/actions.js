@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getViewer, supabaseAdmin } from "../../lib/supabase";
 import { STEPS, PACKAGES, startingPoint } from "../../lib/steps";
 import { SITE_URL } from "../../lib/env";
-import { SECTIONS, readAnswers } from "../../lib/questions";
+import { SECTIONS, readAnswers, cleanUrl } from "../../lib/questions";
 import { applyIntake } from "../../lib/intake";
 
 async function requireAdmin() {
@@ -161,6 +161,16 @@ export async function addMilestone(formData) {
   redirect(`/admin/artists/${id}#timeline`);
 }
 
+export async function addSong(formData) {
+  const supabase = await requireAdmin();
+  const id = str(formData, "artist_id", 60);
+  const title = str(formData, "title", 200);
+  if (title) {
+    await supabase.from("songs").insert({ artist_id: id, title, release_date: str(formData, "release_date", 10) || null, link: cleanUrl(formData.get("link")) || null });
+  }
+  redirect(`/admin/artists/${id}#songs`);
+}
+
 export async function toggleMilestone(formData) {
   const supabase = await requireAdmin();
   const id = str(formData, "artist_id", 60);
@@ -174,7 +184,7 @@ export async function deleteItem(formData) {
   const id = str(formData, "artist_id", 60);
   const table = String(formData.get("table"));
   const itemId = str(formData, "id", 60);
-  if (!["next_steps", "notes", "milestones", "artist_files"].includes(table)) redirect(`/admin/artists/${id}`);
+  if (!["next_steps", "notes", "milestones", "artist_files", "songs"].includes(table)) redirect(`/admin/artists/${id}`);
   if (table === "artist_files") {
     const { data } = await supabase.from("artist_files").select("path").eq("id", itemId).maybeSingle();
     if (data?.path) await supabaseAdmin().storage.from("artist-files").remove([data.path]);
