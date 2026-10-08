@@ -22,58 +22,34 @@ export const MARQUEE = [
 
 export const PILLARS = [
   {
-    tag: "01 · Rights",
-    title: "Get paid for every play.",
-    text: "We sort out your credits, splits and registrations so no royalty goes unclaimed.",
-    items: [
-      "Credits and splits confirmed in writing",
-      "U.S. Copyright Office registration",
-      "ASCAP or BMI, chosen and set up",
-      "PRO, MLC and SoundExchange registrations",
-    ],
+    key: "rights",
+    title: "Behind the Music.",
+    text: "Make sense of your music rights and the business behind your songs.",
     bg: "#FFF6D6",
     star: COLORS.yellow,
   },
   {
-    tag: "02 · Release",
-    title: "Release music the right way.",
-    text: "Your songs go out on time, with clean info, on every platform.",
-    items: [
-      "The right distributor for your budget",
-      "Audio, artwork, lyrics and credits in one place",
-      "Uploads checked so nothing gets rejected",
-      "Timelines with real deadlines",
-    ],
+    key: "release",
+    title: "Ready for the World.",
+    text: "Get your music ready to go from your hard drive to someone's headphones.",
     bg: "#E3F1F8",
     star: COLORS.blue,
   },
   {
-    tag: "03 · Brand",
-    title: "Know who you are as an artist.",
-    text: "A clear story, look and voice that make people stop scrolling.",
-    items: [
-      "Your identity, story and audience",
-      "Visual direction fans recognize",
-      "Bios and an EPK ready to send",
-      "Profiles that match your brand",
-    ],
+    key: "brand",
+    title: "Make It Feel Like You.",
+    text: "Bring your story, sound, and personality into a brand of your own.",
     bg: "#FCE4EF",
     star: COLORS.pink,
   },
   {
-    tag: "04 · Campaign",
-    title: "Turn releases into listeners.",
-    text: "A plan that gets your music heard before, during and after release day.",
-    items: [
-      "Release campaigns and content ideas",
-      "Edited videos, captions and a calendar",
-      "Playlist pitches and curator outreach",
-      "A results report after every release",
-    ],
+    key: "campaign",
+    title: "Give It a Moment.",
+    text: "Build excitement around your music with creative content and a plan to share it.",
     bg: "#E4EAF7",
     star: COLORS.navy,
   },
-];
+]
 
 export const PACKAGES = [
   {

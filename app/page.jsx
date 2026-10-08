@@ -111,15 +111,12 @@ export default function Home() {
           </Reveal>
           <div className="grid">
             {PILLARS.map((p, i) => (
-              <Reveal key={p.tag} delay={i * 100} className="card lift" style={{ background: p.bg }}>
+              <Reveal key={p.key} delay={i * 100} className="card lift" style={{ background: p.bg }}>
                 <Star size={44} fill={p.star} stroke="#1E1B2E" />
-                <div className="tag" style={{ marginTop: 16 }}>{p.tag}</div>
-                <h3>{p.title}</h3>
+                <h3 style={{ marginTop: 18 }}>{p.title}</h3>
                 <p>{p.text}</p>
-                <ul className="list">
-                  {p.items.map((it) => (
-                    <li key={it}>{it}</li>
-                  ))}
+              </Reveal>
+            ))}
                 </ul>
               </Reveal>
             ))}
