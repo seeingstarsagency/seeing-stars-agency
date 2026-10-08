@@ -223,8 +223,7 @@ export default function Home() {
                 Ready to <span className="it">see stars?</span>
               </h2>
               <p>
-                Tell us about your music by email. We reply within 2 business days, and you&apos;ll leave with at least one
-                thing you can fix today.
+                New music? Big ideas? No clue where to start? Let&apos;s figure it out together!
               </p>
               <div className="contact__ctas">
                 <a href="/questionnaire" className="btn btn--accent">
