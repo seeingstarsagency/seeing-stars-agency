@@ -102,6 +102,11 @@ language sql stable security definer set search_path = public as $$
   select artist_id from public.profiles where id = auth.uid();
 $$;
 
+revoke execute on function public.is_admin() from public, anon;
+revoke execute on function public.my_artist_id() from public, anon;
+grant execute on function public.is_admin() to authenticated;
+grant execute on function public.my_artist_id() to authenticated;
+
 -- ============ SECURITY (row level security) ============
 -- Artists can only READ their own rows. Only the admin can change anything.
 -- Questionnaire submissions are saved by the website server, never directly by visitors.
