@@ -88,7 +88,7 @@ export const PACKAGES = [
       "Artist profile & social media update and clean-up.",
       "A clear checklist of next steps.",
     ],
-    footnote: "For one single · Playlist placement is never guaranteed",
+    footnote: "For one single",
   },
   {
     name: "Astro",
