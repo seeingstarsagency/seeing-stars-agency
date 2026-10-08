@@ -408,3 +408,4 @@ button.btn { cursor: pointer; }
 @media (max-width: 640px) { .countdown { flex-basis: 100%; } }
 
 .section__lead.section__lead--small { font-size: 16px; }
+.section__title .soft--sub { display: inline-block; margin-top: 6px; font-size: .68em; }

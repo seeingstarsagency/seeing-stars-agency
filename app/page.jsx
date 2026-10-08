@@ -128,9 +128,9 @@ export default function Home() {
           <Reveal>
             <div className="hand" style={{ color: "var(--rose)" }}>Your music is the starting point.</div>
             <h2 className="section__title">
-              Packages
+              Packages.
               <br />
-              <span className="soft">Let&apos;s build what comes next.</span>
+              <span className="soft soft--sub">Let&apos;s build what comes next.</span>
             </h2>
             <p className="section__lead section__lead--small">
               Start with what you need most. Every package comes with clear deliverables and a timeline in
