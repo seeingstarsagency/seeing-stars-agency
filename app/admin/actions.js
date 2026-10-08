@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { getViewer, supabaseAdmin } from "../../lib/supabase";
 import { STEPS, PACKAGES, startingPoint } from "../../lib/steps";
 import { SITE_URL } from "../../lib/env";
+import { SECTIONS, readAnswers } from "../../lib/questions";
+import { applyIntake } from "../../lib/intake";
 
 async function requireAdmin() {
   const v = await getViewer();
@@ -203,4 +205,15 @@ export async function archiveSubmission(formData) {
   const supabase = await requireAdmin();
   await supabase.from("intake_submissions").update({ status: "archived" }).eq("id", str(formData, "id", 60));
   redirect("/admin");
+}
+
+// The admin types in (or corrects) an artist's Launchpad questionnaire, e.g. from a paper copy.
+export async function saveIntakeForArtist(formData) {
+  await requireAdmin();
+  const artistId = str(formData, "artist_id", 60);
+  const answers = readAnswers(formData, SECTIONS);
+  const res = await applyIntake(supabaseAdmin(), artistId, answers);
+  if (res.error) redirect(`/admin/artists/${artistId}/intake?error=${encodeURIComponent(res.error)}`);
+  revalidatePath(`/admin/artists/${artistId}`);
+  redirect(`/admin/artists/${artistId}?ok=intake#intake`);
 }

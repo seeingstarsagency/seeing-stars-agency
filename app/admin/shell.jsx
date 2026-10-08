@@ -40,4 +40,5 @@ export const OK_MSG = {
   invite_failed: "The artist was created, but the invitation failed (does that email already have an account?). You can resend it below.",
   saved: "Changes saved.",
   uploaded: "File uploaded.",
+  intake: "Questionnaire saved. The starting point and progress were updated from the answers.",
 };

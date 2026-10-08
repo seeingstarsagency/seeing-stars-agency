@@ -1,7 +1,8 @@
 import { pick } from "../lib/i18n";
 
 // One question, in the artist's language. `value` pre-fills it.
-export function Field({ f, lang, value }) {
+export function Field({ f: field, lang, value, optional = false }) {
+  const f = optional ? { ...field, required: false } : field;
   const label = pick(lang, f);
   const id = `q-${f.name}`;
   if (f.type === "radio" || f.type === "checkbox") {
@@ -43,13 +44,13 @@ export function Field({ f, lang, value }) {
 }
 
 // All sections of a questionnaire as colored cards.
-export function FormSections({ sections, lang, values = {} }) {
+export function FormSections({ sections, lang, values = {}, optional = false }) {
   return sections.map((s) => (
     <section key={s.key} className="panel stack" style={{ background: s.bg, gap: 18 }}>
       <h2 className="h2" style={{ fontSize: 28 }}>{pick(lang, s)}</h2>
       <div className="fgrid">
         {s.fields.map((f) => (
-          <Field key={f.name} f={f} lang={lang} value={values[f.name]} />
+          <Field key={f.name} f={f} lang={lang} value={values[f.name]} optional={optional} />
         ))}
       </div>
     </section>
