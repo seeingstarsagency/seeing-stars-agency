@@ -5,7 +5,7 @@ import { AppHeader, StarIcon } from "../../ui";
 
 export const metadata = { title: "Your package | Seeing Stars Agency" };
 
-const BG = { Launchpad: "#E3F1F8", Liftoff: "#FFF6D6", Spark: "#E4EAF7", Orbit: "#FCE4EF" };
+const BG = { Launchpad: "#E3F1F8", Astro: "#FFF6D6", Comet: "#E4EAF7", Orbit: "#FCE4EF" };
 
 export default async function Result({ searchParams }) {
   const lang = await getLang();

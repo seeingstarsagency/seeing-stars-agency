@@ -32,7 +32,7 @@ export default function Home() {
           <a href="/login">Client login</a>
         </nav>
         <a href="#contact" className="btn btn--dark btn--sm">
-          Contact us
+          Get in contact!
         </a>
       </header>
 
@@ -58,8 +58,8 @@ export default function Home() {
               </span>
             </h1>
             <p className="hero__lead rise d4">
-              We help emerging artists build a brand people remember, and we handle{" "}
-              <span className="hl">the business behind the music</span>, so every play pays.
+              We help emerging artists build their identity, <span className="hl">make sense of the industry</span>,
+              and get ready for what&apos;s next.
             </p>
             <div className="hero__ctas rise d5">
               <a href="/questionnaire" className="btn btn--accent">
@@ -79,6 +79,7 @@ export default function Home() {
                 <p>
                   <b>Your music deserves</b> to be heard, credited and paid. We take care of all three.
                 </p>
+                <p className="note__sign">Artists helping artists find their way.</p>
               </div>
             </div>
           </div>
@@ -99,15 +100,15 @@ export default function Home() {
         {/* Services */}
         <section id="services" className="wrap section">
           <Reveal>
-            <div className="hand" style={{ color: "var(--sky)" }}>what we do</div>
+            <div className="hand" style={{ color: "var(--sky)" }}>Your music is the starting point.</div>
             <h2 className="section__title">
               Four things every artist needs.
               <br />
-              <span className="soft">We do all of them.</span>
+              <span className="soft">Let&apos;s build what comes next.</span>
             </h2>
             <p className="section__lead">
-              Most agencies do brand or paperwork. We do both, so your music looks the part and earns what it
-              should.
+              From the creative vision to the business details, we help you build a solid foundation for your
+              music career.
             </p>
           </Reveal>
           <div className="grid">
@@ -157,7 +158,9 @@ export default function Home() {
                   <h3 className="pkg__name">{p.name}</h3>
                   <Star size={38} fill={p.color} />
                 </div>
+                <div className="pkg__label">{p.label}</div>
                 <p className="pkg__tagline">{p.tagline}</p>
+                <p className="pkg__desc">{p.desc}</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   <a href="#contact" className="price-link">Contact us for pricing →</a>
                   {p.note && <span className="small">{p.note}</span>}
@@ -167,7 +170,7 @@ export default function Home() {
                     <li key={it}>{it}</li>
                   ))}
                 </ul>
-                <div className="pkg__foot">{p.footnote}</div>
+                {p.footnote && <div className="pkg__foot">{p.footnote}</div>}
               </Reveal>
             ))}
           </div>
@@ -196,7 +199,7 @@ export default function Home() {
               <div className="tag">The full experience</div>
               <h3>Star Treatment</h3>
               <p>
-                Everything, start to finish: Launchpad, Liftoff, a full Spark campaign and three months of
+                Everything, start to finish: Launchpad, Astro, a full Comet campaign and three months of
                 Orbit. Payable in installments.
               </p>
             </div>

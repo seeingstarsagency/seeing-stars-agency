@@ -167,7 +167,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
           <div className="stack" style={{ gap: 12, margin: "12px 0 16px" }}>
             {notes.map((n) => (
               <div key={n.id} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                <div className="note" style={{ flexGrow: 1 }}><div className="muted" style={{ fontSize: 13 }}>{fmtDate(n.created_at, "en")}</div>{n.body}</div>
+                <div className="anote" style={{ flexGrow: 1 }}><div className="muted" style={{ fontSize: 13 }}>{fmtDate(n.created_at, "en")}</div>{n.body}</div>
                 <Del artistId={artist.id} table="notes" id={n.id} />
               </div>
             ))}

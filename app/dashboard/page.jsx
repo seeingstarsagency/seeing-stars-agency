@@ -204,7 +204,7 @@ export default async function Dashboard({ searchParams }) {
                 <h2 className="h2" style={{ marginBottom: 14 }}>{t.notesTitle}</h2>
                 <div className="stack" style={{ gap: 14 }}>
                   {notes.slice(0, 6).map((n) => (
-                    <div key={n.id} className="note">
+                    <div key={n.id} className="anote">
                       <div className="muted" style={{ fontSize: 13 }}>{fmtDate(n.created_at, lang)}</div>
                       {n.body}
                     </div>

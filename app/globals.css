@@ -304,7 +304,7 @@ button.btn { cursor: pointer; }
 .box { flex-shrink: 0; width: 24px; height: 24px; border: 2px solid var(--ink); border-radius: 6px; background: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
 .filelist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .filelist li { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: #fff; border: 1.5px solid var(--ink); border-radius: 12px; padding: 12px 14px; font-size: 15px; }
-.note { border-left: 4px solid var(--yellow); padding-left: 12px; font-size: 15px; line-height: 1.6; }
+.anote { border-left: 4px solid var(--yellow); padding-left: 12px; font-size: 15px; line-height: 1.6; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .upcard { background: var(--paper); color: var(--ink); border-radius: 16px; padding: 20px; border: 2px solid var(--yellow); }
 
@@ -367,3 +367,6 @@ button.btn { cursor: pointer; }
 @media (max-width: 640px) { .profile { padding: 22px; } .profile { justify-content: center; text-align: center; } .chips, .sociallinks { justify-content: center; } }
 .linkrow__check input { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 1.5px solid var(--ink); border-radius: 999px; background: #fff; display: inline-block; flex-shrink: 0; }
 .linkrow__check input:checked { background: var(--ink); box-shadow: inset 0 0 0 3px #fff; }
+.note p.note__sign { margin-top: 18px; font-family: var(--hand); font-size: 25px; line-height: 1.2; color: #2c4a63; }
+.pkg__label { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #C2417F; margin-top: -6px; }
+.pkg__desc { margin: 0; font-size: 15px; line-height: 1.55; }
