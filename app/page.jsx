@@ -215,21 +215,6 @@ export default function Home() {
           </p>
         </section>
 
-        {/* Promise */}
-        <section className="wrap" style={{ paddingTop: 96, position: "relative", zIndex: 1 }}>
-          <Reveal className="promise">
-            <Star size={70} fill="#C2417F" style={{ flexShrink: 0 }} />
-            <div style={{ flex: "999 1 400px", minWidth: 0 }}>
-              <h3>Real listeners, no shortcuts.</h3>
-              <p>
-                We pitch your music to the right playlists and curators. We never buy placements or streams,
-                and no one can honestly guarantee them. Platforms penalize fake plays; your music deserves fans
-                who come back.
-              </p>
-            </div>
-          </Reveal>
-        </section>
-
         {/* How it works */}
         <section id="how" className="wrap section" style={{ paddingTop: 96 }}>
           <Reveal>
