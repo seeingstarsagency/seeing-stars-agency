@@ -223,7 +223,9 @@ export default function Home() {
                 Ready to <span className="it">see stars?</span>
               </h2>
               <p>
-                New music? Big ideas? No clue where to start? Let&apos;s figure it out together!
+                New music? Big ideas? No clue where to start?
+                <br />
+                Let&apos;s figure it out together!
               </p>
               <div className="contact__ctas">
                 <a href="/questionnaire" className="btn btn--accent">
