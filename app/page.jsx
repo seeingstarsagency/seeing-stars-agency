@@ -29,6 +29,7 @@ export default function Home() {
           <a href="#packages">Packages</a>
           <a href="#bundles">Bundles</a>
           <a href="#how">How it works</a>
+          <a href="/login">Client login</a>
         </nav>
         <a href="#contact" className="btn btn--dark btn--sm">
           Book a free call
@@ -61,11 +62,11 @@ export default function Home() {
               <span className="hl">the business behind the music</span>, so every play pays.
             </p>
             <div className="hero__ctas rise d5">
-              <a href="#packages" className="btn btn--accent">
-                See packages
+              <a href="/questionnaire" className="btn btn--accent">
+                Start here
               </a>
-              <a href="#contact" className="btn">
-                Book a free call
+              <a href="#packages" className="btn">
+                See packages
               </a>
             </div>
           </div>
@@ -263,6 +264,9 @@ export default function Home() {
               fix today.
             </p>
             <div className="contact__ctas">
+              <a href="/questionnaire" className="btn btn--accent">
+                Start with the questionnaire
+              </a>
               <a href={`mailto:${CONTACT.email}`} className="btn btn--dark">
                 Book a free call
               </a>

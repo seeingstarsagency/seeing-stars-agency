@@ -36,8 +36,13 @@ Open http://localhost:3000
 
 Every time you push a change to GitHub, Vercel republishes the site on its own.
 
-## Next phases (planned)
+## Questionnaire, artist dashboards and admin
 
-- Intake questionnaire that saves answers (Supabase or Tally + Google Sheets)
-- Admin panel to track each artist
-- Artist login and dashboard
+- `/questionnaire` · bilingual intake form (answers become each artist's starting point)
+- `/login` · artist and admin login
+- `/dashboard` · artist progress: starting point vs today, steps, next steps, files, notes
+- `/admin` · only for Seeing Stars Agency: questionnaires, artists, editing progress
+- `/report` · closing report with what was done, what's pending and the recommended next package
+
+The 15-step checklist lives in `lib/steps.js`; questionnaire questions in `lib/questions.js`; texts in `lib/i18n.js`.
+One-time database setup: see `supabase/SETUP.md`.
