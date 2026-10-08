@@ -23,6 +23,7 @@ export function AdminShell({ children }) {
           <div className="apphead__right">
             <a href="/admin">Artists</a>
             <a href="/admin/artists/new">+ New artist</a>
+            <a href="/questionnaire" target="_blank" rel="noopener noreferrer">Questionnaire ↗</a>
             <a href="/" target="_blank" rel="noopener noreferrer">View site</a>
             <form action="/auth/logout" method="post"><button type="submit" className="linkbtn">Log out</button></form>
           </div>
