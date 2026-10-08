@@ -46,6 +46,16 @@ Then **Deployments → ⋯ on the latest → Redeploy**, so the site picks up th
 - In the artist's page you update steps, next steps, notes, the timeline and files. The artist sees it live.
 - **Informe final** builds the closing report; use "Download PDF" to save it.
 
+## Custom emails (sender name and branded templates)
+Supabase only lets you edit email text once you connect your own email service.
+For now we use the Gmail account:
+1. Gmail: turn on 2-Step Verification, then create an App Password at https://myaccount.google.com/apppasswords
+2. Supabase → Authentication → Emails → SMTP Settings → Enable custom SMTP:
+   host `smtp.gmail.com`, port `465`, username and sender `seeingstarsagency@gmail.com`,
+   sender name `Seeing Stars Agency`, password = the App Password.
+3. Supabase → Authentication → Emails → Templates: paste the files in `supabase/email-templates/`
+   (Invite user, Magic link, Reset password).
+
 ## Email sending limits
 Supabase's built-in email is fine for testing but sends only a few emails per hour.
 Before inviting many artists, connect your own email service in Supabase → **Authentication → Emails → SMTP Settings**
