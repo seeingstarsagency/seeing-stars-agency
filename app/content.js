@@ -1,7 +1,7 @@
 // All the text on the site lives here. Edit this file to change copy.
 
 export const CONTACT = {
-  email: "hello@seeingstarsagency.com",
+  email: "seeingstarsagency@gmail.com",
   instagramHandle: "@seeingstarsagency",
   instagramUrl: "https://www.instagram.com/seeingstarsagency/",
 };

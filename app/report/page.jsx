@@ -116,13 +116,13 @@ export default async function Report({ searchParams }) {
                   <li key={r.pkg}><strong>{r.pkg}</strong> · {pick(lang, PKG_BLURB[r.pkg])} {t.solves}: {r.steps.map((x) => pick(lang, x)).join(", ")}.</li>
                 ))}
               </ul>
-              <a href={`mailto:hello@seeingstarsagency.com?subject=${encodeURIComponent(recs.map((r) => r.pkg).join(" + ") + " · " + artist.name)}`} className="btn btn--accent btn--sm" style={{ borderColor: "#F2C94C" }}>
+              <a href={`mailto:seeingstarsagency@gmail.com?subject=${encodeURIComponent(recs.map((r) => r.pkg).join(" + ") + " · " + artist.name)}`} className="btn btn--accent btn--sm" style={{ borderColor: "#F2C94C" }}>
                 {t.reportBook}
               </a>
             </section>
           )}
 
-          <p className="muted" style={{ margin: "28px 0 0", fontSize: 13 }}>hello@seeingstarsagency.com · @seeingstarsagency · seeingstarsagency.com</p>
+          <p className="muted" style={{ margin: "28px 0 0", fontSize: 13 }}>seeingstarsagency@gmail.com · @seeingstarsagency · seeingstarsagency.com</p>
         </article>
       </div>
     </div>

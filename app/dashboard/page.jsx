@@ -159,7 +159,7 @@ export default async function Dashboard({ searchParams }) {
                 </div>
               ))}
             </div>
-            <a href={`mailto:hello@seeingstarsagency.com?subject=${encodeURIComponent(recs.map((r) => r.pkg).join(" + "))}`} className="btn btn--accent" style={{ alignSelf: "flex-start", borderColor: "#F2C94C" }}>
+            <a href={`mailto:seeingstarsagency@gmail.com?subject=${encodeURIComponent(recs.map((r) => r.pkg).join(" + "))}`} className="btn btn--accent" style={{ alignSelf: "flex-start", borderColor: "#F2C94C" }}>
               {t.talkAbout} {recs.map((r) => r.pkg).join(" + ")}
             </a>
           </section>
