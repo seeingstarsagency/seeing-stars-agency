@@ -14,16 +14,8 @@ Supabase → **Authentication**:
   - Redirect URLs: add `https://www.seeingstarsagency.com/**`
 - **Sign In / Providers → Email**: turn **off** "Allow new users to sign up".
   Only you create accounts; invitations still work.
-- **Emails → Templates → Invite user**: replace the link in the message with:
-  ```
-  {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/account/set-password
-  ```
-  Example body:
-  ```html
-  <h2>Welcome to Seeing Stars Agency ✶ Bienvenido</h2>
-  <p>Create your password to see your dashboard. / Crea tu contraseña para ver tu panel.</p>
-  <p><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/account/set-password">Create my password / Crear mi contraseña</a></p>
-  ```
+- **Emails → Templates**: nothing to change. The default emails work as they are.
+  Editing their text requires your own email service (SMTP), see the bottom of this page.
 
 ## 3. Keys in Vercel
 Vercel → project → **Settings → Environment Variables**. Add these four:

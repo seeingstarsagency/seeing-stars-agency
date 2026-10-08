@@ -12,6 +12,12 @@ export async function GET(request) {
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type");
 
+  // Default Supabase emails put the session in the URL "#fragment", which only the
+  // browser can read. Hand those off to /auth/callback (the fragment is kept on redirect).
+  if (!code && !tokenHash && !url.searchParams.get("error")) {
+    return NextResponse.redirect(new URL(`/auth/callback?next=${encodeURIComponent(next)}`, url.origin));
+  }
+
   let ok = false;
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
