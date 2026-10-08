@@ -181,7 +181,14 @@ export default function Home() {
           <div className="grid" style={{ gap: 24 }}>
             {BUNDLES.map((b, i) => (
               <Reveal key={b.combo} delay={i * 100} className="bundle lift" style={{ background: b.bg }}>
-                <div className="tag">{b.combo}</div>
+                <div className="bundle__combo">
+                  {b.combo.split(" + ").map((name, j) => (
+                    <span key={name}>
+                      {j > 0 && <span className="bundle__plus">+</span>}
+                      {name}
+                    </span>
+                  ))}
+                </div>
                 <h3>{b.title}</h3>
                 <p>{b.text}</p>
                 <a href="#contact" className="price-link">Contact us for pricing →</a>
