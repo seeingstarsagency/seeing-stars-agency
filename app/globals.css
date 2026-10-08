@@ -370,18 +370,12 @@ button.btn { cursor: pointer; }
 .pkg__label { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #C2417F; margin-top: -6px; }
 .pkg__desc { margin: 0; font-size: 15px; line-height: 1.55; }
 
-/* Packages: gentle float (uses `translate`, so it doesn't fight the reveal or hover transforms) */
-@keyframes pkgfloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
-@keyframes pkgstar { 0%, 100% { rotate: 0deg; scale: 1; } 50% { rotate: 14deg; scale: 1.1; } }
-.pkg { animation: pkgfloat 5.5s ease-in-out infinite; }
-.pkg:nth-child(2) { animation-delay: -1.4s; }
-.pkg:nth-child(3) { animation-delay: -2.8s; }
-.pkg:nth-child(4) { animation-delay: -4.2s; }
-.pkg__head svg { animation: pkgstar 4s ease-in-out infinite; }
-.pkg:nth-child(2) .pkg__head svg { animation-delay: -1s; }
-.pkg:nth-child(3) .pkg__head svg { animation-delay: -2s; }
-.pkg:nth-child(4) .pkg__head svg { animation-delay: -3s; }
-.pkg:hover { animation-play-state: paused; }
+/* Packages: gentle float only while the cursor is over the card
+   (uses `translate`/`rotate`, so it adds to the existing hover lift) */
+@keyframes pkgfloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
+@keyframes pkgstar { 0%, 100% { rotate: 0deg; scale: 1; } 50% { rotate: 14deg; scale: 1.12; } }
+.pkg:hover { animation: pkgfloat 1.8s ease-in-out infinite; }
+.pkg:hover .pkg__head svg { animation: pkgstar 1.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .pkg, .pkg__head svg { animation: none; }
+  .pkg:hover, .pkg:hover .pkg__head svg { animation: none; }
 }
