@@ -396,3 +396,13 @@ button.btn { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   .pkg:hover, .pkg:hover .pkg__head svg { animation: none; }
 }
+
+/* Release countdown (dashboard profile) */
+.countdown { flex: 0 1 260px; text-align: center; background: var(--ink); color: #fff; border-radius: 22px; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.countdown__label { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--yellow); }
+.countdown__song { font-family: var(--display); font-size: 24px; font-weight: 800; font-style: italic; line-height: 1.15; margin: 4px 0 8px; overflow-wrap: anywhere; }
+.countdown__num { font-family: var(--display); font-size: 64px; font-weight: 900; line-height: 1; color: var(--yellow); }
+.countdown__note { font-size: 14px; }
+.countdown__date { font-size: 13px; opacity: .75; margin-top: 6px; }
+.countdown__today { font-family: var(--display); font-size: 22px; font-weight: 800; color: var(--yellow); margin-top: 4px; }
+@media (max-width: 640px) { .countdown { flex-basis: 100%; } }

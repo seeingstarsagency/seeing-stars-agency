@@ -3,7 +3,6 @@ import { getViewer } from "../../lib/supabase";
 import { loadArtist } from "../../lib/artist-data";
 import { getLang, T, PKG_BLURB, pick } from "../../lib/i18n";
 import { recommendations } from "../../lib/steps";
-import { ALL_FIELDS, answerLabel } from "../../lib/questions";
 import { browserConfig } from "../../lib/env";
 import PhotoUpload from "../PhotoUpload";
 import { AppHeader, LogoutButton, fmtDate } from "../ui";
@@ -58,9 +57,6 @@ export default async function Dashboard({ searchParams }) {
 
   // Profile details from the Launchpad questionnaire.
   const ans = artist.intake_answers || {};
-  const field = (name) => ALL_FIELDS.find((f) => f.name === name);
-  const label = (name) => (ans[name] ? answerLabel(field(name), ans[name], lang) : null);
-  const location = [ans.city, ans.state, ans.country].filter(Boolean).join(", ");
   const COLORS = { instagram: "#F4A6C9", tiktok: "#9CCBE0", youtube: "#F2C94C", other: "#C9B8F0", spotify: "#8FD19E", apple: "#F28C8C" };
   const links = [
     ...(Array.isArray(ans.socials) ? ans.socials.filter((x) => x.url) : []),
@@ -69,16 +65,11 @@ export default async function Dashboard({ searchParams }) {
   ]
     .filter((l) => /^https?:\/\//i.test(l.url))
     .map((l) => ({ ...l, color: COLORS[l.key] || COLORS.other }));
-  const about = [
-    [t.fLegal, ans.legal_name || artist.legal_name],
-    [t.fEmail, artist.email],
-    [t.fPhone, ans.phone],
-    [t.fLocation, location],
-    [t.fDistributor, label("distributor")],
-    [t.fPro, label("pro_choice")],
-    [t.fMaster, label("master_owner")],
-    [t.fAuthors, label("authorship")],
-  ].filter(([, v]) => v);
+  // Days until the single comes out (calendar days, Miami time).
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const daysLeft = artist.release_date
+    ? Math.round((Date.parse(artist.release_date) - Date.parse(today)) / 86400000)
+    : null;
   const reportHref = isAdmin ? `/report?artist=${artist.id}` : "/report";
 
   return (
@@ -88,16 +79,14 @@ export default async function Dashboard({ searchParams }) {
         <section className="profile">
           <PhotoUpload sb={browserConfig()} photoUrl={photoUrl} name={artist.name} label={photoUrl ? t.changePhoto : t.addPhoto} busyLabel={t.uploading} errorLabel={t.photoError} editable={!isAdmin} />
           <div className="profile__main">
-            <div className="kicker">{t.hi}, {artist.name.split(" ")[0]}</div>
+            <div className="kicker">{t.welcome}</div>
             <h1 className="h1 profile__name">{artist.name}</h1>
-            {(ans.legal_name || location) && (
-              <p className="profile__meta">{[ans.legal_name || artist.legal_name, location].filter(Boolean).join(" · ")}</p>
+            {(ans.legal_name || artist.legal_name) && <p className="profile__meta">{ans.legal_name || artist.legal_name}</p>}
+            {(artist.packages || []).length > 0 && (
+              <div className="chips">
+                {artist.packages.map((p) => <span key={p} className="chip">{p}</span>)}
+              </div>
             )}
-            <div className="chips">
-              {(artist.packages || []).map((p) => <span key={p} className="chip">{p}</span>)}
-              {artist.single_title && <span className="chip chip--light">{t.single}: <em>{artist.single_title}</em></span>}
-              {artist.release_date && <span className="chip chip--light">{t.releaseDate}: {fmtDate(artist.release_date, lang)}</span>}
-            </div>
             {links.length > 0 && (
               <div className="sociallinks">
                 {links.map((l) => (
@@ -108,39 +97,50 @@ export default async function Dashboard({ searchParams }) {
               </div>
             )}
           </div>
-          <a href={reportHref} className="btn btn--sm profile__report">{t.seeReport}</a>
+          {artist.single_title && (
+            <div className="countdown">
+              <div className="countdown__label">{t.single}</div>
+              <div className="countdown__song">{artist.single_title}</div>
+              {daysLeft === null ? (
+                <div className="countdown__note">{t.dateTbd}</div>
+              ) : daysLeft > 0 ? (
+                <>
+                  <div className="countdown__num">{daysLeft}</div>
+                  <div className="countdown__note">{daysLeft === 1 ? t.dayToRelease : t.daysToRelease}</div>
+                  <div className="countdown__date">{fmtDate(artist.release_date, lang)}</div>
+                </>
+              ) : daysLeft === 0 ? (
+                <div className="countdown__today">{t.releaseToday}</div>
+              ) : (
+                <>
+                  <div className="countdown__today">{t.outNow}</div>
+                  <div className="countdown__date">{fmtDate(artist.release_date, lang)}</div>
+                </>
+              )}
+            </div>
+          )}
         </section>
 
-        <div className="row">
-          <section className="panel panel--yellow" id="songs">
-            <h2 className="h2" style={{ marginBottom: 14 }}>{t.yourSongs}</h2>
-            {songs.length === 0 ? (
-              <p style={{ margin: 0 }}>{t.noSongs}</p>
-            ) : (
-              <ul className="songlist">
-                {songs.map((s) => (
-                  <li key={s.id}>
-                    <span className="songlist__icon" aria-hidden="true">♪</span>
-                    <span style={{ flexGrow: 1 }}><strong>{s.title}</strong>{s.release_date && <span className="muted"> · {fmtDate(s.release_date, lang)}</span>}</span>
-                    {s.link && <a href={s.link} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>{t.listen}</a>}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section className="panel panel--lilac" id="about">
-            <h2 className="h2" style={{ marginBottom: 14 }}>{t.aboutYou}</h2>
-            <dl className="kv">
-              {about.map(([k, v]) => (
-                <div key={k} style={{ display: "contents" }}>
-                  <dt>{k}</dt>
-                  <dd>{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: -8 }}>
+          <a href={reportHref} className="btn btn--sm">{t.seeReport}</a>
         </div>
+
+        <section className="panel panel--yellow" id="songs">
+          <h2 className="h2" style={{ marginBottom: 14 }}>{t.yourSongs}</h2>
+          {songs.length === 0 ? (
+            <p style={{ margin: 0 }}>{t.noSongs}</p>
+          ) : (
+            <ul className="songlist">
+              {songs.map((s) => (
+                <li key={s.id}>
+                  <span className="songlist__icon" aria-hidden="true">♪</span>
+                  <span style={{ flexGrow: 1 }}><strong>{s.title}</strong>{s.release_date && <span className="muted"> · {fmtDate(s.release_date, lang)}</span>}</span>
+                  {s.link && <a href={s.link} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>{t.listen}</a>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
 
         {sp?.welcome && <div className="alert alert--ok" role="status">{t.iDone}</div>}
         {isAdmin && !artist.intake_done_at && <div className="alert" role="status">Preview: this artist hasn't filled in the Launchpad questionnaire yet. They'll see it first when they log in.</div>}
