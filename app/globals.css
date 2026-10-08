@@ -144,6 +144,9 @@ img, svg { display: block; }
 .bundle { border: 2px solid var(--ink); border-radius: 18px; padding: 28px 26px; box-shadow: 8px 8px 0 var(--ink); }
 .bundle__combo { font-family: var(--display); font-size: 38px; line-height: 1.02; font-weight: 900; font-style: italic; letter-spacing: -.01em; display: flex; flex-direction: column; }
 .bundle__plus { display: inline-block; margin-right: 8px; color: #C2417F; font-style: normal; font-weight: 800; }
+.bundle__name { display: inline-flex; align-items: center; }
+.bundle__star { margin-left: 10px; flex-shrink: 0; }
+.bundle:hover .bundle__star { animation: tw 1.4s ease-in-out infinite; }
 .bundle h3 { margin: 16px 0 6px; font-family: var(--display); font-size: 18px; font-weight: 700; font-style: italic; }
 .bundle p { margin: 0 0 18px; font-size: 14px; line-height: 1.5; }
 @media (max-width: 640px) { .bundle__combo { font-size: 32px; } }
@@ -169,6 +172,17 @@ img, svg { display: block; }
 .terms div { background: #fff; border: 1.5px solid var(--ink); border-radius: 14px; padding: 20px; }
 
 .contact { text-align: center; padding-top: 112px; padding-bottom: 120px; }
+.pinknote-wrap { position: relative; max-width: 860px; margin: 0 auto; }
+.pinknote {
+  position: relative; z-index: 1; background: #F7C6DC; padding: 72px 48px 56px; transform: rotate(-1.2deg);
+  box-shadow: 0 26px 44px -20px rgba(30, 27, 46, .4);
+}
+.pinknote::before {
+  content: ""; position: absolute; top: -20px; left: 50%; margin-left: -80px;
+  width: 160px; height: 40px; background: rgba(150, 190, 110, .85); transform: rotate(3deg);
+}
+.pinknote .btn:not(.btn--accent):not(.btn--dark) { background: #fff; }
+@media (max-width: 640px) { .pinknote { padding: 56px 22px 40px; transform: rotate(-.6deg); } }
 .contact h2 { margin: 0 auto 16px; font-family: var(--display); font-size: 64px; font-weight: 900; letter-spacing: -1px; max-width: 820px; }
 .contact p { margin: 0 auto 36px; font-size: 19px; line-height: 1.6; max-width: 560px; }
 .contact__ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }

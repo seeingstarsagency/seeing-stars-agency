@@ -10,6 +10,8 @@ import {
 
 const markColors = [COLORS.yellow, COLORS.pink, COLORS.blue];
 
+const PKG_COLOR = Object.fromEntries(PACKAGES.map((p) => [p.name, p.color]));
+
 export default function Home() {
   const marquee = [...MARQUEE, ...MARQUEE];
 
@@ -183,9 +185,10 @@ export default function Home() {
               <Reveal key={b.combo} delay={i * 100} className="bundle lift" style={{ background: b.bg }}>
                 <div className="bundle__combo">
                   {b.combo.split(" + ").map((name, j) => (
-                    <span key={name}>
+                    <span key={name} className="bundle__name">
                       {j > 0 && <span className="bundle__plus">+</span>}
                       {name}
+                      <Star size={30} fill={PKG_COLOR[name] || COLORS.yellow} stroke="#1E1B2E" strokeWidth={2} className="bundle__star" />
                     </span>
                   ))}
                 </div>
@@ -221,25 +224,28 @@ export default function Home() {
 
         {/* Contact */}
         <section id="contact" className="wrap contact">
-          <Star size={80} fill={COLORS.yellow} stroke="#1E1B2E" strokeWidth={2.5} className="twinkle" style={{ margin: "0 auto 12px" }} />
-          <Reveal>
-            <h2>
-              Ready to <span className="it">see stars?</span>
-            </h2>
-            <p>
-              Tell us about your music by email. We reply within 2 business days, and you'll leave with at least one thing you can
-              fix today.
-            </p>
-            <div className="contact__ctas">
-              <a href="/questionnaire" className="btn btn--accent">
-                Find your package
-              </a>
-              <a href={`mailto:${CONTACT.email}`} className="btn btn--dark">
-                Email us
-              </a>
-              <a href={CONTACT.instagramUrl} className="btn" target="_blank" rel="noopener noreferrer">
-                {CONTACT.instagramHandle}
-              </a>
+          <Reveal className="pinknote-wrap">
+            <Star size={86} fill={COLORS.yellow} stroke="#1E1B2E" strokeWidth={2.5} className="abs twinkle" style={{ top: -40, right: -18, zIndex: 2 }} />
+            <Star size={64} fill={COLORS.blue} className="abs twinkle2" style={{ bottom: -26, left: -22, zIndex: 0 }} />
+            <div className="pinknote">
+              <h2>
+                Ready to <span className="it">see stars?</span>
+              </h2>
+              <p>
+                Tell us about your music by email. We reply within 2 business days, and you&apos;ll leave with at least one
+                thing you can fix today.
+              </p>
+              <div className="contact__ctas">
+                <a href="/questionnaire" className="btn btn--accent">
+                  Find your package
+                </a>
+                <a href={`mailto:${CONTACT.email}`} className="btn btn--dark">
+                  Email us
+                </a>
+                <a href={CONTACT.instagramUrl} className="btn" target="_blank" rel="noopener noreferrer">
+                  {CONTACT.instagramHandle}
+                </a>
+              </div>
             </div>
           </Reveal>
         </section>
