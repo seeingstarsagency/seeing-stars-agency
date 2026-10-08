@@ -1,9 +1,9 @@
 // All the text on the site lives here. Edit this file to change copy.
 
 export const CONTACT = {
-  email: "[YOUR EMAIL]", // e.g. hello@seeingstarsagency.com
-  instagramHandle: "[@YOUR_INSTAGRAM]",
-  instagramUrl: "https://instagram.com/",
+  email: "hello@seeingstarsagency.com",
+  instagramHandle: "@seeingstarsagency",
+  instagramUrl: "https://www.instagram.com/seeingstarsagency/",
 };
 
 export const COLORS = {
