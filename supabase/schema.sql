@@ -213,3 +213,24 @@ revoke all on public.calendar_items from anon;
 
 -- Monthly membership: set by the admin, unlocks every locked dashboard section
 alter table public.artists add column if not exists monthly_member boolean not null default false;
+
+-- ============ BRANDBOOK (Astro) ============
+-- One row per page. The artist only reads pages the agency marked visible.
+create table if not exists public.brandbook_pages (
+  id uuid primary key default gen_random_uuid(),
+  artist_id uuid not null references public.artists(id) on delete cascade,
+  position int not null default 0,
+  title text not null default '',
+  visible boolean not null default false,
+  data jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+create index if not exists brandbook_pages_artist on public.brandbook_pages(artist_id, position);
+alter table public.brandbook_pages enable row level security;
+drop policy if exists "read own visible" on public.brandbook_pages;
+create policy "read own visible" on public.brandbook_pages for select using (artist_id = public.my_artist_id() and visible);
+drop policy if exists "admin all" on public.brandbook_pages;
+create policy "admin all" on public.brandbook_pages for all using (public.is_admin()) with check (public.is_admin());
+grant select, insert, update, delete on public.brandbook_pages to authenticated;
+grant all on public.brandbook_pages to service_role;
+revoke all on public.brandbook_pages from anon;

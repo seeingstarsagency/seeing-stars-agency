@@ -135,6 +135,8 @@ export async function updateSteps(formData) {
     await supabase.from("artist_steps").update({ status, done_on, updated_at: new Date().toISOString() }).eq("id", row.id).eq("artist_id", id);
   }
   revalidatePath(`/admin/artists/${id}`);
+  revalidatePath("/dashboard/astro");
+  if (str(formData, "back", 20) === "astro") redirect(`/admin/artists/${id}/astro?ok=saved#brand`);
   redirect(`/admin/artists/${id}?ok=saved${song ? `&song=${song}` : ""}#steps`);
 }
 

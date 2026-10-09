@@ -11,22 +11,7 @@ import { setListenPlatform, addCalendarItem, setCalendarStatus, deleteCalendarIt
 import Calendar from "../Calendar";
 import { AppHeader, LogoutButton, fmtDate } from "../ui";
 import { ProgressSummary, StepsTable } from "../progress";
-
-// A section the artist can see but not use until they have the package.
-function Locked({ locked, pkg, text, t, children }) {
-  if (!locked) return children;
-  return (
-    <div className="locked">
-      <div className="locked__inner" inert aria-hidden="true">{children}</div>
-      <div className="locked__card">
-        <span className="locked__tag">✦ {t.lockedTag.replace("{pkg}", pkg)}</span>
-        <p>{text}</p>
-        <p className="locked__or">{t.lockedOr}</p>
-        <a href="/#contact" className="btn btn--accent btn--sm">{t.lockedCta.replace("{pkg}", pkg)}</a>
-      </div>
-    </div>
-  );
-}
+import Locked from "../Locked";
 
 export const metadata = { title: "Dashboard | Seeing Stars Agency" };
 
@@ -302,7 +287,10 @@ export default async function Dashboard({ searchParams }) {
         )}
 
         <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
-          <h2 className="h2" style={{ fontSize: 28 }}>{t.brandTitle}</h2>
+          <div className="songs__head">
+            <h2 className="h2" style={{ fontSize: 28, margin: 0 }}>{t.brandTitle}</h2>
+            <a href={isAdmin ? `/dashboard/astro?artist=${artist.id}` : "/dashboard/astro"} className="btn btn--dark btn--sm">{t.astroOpen}</a>
+          </div>
           <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.brandLead}</p>
           <Locked locked={brandLocked} pkg="Astro" text={t.lockedBrand} t={t}>
             <StepsTable

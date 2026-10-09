@@ -79,6 +79,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
         </div>
         <div className="inline">
           <a href={`/dashboard?artist=${artist.id}`} className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>View their dashboard</a>
+          <a href={`/admin/artists/${artist.id}/astro`} className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", background: "#F2C94C" }}>✦ Astro · Brandbook</a>
           <a href={`/report?artist=${artist.id}`} className="small-btn small-btn--dark" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>Final report</a>
         </div>
       </div>
