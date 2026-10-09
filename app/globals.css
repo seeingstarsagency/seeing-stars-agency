@@ -510,3 +510,21 @@ button.btn { cursor: pointer; }
 .songbar select option:disabled { color: #9A96A8; }
 .songbar__more { margin: 0; font-size: 15px; }
 .songbar__more a { color: var(--yellow); font-weight: 700; }
+
+/* Steps table: a table on wide screens, one small card per step on phones */
+.table--steps { min-width: 640px; }
+@media (max-width: 640px) {
+  .tablewrap:has(.table--steps) { overflow: visible; }
+  .table--steps { min-width: 0; display: block; }
+  .table--steps thead { display: none; }
+  .table--steps tbody { display: flex; flex-direction: column; gap: 10px; }
+  .table--steps .group { display: block; }
+  .table--steps .group td { display: block; padding: 20px 2px 8px; font-size: 12px; letter-spacing: 1.2px; line-height: 1.4; white-space: normal; }
+  .table--steps tbody > .group:first-child td { padding-top: 4px; }
+  .table--steps .steps__row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; align-items: center; border: 1.5px solid var(--ink); border-radius: 16px; padding: 14px 16px; background: #fff; }
+  .table--steps .steps__row td { display: block; padding: 0; border: 0; }
+  .table--steps .steps__row td::before { content: attr(data-label); display: block; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #6B6680; margin-bottom: 3px; }
+  .table--steps .steps__name { grid-column: 1 / -1; font-weight: 700; font-size: 16px; line-height: 1.35; }
+  .table--steps .steps__name::before { display: none !important; }
+  .table--steps .steps__row td[data-label]:last-child { grid-column: 1 / -1; }
+}

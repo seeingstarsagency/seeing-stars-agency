@@ -54,7 +54,7 @@ export function StepsTable({ rows, lang, renderStatus, pillars }) {
   const byKey = Object.fromEntries(rows.map((r) => [r.step_key, r]));
   return (
     <div className="tablewrap">
-      <table className="table" style={{ minWidth: 640 }}>
+      <table className="table table--steps">
         <thead>
           <tr>
             <th>{t.colStep}</th>
@@ -82,11 +82,11 @@ function PillarRows({ pillar, byKey, lang, t, renderStatus }) {
       {steps.map((s) => {
         const r = byKey[s.key];
         return (
-          <tr key={s.key}>
-            <td>{pick(lang, s)}</td>
-            <td className="muted">{r.start_status === "had" ? t.yes : t.no}</td>
-            <td>{renderStatus ? renderStatus(r) : <span className="chip" style={{ background: STATUS[r.status].bg }}>{STATUS[r.status][lang]}</span>}</td>
-            <td className="muted">{r.start_status === "had" ? "—" : s.pkg}</td>
+          <tr key={s.key} className="steps__row">
+            <td className="steps__name">{pick(lang, s)}</td>
+            <td className="muted" data-label={t.colStart}>{r.start_status === "had" ? t.yes : t.no}</td>
+            <td data-label={t.colToday}>{renderStatus ? renderStatus(r) : <span className="chip" style={{ background: STATUS[r.status].bg }}>{STATUS[r.status][lang]}</span>}</td>
+            <td className="muted" data-label={t.colPkg}>{r.start_status === "had" ? "—" : s.pkg}</td>
           </tr>
         );
       })}
