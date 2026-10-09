@@ -447,18 +447,29 @@ button.btn { cursor: pointer; }
 /* Release countdown (dashboard profile) */
 /* Countdown as a taped sticky note, like "We specialize…" on the home page */
 .countdown-wrap { position: relative; flex: 0 1 230px; padding: 18px 10px 12px; }
-.countdown-wrap__star1 { top: -2px; right: -8px; z-index: 0; }
-.countdown-wrap__star2 { bottom: -4px; left: -6px; z-index: 0; }
+.countdown-wrap__star1 { top: -2px; left: -8px; z-index: 0; }
+.countdown-wrap__star2 { bottom: -4px; right: -6px; z-index: 0; }
 .countdown {
   position: relative; z-index: 1; text-align: center; color: var(--ink);
-  background: #a9d2e6; padding: 30px 18px 18px; transform: rotate(-2deg);
-  box-shadow: 0 18px 30px -16px rgba(30, 27, 46, .4);
+  padding: 30px 22px 22px; transform: rotate(-2deg);
+  filter: drop-shadow(4px 10px 8px rgba(30, 27, 46, .28));
   display: flex; flex-direction: column; align-items: center; gap: 0;
 }
-.countdown::before {
-  content: ""; position: absolute; top: -13px; left: 50%; margin-left: -52px;
-  width: 104px; height: 28px; background: rgba(150, 190, 110, .85); transform: rotate(-4deg);
+/* Torn white paper (jagged left and right edges) */
+.countdown::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, #f1f3f3 0%, #e8ebeb 100%);
+  clip-path: polygon(1.5% 0, 98.5% 0, 98.4% 4.5%, 96.8% 9.1%, 100.0% 13.6%, 99.2% 18.2%, 99.2% 22.7%, 98.4% 27.3%, 100.0% 31.8%, 100.0% 36.4%, 100.0% 40.9%, 99.2% 45.5%, 97.6% 50.0%, 96.8% 54.5%, 100.0% 59.1%, 98.4% 63.6%, 97.6% 68.2%, 97.6% 72.7%, 96.8% 77.3%, 96.8% 81.8%, 98.4% 86.4%, 100.0% 90.9%, 96.8% 95.5%, 98.5% 100%, 1.5% 100%, 1.6% 95.5%, 0.0% 90.9%, 3.2% 86.4%, 3.2% 81.8%, 1.6% 77.3%, 1.6% 72.7%, 3.2% 68.2%, 3.2% 63.6%, 3.2% 59.1%, 0.0% 54.5%, 2.4% 50.0%, 3.2% 45.5%, 0.8% 40.9%, 2.4% 36.4%, 1.6% 31.8%, 1.6% 27.3%, 1.6% 22.7%, 0.8% 18.2%, 3.2% 13.6%, 0.0% 9.1%, 2.4% 4.5%);
 }
+/* Two strips of masking tape, top right and bottom left */
+.countdown-wrap::before, .countdown-wrap::after {
+  content: ""; position: absolute; z-index: 2; width: 86px; height: 26px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(236, 224, 198, .95), rgba(222, 207, 176, .95));
+  box-shadow: 0 1px 2px rgba(0,0,0,.12);
+  clip-path: polygon(2% 0, 98% 6%, 100% 30%, 97% 52%, 100% 78%, 97% 100%, 3% 94%, 0 70%, 3% 46%, 0 20%);
+}
+.countdown-wrap::before { top: 10px; right: -6px; transform: rotate(32deg); }
+.countdown-wrap::after { bottom: 6px; left: -4px; transform: rotate(32deg); }
 .countdown__label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #8A2E5A; }
 .countdown__song { font-family: var(--display); font-size: 20px; font-weight: 800; font-style: italic; line-height: 1.15; margin: 2px 0 4px; overflow-wrap: anywhere; }
 .countdown__num { font-family: var(--display); font-size: 46px; font-weight: 900; line-height: 1; color: var(--ink); }
