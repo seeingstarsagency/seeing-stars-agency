@@ -904,3 +904,9 @@ button.btn { cursor: pointer; }
   .dash-l__songs { order: 2; }
 }
 @media (max-width: 980px) { .dash-l { align-items: stretch; } }
+
+/* "See final report" lives in the dark song bar */
+.songbar__report { background: var(--yellow); color: var(--ink); border: 2px solid var(--yellow); min-height: 48px; white-space: nowrap; }
+.songbar__report:hover, .songbar__report:focus-visible { background: #fff; border-color: #fff; color: var(--ink); }
+.songbar__more { flex-basis: 100%; }
+@media (max-width: 640px) { .songbar__report { width: 100%; } }

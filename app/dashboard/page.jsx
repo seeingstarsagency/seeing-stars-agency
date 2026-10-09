@@ -187,9 +187,11 @@ export default async function Dashboard({ searchParams }) {
               )}
             </section>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: -8 }}>
-              <a href={reportHref} className="btn btn--sm">{t.seeReport}</a>
-            </div>
+            {songs.length === 0 && (
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: -8 }}>
+                <a href={reportHref} className="btn btn--sm">{t.seeReport}</a>
+              </div>
+            )}
 
 
             <section className="panel" id="cal-release" style={{ borderRadius: 24, padding: 30 }}>
@@ -229,6 +231,7 @@ export default async function Dashboard({ searchParams }) {
                   lockedNote={t.songLocked}
                   chooseLabel={t.songChoose}
                 />
+                <a href={reportHref} className="btn btn--sm songbar__report">{t.seeReport}</a>
                 {songs.some((x) => !x.is_project) && (
                   <p className="songbar__more">{t.songMore} <a href="/#contact">{t.songMoreLink}</a></p>
                 )}
