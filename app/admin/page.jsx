@@ -1,6 +1,7 @@
 import { AdminShell, requireAdminPage } from "./shell";
 import { summarize } from "../../lib/steps";
 import { fmtDate } from "../ui";
+import { Star } from "../components";
 
 export const metadata = { title: "Admin | Seeing Stars Agency" };
 
@@ -42,8 +43,12 @@ export default async function Admin({ searchParams }) {
       </div>
 
 
-      <section className="panel">
-        <h2 className="h2" style={{ marginBottom: 16 }}>Artists</h2>
+      <section className="panel artists-panel">
+        <Star size={70} fill="#F2C94C" stroke="#1E1B2E" strokeWidth={3} className="abs twinkle artists-panel__star1" />
+        <Star size={30} fill="#9CCBE0" stroke="#1E1B2E" strokeWidth={4} className="abs drift artists-panel__star2" />
+        <Star size={22} fill="#F4A6C9" stroke="#1E1B2E" strokeWidth={5} className="abs drift2 artists-panel__star3" />
+        <div className="hand" style={{ color: "var(--sky)" }}>your constellation</div>
+        <h2 className="section__title artists-panel__title">Artists</h2>
         {!artists?.length ? (
           <p style={{ margin: 0 }}>No artists yet. Create one from a request or with "+ New artist".</p>
         ) : (
@@ -61,7 +66,7 @@ export default async function Admin({ searchParams }) {
                   const waitUs = w.find((n) => n.owner === "agency");
                   return (
                     <tr key={a.id}>
-                      <td style={{ fontWeight: 600 }}>{a.name}{a.user_id && !a.intake_done_at && <span className="muted"> · questionnaire pending</span>}{a.closed_at && <span className="muted"> · closed</span>}{!a.user_id && <span className="muted"> · no account</span>}</td>
+                      <td style={{ fontWeight: 600 }}><a href={`/admin/artists/${a.id}`} className="artist-link">{a.name}</a>{a.user_id && !a.intake_done_at && <span className="muted"> · questionnaire pending</span>}{a.closed_at && <span className="muted"> · closed</span>}{!a.user_id && <span className="muted"> · no account</span>}</td>
                       <td>{(a.packages || []).join(" + ") || "—"}</td>
                       <td style={{ minWidth: 160 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

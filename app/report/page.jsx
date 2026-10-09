@@ -36,7 +36,7 @@ export default async function Report({ searchParams }) {
   const doneMilestones = milestones.filter((m) => m.done);
 
   return (
-    <div className="app" style={{ background: "#ECE9E2", padding: "0 0 80px" }}>
+    <div className="app">
       <AppHeader lang={lang} path={path} />
       <div className="no-print" style={{ maxWidth: 860, margin: "0 auto", padding: "16px 24px", display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
         <a href={back}>{t.backToDashboard}</a>
