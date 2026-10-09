@@ -470,7 +470,7 @@ button.btn { cursor: pointer; }
 }
 .countdown-wrap::before { top: 10px; right: -6px; transform: rotate(32deg); }
 .countdown-wrap::after { bottom: 6px; left: -4px; transform: rotate(32deg); }
-.countdown__label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #8A2E5A; }
+.countdown__label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--rose); }
 .countdown__song { font-family: var(--display); font-size: 20px; font-weight: 800; font-style: italic; line-height: 1.15; margin: 2px 0 4px; overflow-wrap: anywhere; }
 .countdown__num { font-family: var(--display); font-size: 46px; font-weight: 900; line-height: 1; color: var(--ink); }
 .countdown__note { font-size: 13px; margin-top: 2px; }
