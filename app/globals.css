@@ -869,8 +869,8 @@ button.btn { cursor: pointer; }
   .table--steps .steps__row--brand { background: #F8F5FD; }
 }
 
-/* Dashboard top: an "L" — profile and progress on the right, "Your songs" as a column on the left */
-.dash-l { display: grid; grid-template-columns: 300px minmax(0, 1fr); grid-template-areas: "songs main"; gap: 28px; align-items: start; }
+/* Dashboard top: an "L" — profile and progress on the left, "Your songs" as a column on the right */
+.dash-l { display: grid; grid-template-columns: minmax(0, 1fr) 300px; grid-template-areas: "main songs"; gap: 28px; align-items: start; }
 .dash-l__main { grid-area: main; min-width: 0; display: flex; flex-direction: column; gap: 28px; container-type: inline-size; }
 .dash-l__songs { grid-area: songs; min-width: 0; padding: 22px 20px; }
 .dash-l__songs .songs__head { flex-direction: column; align-items: flex-start; gap: 10px; }
