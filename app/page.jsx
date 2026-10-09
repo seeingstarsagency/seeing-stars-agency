@@ -101,7 +101,7 @@ export default function Home() {
             <h2 className="section__title">
               Four things every artist needs.
               <br />
-              <span className="soft soft--sub">Let&apos;s put the pieces together</span>
+              <span className="soft soft--sub">Let&apos;s put the pieces together.</span>
             </h2>
             <p className="section__lead">
               From the creative vision to the business details, we help you build a solid foundation for your
