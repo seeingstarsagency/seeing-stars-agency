@@ -95,7 +95,7 @@ export default async function Dashboard({ searchParams }) {
             {(ans.legal_name || artist.legal_name) && <p className="profile__meta">{ans.legal_name || artist.legal_name}</p>}
             {(artist.packages || []).length > 0 && (
               <div className="chips">
-                {artist.packages.map((p) => <span key={p} className="chip">{p}</span>)}
+                {artist.packages.map((p) => <span key={p} className="pchip">{p}</span>)}
               </div>
             )}
             {links.length > 0 && (
@@ -178,8 +178,16 @@ export default async function Dashboard({ searchParams }) {
         <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
           <h2 className="h2" style={{ fontSize: 28 }}>{t.stepByStep}</h2>
           <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.stepByStepLead}</p>
-          <StepsTable rows={rows} lang={lang} />
+          <StepsTable rows={rows} lang={lang} pillars={["rights", "release", "campaign"]} />
         </section>
+
+        {rows.some((r) => r.step_key && ["bio", "photos", "epk", "visual_identity"].includes(r.step_key)) && (
+          <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
+            <h2 className="h2" style={{ fontSize: 28 }}>{t.brandTitle}</h2>
+            <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.brandLead}</p>
+            <StepsTable rows={rows} lang={lang} pillars={["brand"]} />
+          </section>
+        )}
 
         <div className="row">
           <section className="panel panel--yellow">

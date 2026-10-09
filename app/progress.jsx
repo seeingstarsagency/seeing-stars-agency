@@ -49,7 +49,7 @@ export function ProgressSummary({ rows, lang }) {
   );
 }
 
-export function StepsTable({ rows, lang, renderStatus }) {
+export function StepsTable({ rows, lang, renderStatus, pillars }) {
   const t = T[lang];
   const byKey = Object.fromEntries(rows.map((r) => [r.step_key, r]));
   return (
@@ -64,7 +64,7 @@ export function StepsTable({ rows, lang, renderStatus }) {
           </tr>
         </thead>
         <tbody>
-          {PILLARS.map((p) => (
+          {PILLARS.filter((p) => !pillars || pillars.includes(p.key)).map((p) => (
             <PillarRows key={p.key} pillar={p} byKey={byKey} lang={lang} t={t} renderStatus={renderStatus} />
           ))}
         </tbody>
