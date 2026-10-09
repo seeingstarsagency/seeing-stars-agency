@@ -2,16 +2,19 @@
 import { PILLARS, STEPS, STATUS, summarize } from "../lib/steps";
 import { T, pick } from "../lib/i18n";
 
-export function ProgressSummary({ rows, lang }) {
+export function ProgressSummary({ rows, lang, aside, id }) {
   const t = T[lang];
   const s = summarize(rows);
   const pct = (n) => `${((n / s.total) * 100).toFixed(1)}%`;
   const label = `${s.had} ${STATUS.had[lang]}, ${s.done} ${STATUS.done[lang]}, ${s.inProgress} ${STATUS.in_progress[lang]}, ${s.pending} ${STATUS.pending[lang]}`;
   return (
-    <section className="panel stack" style={{ borderRadius: 24, padding: 30, gap: 22 }}>
-      <div>
-        <h2 className="h2" style={{ fontSize: 28 }}>{t.progressTitle}</h2>
-        <p style={{ margin: 0, fontSize: 15 }}>{t.progressLead}</p>
+    <section className="panel stack" id={id} style={{ borderRadius: 24, padding: 30, gap: 22 }}>
+      <div className="steps__head" style={{ marginBottom: 0 }}>
+        <div>
+          <h2 className="h2" style={{ fontSize: 28 }}>{t.progressTitle}</h2>
+          <p style={{ margin: 0, fontSize: 15 }}>{t.progressLead}</p>
+        </div>
+        {aside}
       </div>
       <div className="stats">
         <div className="stat" style={{ background: "#F1EFEA" }}>

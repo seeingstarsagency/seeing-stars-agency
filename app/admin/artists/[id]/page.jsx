@@ -85,7 +85,24 @@ export default async function ArtistAdmin({ params, searchParams }) {
       </div>
       {sp?.ok && OK_MSG[sp.ok] && <div className="alert alert--ok" role="status">{OK_MSG[sp.ok]}</div>}
 
-      <ProgressSummary rows={allRows} lang="en" />
+      <ProgressSummary
+        rows={allRows}
+        lang="en"
+        id="progress"
+        aside={projects.length > 0 && (
+          <div className="stepsong">
+            <SongPicker
+              songs={projects.map((p) => ({ id: p.id, title: p.title, open: true }))}
+              value={song?.id}
+              base={`/admin/artists/${artist.id}`}
+              hash="#progress"
+              label="Song"
+              lockedNote=""
+              chooseLabel="Choose a song"
+            />
+          </div>
+        )}
+      />
 
       <section className="panel" id="steps">
         <div className="steps__head">
@@ -93,19 +110,6 @@ export default async function ArtistAdmin({ params, searchParams }) {
             <h2 className="h2">Steps</h2>
             <p style={{ margin: 0, fontSize: 15 }}>Change the status and click "Save steps". Marking "Done together" saves the date for the report.</p>
           </div>
-          {projects.length > 0 && (
-            <div className="stepsong">
-              <SongPicker
-                songs={projects.map((p) => ({ id: p.id, title: p.title, open: true }))}
-                value={song?.id}
-                base={`/admin/artists/${artist.id}`}
-                hash="#steps"
-                label="Song"
-                lockedNote=""
-                chooseLabel="Choose a song"
-              />
-            </div>
-          )}
         </div>
         <form action={updateSteps} className="stack">
           {hidden}
