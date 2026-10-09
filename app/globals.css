@@ -883,8 +883,8 @@ button.btn { cursor: pointer; }
 }
 
 /* Dashboard top: an "L" — profile and progress on the left, "Your songs" as a column on the right */
-.dash-l { display: grid; grid-template-columns: minmax(0, 1fr) 300px; grid-template-areas: "main songs"; gap: 28px; align-items: start; }
-.dash-l__main { grid-area: main; min-width: 0; display: flex; flex-direction: column; gap: 28px; container-type: inline-size; }
+.dash-l { display: grid; grid-template-columns: minmax(0, 1fr) 300px; grid-template-rows: auto 1fr; grid-template-areas: "main songs" "main stars"; gap: 28px; align-items: start; }
+.dash-l__main { grid-area: main; grid-row: 1 / span 2; min-width: 0; display: flex; flex-direction: column; gap: 28px; container-type: inline-size; }
 .dash-l__songs { grid-area: songs; min-width: 0; padding: 22px 20px; }
 .dash-l__songs .songs__head { flex-direction: column; align-items: flex-start; gap: 10px; }
 .dash-l__songs .platform-toggle { flex-wrap: wrap; }
@@ -986,3 +986,7 @@ button.btn { cursor: pointer; }
 .ipod__center:active { background: linear-gradient(#cfcfd8, #e2e2e8); }
 .ipod__hint { margin: 12px 0 0; text-align: center; font-family: var(--hand); font-size: 19px; color: var(--rose); }
 @media (prefers-reduced-motion: reduce) { .ipod__cover { transition: none; } }
+
+/* Floating stars filling the space under "Your songs" */
+.dstars { grid-area: stars; align-self: stretch; position: relative; min-height: 0; overflow: visible; pointer-events: none; }
+@media (max-width: 980px) { .dstars { display: none; } }

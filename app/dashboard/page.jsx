@@ -253,6 +253,17 @@ export default async function Dashboard({ searchParams }) {
               </>
             )}
           </section>
+          <div className="dstars" aria-hidden="true">
+              <Star size={46} fill="#F2C94C" className="abs twinkle" style={{ left: "8%", top: "10%" }} />
+              <Star size={24} fill="#F4A6C9" className="abs drift" style={{ left: "58%", top: "4%" }} />
+              <Star size={30} fill="#9CCBE0" className="abs twinkle2" style={{ left: "72%", top: "30%" }} />
+              <Star size={18} fill="#6F93CF" className="abs drift2" style={{ left: "30%", top: "38%" }} />
+              <Star size={58} fill="#F4A6C9" className="abs twinkle" style={{ left: "18%", top: "56%" }} />
+              <Star size={22} fill="#F2C94C" className="abs drift" style={{ left: "64%", top: "62%" }} />
+              <Star size={36} fill="#6F93CF" className="abs twinkle2" style={{ left: "48%", top: "80%" }} />
+              <Star size={16} fill="#9CCBE0" className="abs drift2" style={{ left: "6%", top: "86%" }} />
+              <Star size={26} fill="#F2C94C" className="abs twinkle2" style={{ left: "80%", top: "84%" }} />
+          </div>
         </div>
 
         <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
