@@ -306,11 +306,14 @@ export default async function Dashboard({ searchParams }) {
           </Locked>
         </section>
 
-            <section className="panel" id="cal-release" style={{ borderRadius: 24, padding: 30 }}>
+            <section className="panel road-panel road-panel--cal" id="cal-release">
+              <Star size={64} fill="#F2C94C" stroke="#1E1B2E" strokeWidth={3} className="abs twinkle road-panel__s1" />
+              <Star size={34} fill="#F4A6C9" className="abs twinkle2 road-panel__s2" />
+              <Star size={24} fill="#9CCBE0" className="abs drift road-panel__s3" />
               <div className="songs__head">
                 <h2 className="h2" style={{ fontSize: 28, margin: 0 }}>{t.releaseCalTitle}</h2>
                 {!releaseLocked && (
-                  <RoadmapButton label={t.roadTitle} closeLabel={t.roadClose}>
+                  <RoadmapButton label={t.roadMore} closeLabel={t.roadClose}>
                   <div className="road-panel">
                     <Star size={64} fill="#F2C94C" stroke="#1E1B2E" strokeWidth={3} className="abs twinkle road-panel__s1" />
                     <Star size={36} fill="#F4A6C9" className="abs twinkle2 road-panel__s2" />

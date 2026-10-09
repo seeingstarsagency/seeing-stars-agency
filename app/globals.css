@@ -1109,3 +1109,10 @@ button.btn { cursor: pointer; }
   .road-modal__close { top: 40px; right: 20px; }
   .road-modal .road-panel__s1 { right: 60px; }
 }
+/* Release calendar ("Road to Release Day") wears the same starry look */
+.road-panel--cal .songs__head .h2 { font-style: italic; font-size: 32px !important; }
+.road-panel--cal .road-btn { background: #fff; }
+.road-panel--cal .road-btn:hover, .road-panel--cal .road-btn:focus-visible { background: var(--yellow); }
+.road-panel--cal .road-panel__s1 { right: auto; left: -22px; top: -26px; }
+.road-panel--cal .road-panel__s2 { top: auto; right: auto; bottom: -16px; left: 46px; }
+.road-panel--cal .road-panel__s3 { bottom: auto; top: -12px; right: 38%; }
