@@ -21,11 +21,13 @@ const str = (fd, k, max = 300) => String(fd.get(k) ?? "").trim().slice(0, max);
 const siteUrl = SITE_URL;
 const today = () => new Date().toISOString().slice(0, 10);
 
-async function invite(email, lang) {
+// name and packages fill in the "for {name}" and "{package}" parts of the invitation email template.
+async function invite(email, lang, name, packages) {
   const admin = supabaseAdmin();
+  const pkg = (packages || []).join(" + ");
   const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
     redirectTo: `${siteUrl()}/auth/confirm?next=/account/set-password`,
-    data: { lang },
+    data: { lang, ...(name ? { artist_name: name } : {}), ...(pkg ? { package: pkg } : {}) },
   });
   if (error) return { error: error.message };
   return { userId: data.user.id };
@@ -74,7 +76,7 @@ export async function createArtist(formData) {
   const sendInvite = formData.get("send_invite") === "on";
   let note = "created";
   if (sendInvite) {
-    const res = await invite(email, lang);
+    const res = await invite(email, lang, name, packages);
     if (res.userId) {
       await admin.from("profiles").upsert({ id: res.userId, role: "artist", artist_id: artist.id });
       await admin.from("artists").update({ user_id: res.userId }).eq("id", artist.id);
@@ -91,8 +93,8 @@ export async function resendInvite(formData) {
   await requireAdmin();
   const admin = supabaseAdmin();
   const id = str(formData, "artist_id", 60);
-  const { data: artist } = await admin.from("artists").select("id, email, lang").eq("id", id).single();
-  const res = await invite(artist.email, artist.lang);
+  const { data: artist } = await admin.from("artists").select("id, email, lang, name, packages").eq("id", id).single();
+  const res = await invite(artist.email, artist.lang, artist.name, artist.packages);
   if (res.userId) {
     await admin.from("profiles").upsert({ id: res.userId, role: "artist", artist_id: artist.id });
     await admin.from("artists").update({ user_id: res.userId }).eq("id", artist.id);
