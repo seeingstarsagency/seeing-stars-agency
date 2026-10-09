@@ -200,29 +200,6 @@ export default async function Dashboard({ searchParams }) {
             )}
 
 
-            <section className="panel" id="cal-release" style={{ borderRadius: 24, padding: 30 }}>
-              <h2 className="h2" style={{ fontSize: 28 }}>{t.releaseCalTitle}</h2>
-              <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.releaseCalLead}</p>
-              <Locked locked={releaseLocked} pkg="Launchpad" text={t.lockedRelease} t={t}>
-              <Calendar
-                {...calProps}
-                items={releaseItems}
-                legend={[{ color: CAL.release, label: t.releaseDay }, { color: CAL.milestone, label: t.milestone }]}
-              >
-                {!releaseLocked && <details className="cal__add">
-                  <summary>+ {t.calAdd}</summary>
-                  <form action={addCalendarItem} className="cal__form">
-                    <input type="hidden" name="kind" value="release" />
-                    {adminHidden}
-                    <label className="field"><span>{t.calDate}</span><input type="date" name="happens_on" className="input" required /></label>
-                    <label className="field cal__wide"><span>{t.milestoneTitle}</span><input name="title" className="input" maxLength={160} placeholder={t.milestonePh} required /></label>
-                    <label className="field"><span>{t.calSong}</span>{songOptions}</label>
-                    <button type="submit" className="btn btn--dark cal__submit">{t.calSave}</button>
-                  </form>
-                </details>}
-              </Calendar>
-              </Locked>
-            </section>
 
             {sp?.welcome && <div className="alert alert--ok" role="status">{t.iDone}</div>}
             {isAdmin && !artist.intake_done_at && <div className="alert" role="status">Preview: this artist hasn't filled in the Launchpad questionnaire yet. They'll see it first when they log in.</div>}
@@ -312,6 +289,30 @@ export default async function Dashboard({ searchParams }) {
             />
           </Locked>
         </section>
+
+            <section className="panel" id="cal-release" style={{ borderRadius: 24, padding: 30 }}>
+              <h2 className="h2" style={{ fontSize: 28 }}>{t.releaseCalTitle}</h2>
+              <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.releaseCalLead}</p>
+              <Locked locked={releaseLocked} pkg="Launchpad" text={t.lockedRelease} t={t}>
+              <Calendar
+                {...calProps}
+                items={releaseItems}
+                legend={[{ color: CAL.release, label: t.releaseDay }, { color: CAL.milestone, label: t.milestone }]}
+              >
+                {!releaseLocked && <details className="cal__add">
+                  <summary>+ {t.calAdd}</summary>
+                  <form action={addCalendarItem} className="cal__form">
+                    <input type="hidden" name="kind" value="release" />
+                    {adminHidden}
+                    <label className="field"><span>{t.calDate}</span><input type="date" name="happens_on" className="input" required /></label>
+                    <label className="field cal__wide"><span>{t.milestoneTitle}</span><input name="title" className="input" maxLength={160} placeholder={t.milestonePh} required /></label>
+                    <label className="field"><span>{t.calSong}</span>{songOptions}</label>
+                    <button type="submit" className="btn btn--dark cal__submit">{t.calSave}</button>
+                  </form>
+                </details>}
+              </Calendar>
+              </Locked>
+            </section>
 
         <section className="panel" id="cal-content" style={{ borderRadius: 24, padding: 30 }}>
           <h2 className="h2" style={{ fontSize: 28 }}>{t.contentCalTitle}</h2>
