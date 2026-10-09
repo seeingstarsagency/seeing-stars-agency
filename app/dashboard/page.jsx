@@ -14,6 +14,8 @@ import { AppHeader, LogoutButton, fmtDate } from "../ui";
 import { ProgressSummary, StepsTable } from "../progress";
 import Locked from "../Locked";
 import IPod from "../IPod";
+import Roadmap from "../Roadmap";
+import { buildRoadmap } from "../../lib/roadmap";
 
 export const metadata = { title: "Dashboard | Seeing Stars Agency" };
 
@@ -99,7 +101,12 @@ export default async function Dashboard({ searchParams }) {
     ? ["Reel", "Post", "Carrusel", "Story", "Video corto", "En vivo", "Otro"]
     : ["Reel", "Post", "Carousel", "Story", "Short video", "Live", "Other"];
   const ST = { pending: t.stPending, done: t.stDone, ready: t.stReady, posted: t.stPosted };
+  // Road to release day: suggested deadlines for the current song.
+  const road = buildRoadmap(songDate, songRows, today);
   const releaseItems = [
+    ...road.filter((m) => !m.release).map((m) => ({
+      id: `road-${m.key}`, date: m.date, title: lang === "es" ? m.es : m.en, color: "#F4A6C9", auto: true, tag: t.roadDeadline,
+    })),
     ...songs.filter((x) => x.release_date).map((x) => ({
       id: `song-${x.id}`, date: x.release_date, title: x.title, color: CAL.release, auto: true, tag: t.releaseDay,
     })),
@@ -300,6 +307,31 @@ export default async function Dashboard({ searchParams }) {
             />
           </Locked>
         </section>
+
+            <section className="panel road-panel" id="road">
+              <Star size={64} fill="#F2C94C" stroke="#1E1B2E" strokeWidth={3} className="abs twinkle road-panel__s1" />
+              <Star size={36} fill="#F4A6C9" className="abs twinkle2 road-panel__s2" />
+              <Star size={26} fill="#9CCBE0" className="abs drift road-panel__s3" />
+              <div className="kicker">{songTitle}</div>
+              <h2 className="h2 road-panel__title">{t.roadTitle}</h2>
+              <p className="road-panel__lead">{t.roadLead}</p>
+              <Locked locked={releaseLocked} pkg="Launchpad" text={t.lockedRelease} t={t}>
+                {road.length ? (
+                  <>
+                    <div className="road__legend">
+                      {t.roadLegend.map(([k, l]) => <span key={k}><i className={`road__dot road__dot--${k}`} />{l}</span>)}
+                    </div>
+                    <Roadmap
+                      items={road}
+                      lang={lang}
+                      labels={{ here: t.roadHere, daysLeft: t.roadDaysLeft, lateBy: t.roadLateBy, dueToday: t.roadDueToday, doneTag: t.roadDone, today: t.roadToday, released: t.roadReleased, releaseDay: t.releaseDay, weeksBefore: t.roadWeeksBefore, weekAfter: t.roadWeekAfter }}
+                    />
+                  </>
+                ) : (
+                  <p className="road-panel__empty">{t.roadNoDate}</p>
+                )}
+              </Locked>
+            </section>
 
             <section className="panel" id="cal-release" style={{ borderRadius: 24, padding: 30 }}>
               <h2 className="h2" style={{ fontSize: 28 }}>{t.releaseCalTitle}</h2>

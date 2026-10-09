@@ -1020,3 +1020,68 @@ button.btn { cursor: pointer; }
 }
 .tip:hover .tip__box, .tip:focus .tip__box { opacity: 1; visibility: visible; }
 @media (max-width: 600px) { .tip__box { width: 220px; transform: translateX(-50%); } }
+
+/* ============ Road to release day ============ */
+.road-panel {
+  position: relative; border-radius: 24px; padding: 34px 30px 30px;
+  background: linear-gradient(135deg, #FCE4EF 0%, #FFF6D6 50%, #E3F1F8 100%);
+  border: 2px solid var(--ink); box-shadow: 8px 8px 0 var(--ink);
+}
+.road-panel__s1 { top: -26px; right: 24px; z-index: 2; }
+.road-panel__s2 { top: 30px; right: 104px; }
+.road-panel__s3 { bottom: 26px; right: 30px; }
+.road-panel .kicker { margin-bottom: 2px; }
+.road-panel__title { font-size: 34px; margin: 0 0 6px; font-style: italic; }
+.road-panel__lead { margin: 0 0 18px; font-size: 15px; max-width: 620px; }
+.road-panel__empty { margin: 0; font-family: var(--hand); font-size: 24px; color: var(--rose); }
+
+.road__legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0 0 20px; font-size: 13px; font-weight: 600; }
+.road__legend span { display: inline-flex; align-items: center; gap: 6px; }
+.road__dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--ink); display: inline-block; }
+.road__dot--done { background: #F2C94C; } .road__dot--in_progress { background: #9CCBE0; } .road__dot--soon { background: #F4A6C9; }
+.road__dot--late { background: #F28C8C; } .road__dot--upcoming { background: #fff; }
+
+.road { list-style: none; margin: 0; padding: 0; position: relative; }
+.road::before { content: ""; position: absolute; top: 18px; bottom: 30px; left: 167px; border-left: 3px dashed var(--ink); opacity: .35; }
+.road__item { position: relative; display: grid; grid-template-columns: 130px 46px minmax(0, 1fr); gap: 0 14px; align-items: center; padding: 7px 0; }
+.road__date { text-align: right; line-height: 1.2; }
+.road__date strong { display: block; font-family: var(--display); font-size: 19px; font-weight: 800; }
+.road__date em { display: block; font-style: normal; font-size: 12px; color: #555; text-transform: capitalize; }
+.road__date span { display: block; font-size: 12px; color: var(--rose); font-weight: 600; }
+.road__node { display: flex; justify-content: center; position: relative; z-index: 1; }
+.road__card {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center;
+  background: #fff; border: 2px solid var(--ink); border-radius: 14px; padding: 10px 14px;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.road__item:hover .road__card { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink); }
+.road__title { font-weight: 700; font-size: 15px; line-height: 1.3; }
+.road__tip { grid-column: 1; font-size: 13px; color: #555; line-height: 1.35; }
+.road__when { grid-column: 2; grid-row: 1 / span 2; white-space: nowrap; font-size: 12px; font-weight: 700; padding: 4px 10px; border: 1.5px solid var(--ink); border-radius: 999px; background: #fff; }
+.road__when--done { background: #F2C94C; } .road__when--in_progress { background: #9CCBE0; } .road__when--soon { background: #F4A6C9; }
+.road__when--late { background: #F28C8C; } .road__when--release { background: #F2C94C; }
+.road__item--done .road__title { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: #F2C94C; }
+.road__item--done .road__card { background: #FFFCF0; }
+.road__item--late .road__card { border-color: #C2417F; }
+.road__item--release { padding: 14px 0; }
+.road__item--release .road__card { background: var(--ink); color: #fff; padding: 16px 18px; box-shadow: 5px 5px 0 #F4A6C9; }
+.road__item--release .road__title { font-family: var(--display); font-style: italic; font-size: 26px; font-weight: 800; }
+.road__item--release .road__tip { color: #E3F1F8; }
+.road__item--release .road__when { color: var(--ink); }
+.road__here { display: flex; align-items: center; gap: 10px; margin: 6px 0 8px; position: relative; z-index: 1; }
+.road__here::before, .road__here::after { content: ""; flex: 1; border-top: 2px dashed var(--rose); }
+.road__here span { font-family: var(--hand); font-size: 24px; color: var(--rose); line-height: 1; }
+
+@media (max-width: 640px) {
+  .road-panel { padding: 28px 18px 22px; box-shadow: 5px 5px 0 var(--ink); }
+  .road-panel__title { font-size: 28px; }
+  .road-panel__s2 { display: none; }
+  .road::before { left: 19px; }
+  .road__item { grid-template-columns: 40px minmax(0, 1fr); grid-template-areas: "node date" "node card"; gap: 4px 10px; }
+  .road__date { grid-area: date; text-align: left; display: flex; flex-wrap: wrap; gap: 0 8px; align-items: baseline; }
+  .road__date strong { font-size: 16px; }
+  .road__node { grid-area: node; align-self: center; }
+  .road__card { grid-area: card; grid-template-columns: 1fr; }
+  .road__when { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; }
+  .road__item--release .road__title { font-size: 22px; }
+}
