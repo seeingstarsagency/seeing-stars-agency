@@ -1,3 +1,4 @@
+import PendingSubmit from "../../PendingSubmit";
 import { AdminShell, requireAdminPage } from "../../shell";
 import { NewArtistFields } from "../../artist-form";
 import { createArtist } from "../../actions";
@@ -18,7 +19,7 @@ export default async function NewArtist({ searchParams }) {
       {sp?.error && <div className="alert">Name or email is missing.</div>}
       <form action={createArtist} className="panel panel--yellow stack" style={{ gap: 16 }}>
         <NewArtistFields />
-        <button type="submit" className="btn btn--dark" style={{ alignSelf: "flex-start" }}>Create artist</button>
+        <PendingSubmit className="btn btn--dark" style={{ alignSelf: "flex-start" }} pendingText="Creating…">Create artist</PendingSubmit>
       </form>
     </AdminShell>
   );

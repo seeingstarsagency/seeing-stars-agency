@@ -5,7 +5,9 @@ import { browserConfig } from "../../lib/env";
 
 export const metadata = { title: "Login | Seeing Stars Agency" };
 
-export default async function Login() {
+export default async function Login({ searchParams }) {
+  const sp = (await searchParams) || {};
+  const linkBad = sp.error === "link";
   const lang = await getLang();
   const t = T[lang];
   return (
@@ -18,9 +20,10 @@ export default async function Login() {
           <div className="kicker">{t.lKicker}</div>
           <h1 className="h1 it" style={{ fontSize: 40 }}>{t.lTitle}</h1>
           <p style={{ margin: "0 0 28px", fontSize: 16, lineHeight: 1.55 }}>{t.lLead}</p>
+          {linkBad && <div className="alert" role="alert" style={{ marginBottom: 18 }}>{t.lLinkBad}</div>}
           <LoginForm t={{ email: t.email, password: t.password, login: t.login, lBad: t.lBad, lSent: t.lSent, lForgot: t.lForgot, lMagic: t.lMagic }} sb={browserConfig()} />
           <p style={{ margin: "24px 0 0", paddingTop: 18, borderTop: "1.5px dashed #1E1B2E", fontSize: 14, lineHeight: 1.55 }}>
-            {t.lNotClient} <a href="/questionnaire">{t.lStart}</a>. {t.lAccounts}
+            {t.lFirstTime}<br /><br />{t.lNotClient} <a href="/questionnaire">{t.lStart}</a>. {t.lAccounts}
           </p>
         </div>
       </main>

@@ -1,3 +1,4 @@
+import PendingSubmit from "../../PendingSubmit";
 import { notFound } from "next/navigation";
 import { AdminShell, requireAdminPage } from "../../shell";
 import { NewArtistFields } from "../../artist-form";
@@ -61,7 +62,7 @@ export default async function Submission({ params, searchParams }) {
                   packages: wanted,
                 }}
               />
-              <button type="submit" className="btn btn--dark" style={{ alignSelf: "flex-start" }}>Create artist</button>
+              <PendingSubmit className="btn btn--dark" style={{ alignSelf: "flex-start" }} pendingText="Creating…">Create artist</PendingSubmit>
             </form>
           </section>
 

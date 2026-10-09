@@ -1,3 +1,4 @@
+import PendingSubmit from "../../PendingSubmit";
 import { notFound } from "next/navigation";
 import { AdminShell, requireAdminPage, OK_MSG } from "../../shell";
 import { loadArtist } from "../../../../lib/artist-data";
@@ -329,7 +330,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
         </form>
         <form action={resendInvite} style={{ marginTop: 16 }}>
           {hidden}
-          <button type="submit" className="small-btn">{artist.user_id ? "Resend invitation" : "Send invitation"}</button>
+          <PendingSubmit className="small-btn">{artist.user_id ? "Resend invitation" : "Send invitation"}</PendingSubmit>
         </form>
       </section>
     </AdminShell>
