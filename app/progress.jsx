@@ -12,7 +12,7 @@ export function ProgressSummary({ rows, lang, aside, id }) {
       <div className="steps__head" style={{ marginBottom: 0 }}>
         <div>
           <h2 className="h2" style={{ fontSize: 28 }}>{t.progressTitle}</h2>
-          <p style={{ margin: 0, fontSize: 15 }}>{t.progressLead}</p>
+          <p style={{ margin: 0, fontSize: 15 }}>{t.progressLead}<br />{t.progressLead2}</p>
         </div>
         {aside}
       </div>
