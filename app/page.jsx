@@ -1,9 +1,9 @@
 import { Star, Reveal } from "./components";
+import Constellation from "./Constellation";
 import {
   CONTACT,
   COLORS,
   MARQUEE,
-  PILLARS,
   PACKAGES,
   BUNDLES,
 } from "./content";
@@ -95,28 +95,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Services */}
+        {/* Services: everything an independent artist juggles, all connected */}
         <section id="services" className="wrap section">
           <Reveal>
-            <h2 className="section__title">
-              Four things every artist needs.
-              <br />
-              <span className="soft soft--sub">Let&apos;s put the pieces together.</span>
-            </h2>
-            <p className="section__lead">
-              From the creative vision to the business details, we help you build a solid foundation for your
-              music career.
-            </p>
+            <Constellation />
           </Reveal>
-          <div className="grid">
-            {PILLARS.map((p, i) => (
-              <Reveal key={p.key} delay={i * 100} className="card lift" style={{ background: p.bg }}>
-                <Star size={44} fill={p.star} stroke="#1E1B2E" />
-                <h3 style={{ marginTop: 18 }}>{p.title}</h3>
-                <p>{p.text}</p>
-              </Reveal>
-            ))}
-          </div>
         </section>
 
         {/* Packages */}

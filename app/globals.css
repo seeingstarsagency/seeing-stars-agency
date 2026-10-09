@@ -733,3 +733,21 @@ button.btn { cursor: pointer; }
   .bed__bar { position: static; }
   .bed__save { margin-left: 0; width: 100%; padding: 4px 6px; }
 }
+/* Artist constellation (homepage services) */
+.constel { width: 100%; overflow-x: auto; overflow-y: hidden; background: #fff; border: 2px solid var(--ink); border-radius: 24px; -webkit-overflow-scrolling: touch; }
+.constel__sizer { position: relative; }
+.constel__canvas { position: absolute; left: 0; top: 0; transform-origin: 0 0; overflow: hidden; font-family: var(--body); color: var(--ink); }
+.constel__layer { position: absolute; left: 0; top: 0; pointer-events: none; }
+.constel__dust { position: absolute; border-radius: 50%; animation: cdust 4s ease-in-out infinite; }
+@keyframes cdust { 0%, 100% { opacity: .2; transform: scale(.7); } 50% { opacity: .9; transform: scale(1.1); } }
+.constel__tw { animation: ctw 3.4s ease-in-out infinite; transform-origin: 50% 50%; }
+@keyframes ctw { 0%, 100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.16) rotate(14deg); } }
+.constel__shoot { position: absolute; width: 170px; height: 3px; border-radius: 3px; background: linear-gradient(90deg, rgba(242,201,76,0), #F2C94C); opacity: 0; animation: cshoot 8s linear infinite; pointer-events: none; }
+@keyframes cshoot { 0% { transform: translate(0,0) rotate(-22deg); opacity: 0; } 3% { opacity: 1; } 16% { transform: translate(820px,-330px) rotate(-22deg); opacity: 0; } 100% { transform: translate(820px,-330px) rotate(-22deg); opacity: 0; } }
+.constel__node { position: absolute; width: 0; height: 0; }
+.constel__label { position: absolute; white-space: nowrap; font-family: var(--display); font-style: italic; line-height: 1; transition: color .2s, opacity .2s; }
+.constel__hit { position: absolute; left: -30px; top: -30px; width: 60px; height: 60px; border: 0; padding: 0; margin: 0; background: transparent; border-radius: 50%; cursor: pointer; }
+.constel__hit:focus-visible { outline: 2px dashed #C2417F; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .constel__tw, .constel__dust { animation: none; } .constel__shoot { display: none; } }
+.constel { position: relative; }
+.constel__hint { position: sticky; left: 0; width: 100%; text-align: center; font-family: var(--hand); font-size: 20px; color: #6F93CF; padding: 0 0 8px; }
