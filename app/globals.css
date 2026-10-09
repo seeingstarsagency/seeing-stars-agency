@@ -495,3 +495,6 @@ button.btn { cursor: pointer; }
 .songpicker__label { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--yellow); }
 .songpicker select { max-width: 100%; background: #2c2840; color: #fff; border: 1.5px solid var(--yellow); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 14px; cursor: pointer; }
 .h3 { font-family: var(--display); font-size: 20px; font-weight: 800; font-style: italic; }
+
+/* Bundles: 2 × 2 so four cards sit evenly */
+.grid.grid--bundles { gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); }

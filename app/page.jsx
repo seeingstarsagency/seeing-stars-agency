@@ -98,7 +98,11 @@ export default function Home() {
         {/* Services */}
         <section id="services" className="wrap section">
           <Reveal>
-            <h2 className="section__title">Four things every artist needs.</h2>
+            <h2 className="section__title">
+              Four things every artist needs.
+              <br />
+              <span className="soft soft--sub">Let&apos;s put the pieces together</span>
+            </h2>
             <p className="section__lead">
               From the creative vision to the business details, we help you build a solid foundation for your
               music career.
@@ -133,8 +137,8 @@ export default function Home() {
               <span className="soft soft--sub">Let&apos;s build what comes next.</span>
             </h2>
             <p className="section__lead section__lead--small">
-              Start with what you need most. Every package comes with clear deliverables and a timeline in
-              writing. Contact us for pricing.
+              Every artist&apos;s starting point looks different. Let&apos;s find what makes sense for yours. Reach
+              out for details on packages and pricing.
             </p>
           </Reveal>
           <div className="grid">
@@ -171,9 +175,16 @@ export default function Home() {
         <section id="bundles" className="wrap section">
           <Reveal>
             <div className="hand" style={{ color: "var(--sky)" }}>better together</div>
-            <h2 className="section__title" style={{ marginBottom: 48 }}>Bundles</h2>
+            <h2 className="section__title">
+              Bundles
+              <br />
+              <span className="soft soft--sub">Build your constellation.</span>
+            </h2>
+            <p className="section__lead section__lead--small">
+              A little creative direction, a little industry guidance, all working together.
+            </p>
           </Reveal>
-          <div className="grid" style={{ gap: 24 }}>
+          <div className="grid grid--bundles">
             {BUNDLES.map((b, i) => (
               <Reveal key={b.combo} delay={i * 100} className="bundle lift" style={{ background: b.bg }}>
                 <div className="bundle__combo">

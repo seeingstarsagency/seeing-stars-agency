@@ -105,6 +105,12 @@ export const BUNDLES = [
     text: "A brand that fits you and a campaign that shows it off.",
     bg: "#E4EAF7",
   },
+  {
+    combo: "Comet + Orbit",
+    title: "Make your move. Keep your momentum.",
+    text: "A creative plan for your next release, with ongoing guidance.",
+    bg: "#FCE4EF",
+  },
 ];
 
 export const STEPS = [
