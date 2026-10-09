@@ -593,3 +593,4 @@ button.btn { cursor: pointer; }
 .locked__card p { margin: 0; font-size: 15px; line-height: 1.5; }
 .locked__tag { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--yellow); }
 .locked__card .btn { min-height: 44px; }
+.locked__card .locked__or { font-size: 13px; opacity: .8; margin-top: -4px; }

@@ -21,6 +21,7 @@ function Locked({ locked, pkg, text, t, children }) {
       <div className="locked__card">
         <span className="locked__tag">✦ {t.lockedTag.replace("{pkg}", pkg)}</span>
         <p>{text}</p>
+        <p className="locked__or">{t.lockedOr}</p>
         <a href="/#contact" className="btn btn--accent btn--sm">{t.lockedCta.replace("{pkg}", pkg)}</a>
       </div>
     </div>
@@ -143,7 +144,8 @@ export default async function Dashboard({ searchParams }) {
     </select>
   );
   const adminHidden = isAdmin ? <input type="hidden" name="artist_id" value={artist.id} /> : null;
-  const hasPkg = (p) => (artist.packages || []).includes(p);
+  // A monthly membership (set by the admin) unlocks everything.
+  const hasPkg = (p) => !!artist.monthly_member || (artist.packages || []).includes(p);
   const releaseLocked = !hasPkg("Launchpad");
   const contentLocked = !hasPkg("Astro");
   const brandLocked = !hasPkg("Astro");
@@ -158,9 +160,10 @@ export default async function Dashboard({ searchParams }) {
             <div className="kicker">{t.welcome}</div>
             <h1 className="h1 profile__name">{artist.name}</h1>
             {(ans.legal_name || artist.legal_name) && <p className="profile__meta">{ans.legal_name || artist.legal_name}</p>}
-            {(artist.packages || []).length > 0 && (
+            {((artist.packages || []).length > 0 || artist.monthly_member) && (
               <div className="chips">
-                {artist.packages.map((p) => <span key={p} className="pchip">{p}</span>)}
+                {(artist.packages || []).map((p) => <span key={p} className="pchip">{p}</span>)}
+                {artist.monthly_member && <span className="pchip">✦ {t.monthlyMember}</span>}
               </div>
             )}
             {links.length > 0 && (

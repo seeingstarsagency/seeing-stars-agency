@@ -322,6 +322,12 @@ export default async function ArtistAdmin({ params, searchParams }) {
               </div>
             </fieldset>
           </div>
+          <div className="field">
+            <fieldset>
+              <legend>Monthly membership</legend>
+              <label className="opt"><input type="checkbox" name="monthly_member" defaultChecked={!!artist.monthly_member} /> Pays a monthly membership: unlocks the release calendar, the content calendar and "Your brand"</label>
+            </fieldset>
+          </div>
           <button type="submit" className="btn btn--dark btn--sm" style={{ alignSelf: "flex-start" }}>Save details</button>
         </form>
         <form action={resendInvite} style={{ marginTop: 16 }}>

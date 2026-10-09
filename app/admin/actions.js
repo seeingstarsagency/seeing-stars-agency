@@ -109,6 +109,7 @@ export async function updateArtist(formData) {
       name: str(formData, "name"),
       lang: formData.get("lang") === "es" ? "es" : "en",
       packages: formData.getAll("packages").map(String).filter((p) => PACKAGES.includes(p)),
+      monthly_member: formData.get("monthly_member") === "on",
       single_title: str(formData, "single_title") || null,
       release_date: str(formData, "release_date", 10) || null,
       closed_at: str(formData, "closed_at", 10) || null,

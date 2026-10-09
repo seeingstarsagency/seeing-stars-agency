@@ -210,3 +210,6 @@ create policy "admin all" on public.calendar_items for all using (public.is_admi
 grant select on public.calendar_items to authenticated;
 grant all on public.calendar_items to service_role;
 revoke all on public.calendar_items from anon;
+
+-- Monthly membership: set by the admin, unlocks every locked dashboard section
+alter table public.artists add column if not exists monthly_member boolean not null default false;
