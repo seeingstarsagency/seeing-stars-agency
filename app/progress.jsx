@@ -38,6 +38,7 @@ export function ProgressSummary({ rows, lang, aside, id }) {
           {s.had > 0 && <span style={{ width: pct(s.had), background: STATUS.had.bg }} />}
           {s.done > 0 && <span style={{ width: pct(s.done), background: STATUS.done.bg }} />}
           {s.inProgress > 0 && <span style={{ width: pct(s.inProgress), background: STATUS.in_progress.bg }} />}
+          {s.pending > 0 && <span style={{ width: pct(s.pending), background: STATUS.pending.bg }} />}
         </div>
         <div className="legend">
           {["had", "done", "in_progress", "pending"].map((k) => (
