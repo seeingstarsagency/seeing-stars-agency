@@ -88,7 +88,7 @@ function PillarRows({ pillar, byKey, lang, t, renderStatus }) {
         return (
           <tr key={s.key} className={`steps__row steps__row--${pillar.key}`}>
             <td className="steps__name">
-              {pick(lang, s)}
+              <StepName text={pick(lang, s)} />
               {s.info && (
                 <span className="tip" tabIndex={0} role="note" aria-label={s.info[lang] || s.info.en}>
                   <span className="tip__i" aria-hidden="true">i</span>
@@ -104,4 +104,11 @@ function PillarRows({ pillar, byKey, lang, t, renderStatus }) {
       })}
     </>
   );
+}
+
+// "PRO - Release Registration" → the part after " - " in italics.
+function StepName({ text }) {
+  const i = text.indexOf(" - ");
+  if (i < 0) return text;
+  return <>{text.slice(0, i)} - <em>{text.slice(i + 3)}</em></>;
 }
