@@ -815,3 +815,4 @@ button.btn { cursor: pointer; }
 .req__btn { min-height: 44px; padding: 8px 16px; }
 .reqdone summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
 @media (max-width: 640px) { .req__actions { width: 100%; } .req__actions form { flex: 1; } .req__btn { width: 100%; } }
+.mnav__panel.nav a.mnav__contact, .header .header__contact { font-size: 16px; }
