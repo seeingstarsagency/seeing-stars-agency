@@ -7,7 +7,7 @@ import { songScope } from "../../lib/song-scope";
 import SongPicker from "../SongPicker";
 import { browserConfig } from "../../lib/env";
 import PhotoUpload from "../PhotoUpload";
-import { setListenPlatform, addCalendarItem, setCalendarStatus, deleteCalendarItem } from "./actions";
+import { setListenPlatform, addCalendarItem, setCalendarStatus, deleteCalendarItem, saveContentScript } from "./actions";
 import Calendar from "../Calendar";
 import { Star } from "../components";
 import { AppHeader, LogoutButton, fmtDate } from "../ui";
@@ -125,6 +125,7 @@ export default async function Dashboard({ searchParams }) {
     sub: [platformName[c.platform] || c.platform, c.format, c.song_id && songTitleById[c.song_id], c.created_by === "agency" && t.fromAgency].filter(Boolean).join(" · "),
     canDelete: isAdmin || c.created_by === "artist",
     platform: platformName[c.platform] || c.platform, format: c.format, song: c.song_id ? songTitleById[c.song_id] : null,
+    description: c.description || "", script: c.script || "",
   }));
   const calLabels = {
     prev: t.calPrev, next: t.calNext, today: t.calToday, items: t.calItems, thisMonth: t.calThisMonth,
@@ -375,7 +376,9 @@ export default async function Dashboard({ searchParams }) {
             artistId={isAdmin ? artist.id : null}
             setStatus={setCalendarStatus}
             remove={deleteCalendarItem}
-            labels={{ title: t.contentCalTitle, status: t.calStatus, remove: t.calRemove, empty: t.calEmpty, noImages: t.camNoImages, prevMonth: t.calPrev, nextMonth: t.calNext, prev: t.camPrev, next: t.camNext, menu: t.camMenu, disp: t.camDisp, ok: t.camOk, hint: t.camHint }}
+            saveScript={saveContentScript}
+            initialId={sp?.post || null}
+            labels={{ title: t.contentCalTitle, script: t.camScript, scriptTitle: t.camScriptTitle, scriptLead: t.camScriptLead, description: t.contentDesc, descriptionPh: t.contentDescPh, scriptLabel: t.camScriptLabel, scriptPh: t.camScriptPh, save: t.camSave, close: t.roadClose, noScript: t.camNoScript, status: t.calStatus, remove: t.calRemove, empty: t.calEmpty, noImages: t.camNoImages, prevMonth: t.calPrev, nextMonth: t.calNext, prev: t.camPrev, next: t.camNext, menu: t.camMenu, disp: t.camDisp, ok: t.camOk, hint: t.camHint }}
           />
             {!contentLocked && <details className="cal__add">
               <summary>+ {t.calAdd}</summary>
@@ -394,6 +397,7 @@ export default async function Dashboard({ searchParams }) {
                   </select>
                 </label>
                 <label className="field cal__wide"><span>{t.contentIdea}</span><input name="title" className="input" maxLength={160} placeholder={t.contentIdeaPh} required /></label>
+                <label className="field cal__wide"><span>{t.contentDesc}</span><textarea name="description" className="input" rows={3} maxLength={2000} placeholder={t.contentDescPh} /></label>
                 <label className="field"><span>{t.calSong}</span>{songOptions}</label>
                 <label className="field"><span>{t.calStatus}</span>
                   <select name="status" className="input" defaultValue="pending">

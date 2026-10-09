@@ -234,3 +234,7 @@ create policy "admin all" on public.brandbook_pages for all using (public.is_adm
 grant select, insert, update, delete on public.brandbook_pages to authenticated;
 grant all on public.brandbook_pages to service_role;
 revoke all on public.brandbook_pages from anon;
+
+-- Content calendar: what exactly will be done, and the script for it
+alter table public.calendar_items add column if not exists description text;
+alter table public.calendar_items add column if not exists script text;

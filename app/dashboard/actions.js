@@ -51,11 +51,31 @@ export async function addCalendarItem(formData) {
     song_id: songId,
     platform: kind === "content" ? clean(formData.get("platform"), 40) || null : null,
     format: kind === "content" ? clean(formData.get("format"), 40) || null : null,
+    description: kind === "content" ? clean(formData.get("description"), 2000) || null : null,
     status,
     created_by: isAdmin ? "agency" : "artist",
   });
   revalidatePath("/dashboard");
   redirect(`${back}${back.includes("?") ? "&" : "?"}cal=${date.slice(0, 7)}#cal-${kind}`);
+}
+
+// Back to the same post in the content camera after saving.
+const toPost = (back, id, kind) => `${back}${back.includes("?") ? "&" : "?"}post=${id}#cal-${kind}`;
+
+// Description and script of a content post.
+export async function saveContentScript(formData) {
+  const { artistId, back } = await calendarViewer(formData);
+  const id = String(formData.get("id") || "");
+  const db = supabaseAdmin();
+  const { data: item } = await db.from("calendar_items").select("id, kind").eq("id", id).eq("artist_id", artistId).maybeSingle();
+  if (item) {
+    await db.from("calendar_items").update({
+      description: clean(formData.get("description"), 2000) || null,
+      script: String(formData.get("script") || "").slice(0, 20000) || null,
+    }).eq("id", id);
+  }
+  revalidatePath("/dashboard");
+  redirect(item ? toPost(back, id, item.kind) : `${back}#cal-content`);
 }
 
 export async function setCalendarStatus(formData) {
@@ -67,7 +87,7 @@ export async function setCalendarStatus(formData) {
     await db.from("calendar_items").update({ status: formData.get("status") }).eq("id", id);
   }
   revalidatePath("/dashboard");
-  redirect(`${back}#cal-${item?.kind || "release"}`);
+  redirect(item?.kind === "content" ? toPost(back, id, "content") : `${back}#cal-${item?.kind || "release"}`);
 }
 
 export async function deleteCalendarItem(formData) {

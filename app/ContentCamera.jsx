@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 // The content calendar inside a digital camera.
 // Screen modes: "play" (one post, like a photo), "menu" (all posts of the month), "disp" (month grid).
@@ -8,11 +8,12 @@ import { useMemo, useState } from "react";
 const pad = (n) => String(n).padStart(2, "0");
 const ym = (y, m) => `${y}-${pad(m + 1)}`;
 
-export default function ContentCamera({ items, lang, labels, today, artistId, setStatus, remove }) {
+export default function ContentCamera({ items, lang, labels, today, artistId, setStatus, remove, saveScript, initialId }) {
   const locale = lang === "es" ? "es-US" : "en-US";
   const sorted = useMemo(() => [...items].sort((a, b) => a.date.localeCompare(b.date)), [items]);
   // Start on the next post coming up (or today's month).
-  const first = sorted.find((it) => it.date >= today);
+  const first = sorted.find((it) => it.id === initialId) || sorted.find((it) => it.date >= today);
+  const dlg = useRef(null);
   const [month, setMonth] = useState((first?.date || today).slice(0, 7));
   const [mode, setMode] = useState("play");
   const inMonth = sorted.filter((it) => it.date.startsWith(month));
@@ -76,6 +77,7 @@ export default function ContentCamera({ items, lang, labels, today, artistId, se
                   <div className="cam__platform">{cur.platform}{cur.format ? ` · ${cur.format}` : ""}</div>
                   <div className="cam__title">{cur.title}</div>
                   {cur.song && <div className="cam__song">♪ {cur.song}</div>}
+                  {cur.description && <div className="cam__desc">{cur.description}</div>}
                   <div className="cam__bottom">
                     <form action={setStatus} className="cam__statusform">
                       <input type="hidden" name="id" value={cur.id} />
@@ -174,7 +176,39 @@ export default function ContentCamera({ items, lang, labels, today, artistId, se
           )}
         </div>
       </div>
-      <p className="cam__hint">{labels.hint}</p>
+      <div className="cam__below">
+        <button type="button" className="btn btn--sm road-btn" onClick={() => dlg.current?.showModal()} disabled={!cur}>
+          <span aria-hidden="true">✎</span> {labels.script}{cur?.script ? " ✓" : ""}
+        </button>
+        <p className="cam__hint">{labels.hint}</p>
+      </div>
+
+      <dialog ref={dlg} className="road-modal" onClick={(e) => { if (e.target === dlg.current) dlg.current.close(); }}>
+        <button type="button" className="road-modal__close" onClick={() => dlg.current?.close()} aria-label={labels.close}>×</button>
+        {cur ? (
+          <form action={saveScript} className="script-page" key={cur.id}>
+            <input type="hidden" name="id" value={cur.id} />
+            {artistId && <input type="hidden" name="artist_id" value={artistId} />}
+            <div className="script-page__meta" style={{ "--pc": cur.color }}>
+              <span>{cur.platform}{cur.format ? ` · ${cur.format}` : ""}</span>
+              <span className="cam__stamp">{stamp(cur.date)}</span>
+            </div>
+            <div className="kicker">{labels.scriptTitle}</div>
+            <h2 className="h2 script-page__title">{cur.title}</h2>
+            {cur.song && <p className="script-page__song">♪ {cur.song}</p>}
+            <p className="script-page__lead">{labels.scriptLead}</p>
+            <label className="field"><span>{labels.description}</span>
+              <textarea name="description" className="input" rows={3} maxLength={2000} defaultValue={cur.description} placeholder={labels.descriptionPh} />
+            </label>
+            <label className="field"><span>{labels.scriptLabel}</span>
+              <textarea name="script" className="input script-page__script" rows={14} maxLength={20000} defaultValue={cur.script} placeholder={labels.scriptPh} />
+            </label>
+            <button type="submit" className="btn btn--dark">{labels.save}</button>
+          </form>
+        ) : (
+          <div className="script-page"><p>{labels.noScript}</p></div>
+        )}
+      </dialog>
     </div>
   );
 }
