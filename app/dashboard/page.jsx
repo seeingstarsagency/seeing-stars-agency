@@ -151,12 +151,19 @@ export default async function Dashboard({ searchParams }) {
           {songs.length === 0 ? (
             <p style={{ margin: 0 }}>{t.noSongs}</p>
           ) : (
-            <ul className="songlist">
+            <ul className="cdgrid">
               {songs.map((s) => (
-                <li key={s.id}>
-                  {s.artwork_url ? <img src={s.artwork_url} alt="" className="songlist__art" /> : <span className="songlist__icon" aria-hidden="true">♪</span>}
-                  <span style={{ flexGrow: 1 }}><strong>{s.title}</strong>{s.release_date && <span className="muted"> · {fmtDate(s.release_date, lang)}</span>}</span>
-                  <a href={listenUrl(s)} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>{t.listen}</a>
+                <li key={s.id} className="cd">
+                  <div className="cd__art">
+                    <a href={listenUrl(s)} target="_blank" rel="noopener noreferrer" className="cd__disc" aria-label={`${t.listen}: ${s.title}`}>
+                      <span className="cd__listen">▶ {t.listen}</span>
+                    </a>
+                    <div className="cd__case">
+                      {s.artwork_url ? <img src={s.artwork_url} alt="" /> : <span className="cd__placeholder" aria-hidden="true">♪</span>}
+                    </div>
+                  </div>
+                  <div className="cd__title">{s.title}</div>
+                  {s.release_date && <div className="cd__date">{fmtDate(s.release_date, lang)}</div>}
                 </li>
               ))}
             </ul>

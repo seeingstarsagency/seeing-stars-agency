@@ -447,3 +447,44 @@ button.btn { cursor: pointer; }
 .platform-toggle button { border: 1.5px solid var(--ink); background: #fff; color: var(--ink); border-radius: 999px; padding: 6px 14px; font: inherit; font-weight: 600; cursor: pointer; }
 .platform-toggle button.is-on { background: var(--ink); color: #fff; }
 .platform-toggle button:disabled { cursor: default; }
+
+/* Songs as CDs: cover in a jewel case, disc peeking out to the right with the listen link */
+.cdgrid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 28px 20px; }
+.cd { display: flex; flex-direction: column; align-items: flex-start; }
+.cd__art { position: relative; width: 256px; height: 168px; }
+.cd__case {
+  position: absolute; left: 0; top: 0; width: 168px; height: 168px; z-index: 2;
+  background: #f6f6f7; border: 1.5px solid #9a9aa2; border-radius: 3px;
+  box-shadow: 0 10px 18px -10px rgba(30, 27, 46, .45), inset 0 0 0 4px rgba(255,255,255,.9), inset 0 0 0 5px #c9c9cf;
+  padding: 7px 7px 7px 17px; display: flex; overflow: hidden;
+}
+.cd__case::before { /* spine */
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 11px;
+  background: linear-gradient(90deg, #e9e9ec, #fff 40%, #d6d6db); border-right: 1.5px solid #9a9aa2;
+}
+.cd__case::after { /* plastic shine */
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(125deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 38%, rgba(255,255,255,0) 62%, rgba(255,255,255,.25) 100%);
+}
+.cd__case img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cd__placeholder { margin: auto; font-size: 46px; color: #b9b6c4; }
+.cd__disc {
+  position: absolute; z-index: 1; top: 6px; left: 96px; width: 156px; height: 156px; border-radius: 999px;
+  background:
+    radial-gradient(circle, #fff 0 9%, #8d8d94 9.5% 11%, #c7c7cc 11.5% 18%, #9a9aa2 18.5% 19.5%, transparent 20%),
+    conic-gradient(from 200deg, #d9d9de, #bfe7f2, #d6c9f5, #f6c9d9, #fdf3c4, #e3e3e8, #c9eef5, #e0d3f7, #f8cddc, #d9d9de);
+  box-shadow: inset 0 0 0 1.5px #b9b9c0, 0 6px 14px -8px rgba(30,27,46,.4);
+  text-decoration: none; color: var(--ink);
+  transition: transform .45s cubic-bezier(.3, 1.4, .5, 1);
+}
+.cd__listen {
+  position: absolute; right: 10px; bottom: 26px;
+  background: rgba(255,255,255,.92); border: 1.5px solid var(--ink); border-radius: 999px;
+  padding: 3px 9px; font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.cd:hover .cd__disc, .cd__disc:focus-visible { transform: translateX(14px) rotate(25deg); }
+.cd:hover .cd__listen, .cd__disc:focus-visible .cd__listen { transform: rotate(-25deg); background: var(--yellow); }
+.cd__listen { transition: transform .45s cubic-bezier(.3, 1.4, .5, 1), background .2s; }
+.cd__title { margin-top: 12px; font-family: var(--display); font-size: 18px; font-weight: 800; font-style: italic; line-height: 1.2; max-width: 256px; overflow-wrap: anywhere; }
+.cd__date { font-size: 13px; opacity: .7; margin-top: 2px; }
+@media (prefers-reduced-motion: reduce) { .cd__disc, .cd__listen { transition: none; } }
