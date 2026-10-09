@@ -865,6 +865,7 @@ button.btn { cursor: pointer; }
 /* Steps: each area has its own color from the brand palette */
 .table .group td { position: relative; }
 .group__dot { display: inline-block; width: 12px; height: 12px; border-radius: 999px; border: 1.5px solid var(--ink); margin-right: 10px; vertical-align: -1px; background: var(--g, #fff); }
+.table .group--essentials td { background: #E6F5EA; } .group--essentials { --g: #8FD19E; }
 .table .group--rights td { background: #FFF6D6; } .group--rights { --g: #F2C94C; }
 .table .group--release td { background: #E3F1F8; } .group--release { --g: #9CCBE0; }
 .table .group--campaign td { background: #FCE4EF; } .group--campaign { --g: #F4A6C9; }
@@ -875,6 +876,7 @@ button.btn { cursor: pointer; }
 @media (max-width: 640px) {
   .table--steps .group td { border-radius: 12px; padding: 10px 12px !important; margin-top: 10px; border: 1.5px solid var(--ink); }
   .table--steps tbody > .group:first-child td { margin-top: 0; }
+  .table--steps .steps__row--essentials { background: #F3FBF5; }
   .table--steps .steps__row--rights { background: #FFFCF0; }
   .table--steps .steps__row--release { background: #F4FAFD; }
   .table--steps .steps__row--campaign { background: #FEF5F9; }
