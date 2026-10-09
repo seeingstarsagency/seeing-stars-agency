@@ -9,6 +9,7 @@ import { browserConfig } from "../../lib/env";
 import PhotoUpload from "../PhotoUpload";
 import { setListenPlatform, addCalendarItem, setCalendarStatus, deleteCalendarItem } from "./actions";
 import Calendar from "../Calendar";
+import { Star } from "../components";
 import { AppHeader, LogoutButton, fmtDate } from "../ui";
 import { ProgressSummary, StepsTable } from "../progress";
 import Locked from "../Locked";
@@ -164,7 +165,10 @@ export default async function Dashboard({ searchParams }) {
                 )}
               </div>
               {songTitle && (
-                <div className="countdown">
+                <div className="countdown-wrap">
+                <Star size={56} fill="#F4A6C9" className="abs twinkle countdown-wrap__star1" />
+                <Star size={38} fill="#9CCBE0" className="abs twinkle2 countdown-wrap__star2" />
+                <div className="countdown float">
                   <div className="countdown__label">{t.single}</div>
                   <div className="countdown__song">{songTitle}</div>
                   {daysLeft === null ? (
@@ -183,6 +187,7 @@ export default async function Dashboard({ searchParams }) {
                       <div className="countdown__date">{fmtDate(songDate, lang)}</div>
                     </>
                   )}
+                </div>
                 </div>
               )}
             </section>
