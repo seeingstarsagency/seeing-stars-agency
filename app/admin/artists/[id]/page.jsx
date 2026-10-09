@@ -10,9 +10,11 @@ import { browserConfig } from "../../../../lib/env";
 import { SECTIONS, answerLabel } from "../../../../lib/questions";
 import { AnswersList } from "../../../form-fields";
 import { appleArtistIdFromUrl, searchAppleArtists } from "../../../../lib/apple-music";
+import { spotifyArtistIdFromUrl, searchSpotifyArtists } from "../../../../lib/spotify";
+import { spotifyConfigured } from "../../../../lib/env";
 import {
   updateArtist, updateSteps, addNextStep, toggleNextStep, addNote, addMilestone,
-  toggleMilestone, deleteItem, resendInvite, addSong, importAppleSongs,
+  toggleMilestone, deleteItem, resendInvite, addSong, importAppleSongs, importSpotifySongs,
 } from "../../actions";
 
 function Del({ artistId, table, id }) {
@@ -37,13 +39,24 @@ export default async function ArtistAdmin({ params, searchParams }) {
   const { artist, rows, next, notes, milestones, files, songs, photoUrl } = data;
   const hidden = <input type="hidden" name="artist_id" value={artist.id} />;
 
-  // Apple Music: linked artist, or search results to pick from.
+  // Song import: the linked artist on each platform, or search results to pick from.
+  const spOn = spotifyConfigured();
   const appleId = artist.apple_artist_id || appleArtistIdFromUrl(artist.intake_answers?.apple_url);
+  const spotifyId = artist.spotify_artist_id || spotifyArtistIdFromUrl(artist.intake_answers?.spotify_url);
   const amSearch = typeof sp?.am_search === "string" ? sp.am_search.trim() : "";
+  const spSearch = typeof sp?.sp_search === "string" ? sp.sp_search.trim() : "";
   let amResults = null;
+  let spResults = null;
   if (amSearch) {
     try { amResults = await searchAppleArtists(amSearch); } catch { amResults = []; }
   }
+  if (spSearch && spOn) {
+    try { spResults = await searchSpotifyArtists(spSearch); } catch { spResults = []; }
+  }
+  const sources = [
+    { key: "spotify", label: "Spotify", on: spOn, id: spotifyId, idField: "spotify_artist_id", searchParam: "sp_search", search: spSearch, results: spResults, action: importSpotifySongs, link: (x) => `https://open.spotify.com/artist/${x}` },
+    { key: "apple", label: "Apple Music", on: true, id: appleId, idField: "apple_artist_id", searchParam: "am_search", search: amSearch, results: amResults, action: importAppleSongs, link: (x) => `https://music.apple.com/artist/${x}` },
+  ];
 
   return (
     <AdminShell>
@@ -130,53 +143,64 @@ export default async function ArtistAdmin({ params, searchParams }) {
         <h2 className="h2">Songs</h2>
         <p style={{ margin: "0 0 12px", fontSize: 15 }}>These show on the artist&apos;s profile. The single from their questionnaire is added automatically.</p>
 
-        <div className="importbox">
-          <strong>Bring their released songs from Apple Music</strong>
-          {sp?.imported !== undefined && (
-            <div className="alert alert--ok" role="status">Found {sp.found} songs on Apple Music · {sp.imported} new added.</div>
-          )}
-          {sp?.import_error && <div className="alert" role="alert">Couldn&apos;t get the songs from Apple Music. Try again in a moment.</div>}
-          {appleId && !amSearch && (
-            <form action={importAppleSongs} className="inline">
-              {hidden}
-              <input type="hidden" name="apple_artist_id" value={appleId} />
-              <button type="submit" className="small-btn small-btn--dark">Bring songs</button>
-              <span className="muted" style={{ fontSize: 14 }}>
-                Linked artist: <a href={`https://music.apple.com/artist/${appleId}`} target="_blank" rel="noopener noreferrer">Apple Music #{appleId}</a>
-                {" · "}<a href={`/admin/artists/${artist.id}?am_search=${encodeURIComponent(artist.name)}#songs`}>wrong artist? search</a>
-              </span>
-            </form>
-          )}
-          {(!appleId || amSearch) && (
-            <form method="get" action={`/admin/artists/${artist.id}`} className="inline">
-              <input name="am_search" className="input" defaultValue={amSearch || artist.name} aria-label="Artist name on Apple Music" />
-              <button type="submit" className="small-btn">Search Apple Music</button>
-            </form>
-          )}
-          {amResults && (
-            amResults.length === 0 ? (
-              <p style={{ margin: 0, fontSize: 14 }}>No artists found with that name. Try another spelling, or add songs by hand below.</p>
-            ) : (
-              <ul className="checks">
-                {amResults.map((r) => (
-                  <li key={r.id} style={{ alignItems: "center" }}>
-                    <span style={{ flexGrow: 1 }}><strong>{r.name}</strong>{r.genre && <span className="muted"> · {r.genre}</span>} · <a href={r.link} target="_blank" rel="noopener noreferrer">see on Apple Music</a></span>
-                    <form action={importAppleSongs}>
+        {sp?.imported !== undefined && (
+          <div className="alert alert--ok" role="status">Found {sp.found} songs on {sp.from === "spotify" ? "Spotify" : "Apple Music"} · {sp.imported} new added.</div>
+        )}
+        {sp?.import_error && <div className="alert" role="alert">Couldn&apos;t get the songs from {sp.import_error === "spotify" ? "Spotify" : "Apple Music"}. Try again in a moment.</div>}
+        <p style={{ margin: "0 0 10px", fontSize: 14 }}>
+          The artist listens on: <strong>{artist.listen_platform === "apple" ? "Apple Music" : "Spotify"}</strong> (they choose it in their dashboard).
+        </p>
+        <div className="importgrid">
+          {sources.map((src) => (
+            <div key={src.key} className="importbox">
+              <strong>Bring songs from {src.label}</strong>
+              {!src.on ? (
+                <p style={{ margin: 0, fontSize: 14 }}>Not connected yet. Add SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in Vercel (see setup notes).</p>
+              ) : (
+                <>
+                  {src.id && !src.search && (
+                    <form action={src.action} className="inline">
                       {hidden}
-                      <input type="hidden" name="apple_artist_id" value={r.id} />
-                      <button type="submit" className="small-btn small-btn--dark">This is them · bring songs</button>
+                      <input type="hidden" name={src.idField} value={src.id} />
+                      <button type="submit" className="small-btn small-btn--dark">Bring songs</button>
+                      <span className="muted" style={{ fontSize: 13 }}>
+                        <a href={src.link(src.id)} target="_blank" rel="noopener noreferrer">linked artist</a>
+                        {" · "}<a href={`/admin/artists/${artist.id}?${src.searchParam}=${encodeURIComponent(artist.name)}#songs`}>wrong one? search</a>
+                      </span>
                     </form>
-                  </li>
-                ))}
-              </ul>
-            )
-          )}
+                  )}
+                  {(!src.id || src.search) && (
+                    <form method="get" action={`/admin/artists/${artist.id}`} className="inline">
+                      <input name={src.searchParam} className="input" defaultValue={src.search || artist.name} aria-label={`Artist name on ${src.label}`} />
+                      <button type="submit" className="small-btn">Search</button>
+                    </form>
+                  )}
+                  {src.results && (src.results.length === 0 ? (
+                    <p style={{ margin: 0, fontSize: 14 }}>No artists found with that name. Try another spelling.</p>
+                  ) : (
+                    <ul className="checks">
+                      {src.results.map((r) => (
+                        <li key={r.id} style={{ alignItems: "center" }}>
+                          <span style={{ flexGrow: 1, fontSize: 14 }}><strong>{r.name}</strong>{r.genre && <span className="muted"> · {r.genre}</span>} · <a href={r.link} target="_blank" rel="noopener noreferrer">check</a></span>
+                          <form action={src.action}>
+                            {hidden}
+                            <input type="hidden" name={src.idField} value={r.id} />
+                            <button type="submit" className="small-btn small-btn--dark">This is them</button>
+                          </form>
+                        </li>
+                      ))}
+                    </ul>
+                  ))}
+                </>
+              )}
+            </div>
+          ))}
         </div>
         <ul className="checks" style={{ margin: "0 0 16px" }}>
           {songs.map((s) => (
             <li key={s.id} style={{ alignItems: "center" }}>
               {s.artwork_url && <img src={s.artwork_url} alt="" width={36} height={36} style={{ borderRadius: 6, border: "1.5px solid #1E1B2E" }} />}
-              <span style={{ flexGrow: 1 }}><strong>{s.title}</strong>{s.release_date && <> · {fmtDate(s.release_date, "en")}</>}{s.link && <> · <a href={s.link} target="_blank" rel="noopener noreferrer">link</a></>}</span>
+              <span style={{ flexGrow: 1 }}><strong>{s.title}</strong>{s.release_date && <> · {fmtDate(s.release_date, "en")}</>}{s.spotify_url && <> · <a href={s.spotify_url} target="_blank" rel="noopener noreferrer">Spotify</a></>}{s.link && <> · <a href={s.link} target="_blank" rel="noopener noreferrer">{s.link.includes("music.apple.com") ? "Apple Music" : "link"}</a></>}</span>
               <Del artistId={artist.id} table="songs" id={s.id} />
             </li>
           ))}

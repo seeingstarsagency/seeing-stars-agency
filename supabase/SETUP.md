@@ -40,6 +40,13 @@ Then **Deployments → ⋯ on the latest → Redeploy**, so the site picks up th
    ```
 3. Go to `https://www.seeingstarsagency.com/login` and log in. You land on `/admin`.
 
+## Spotify (optional: import songs from Spotify)
+Apple Music works without setup. For Spotify:
+1. https://developer.spotify.com/dashboard → Create app (the account must have Spotify Premium).
+   Redirect URI: `https://www.seeingstarsagency.com` · tick "Web API".
+2. In the app's Settings copy the Client ID and Client secret.
+3. Vercel → Settings → Environment Variables: `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` (secret: paste only here) → Redeploy.
+
 ## Daily use
 - Artists fill in `/questionnaire` (EN/ES). It appears in **Admin → Cuestionarios nuevos**.
 - Open it → **Crear artista**: creates their checklist from their answers and emails them an invitation.

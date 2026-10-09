@@ -5,6 +5,7 @@ import { getLang, T, PKG_BLURB, pick } from "../../lib/i18n";
 import { recommendations } from "../../lib/steps";
 import { browserConfig } from "../../lib/env";
 import PhotoUpload from "../PhotoUpload";
+import { setListenPlatform } from "./actions";
 import { AppHeader, LogoutButton, fmtDate } from "../ui";
 import { ProgressSummary, StepsTable } from "../progress";
 
@@ -65,6 +66,16 @@ export default async function Dashboard({ searchParams }) {
   ]
     .filter((l) => /^https?:\/\//i.test(l.url))
     .map((l) => ({ ...l, color: COLORS[l.key] || COLORS.other }));
+  // Where songs open: the artist's choice. If a song has no link there yet, open a search.
+  const platform = artist.listen_platform === "apple" ? "apple" : "spotify";
+  const listenUrl = (s) => {
+    const q = encodeURIComponent(`${artist.name} ${s.title}`);
+    const apple = s.link && s.link.includes("music.apple.com") ? s.link : null;
+    return platform === "apple"
+      ? apple || `https://music.apple.com/us/search?term=${q}`
+      : s.spotify_url || `https://open.spotify.com/search/${q}`;
+  };
+
   // Days until the single comes out (calendar days, Miami time).
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
   const daysLeft = artist.release_date
@@ -126,7 +137,17 @@ export default async function Dashboard({ searchParams }) {
         </div>
 
         <section className="panel panel--yellow" id="songs">
-          <h2 className="h2" style={{ marginBottom: 14 }}>{t.yourSongs}</h2>
+          <div className="songs__head">
+            <h2 className="h2" style={{ margin: 0 }}>{t.yourSongs}</h2>
+            <form action={setListenPlatform} className="platform-toggle" aria-label={t.listenOn}>
+              <span>{t.listenOn}</span>
+              {[["spotify", "Spotify"], ["apple", "Apple Music"]].map(([k, name]) => (
+                <button key={k} type="submit" name="platform" value={k} className={platform === k ? "is-on" : ""} aria-pressed={platform === k} disabled={isAdmin}>
+                  {name}
+                </button>
+              ))}
+            </form>
+          </div>
           {songs.length === 0 ? (
             <p style={{ margin: 0 }}>{t.noSongs}</p>
           ) : (
@@ -135,7 +156,7 @@ export default async function Dashboard({ searchParams }) {
                 <li key={s.id}>
                   {s.artwork_url ? <img src={s.artwork_url} alt="" className="songlist__art" /> : <span className="songlist__icon" aria-hidden="true">♪</span>}
                   <span style={{ flexGrow: 1 }}><strong>{s.title}</strong>{s.release_date && <span className="muted"> · {fmtDate(s.release_date, lang)}</span>}</span>
-                  {s.link && <a href={s.link} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>{t.listen}</a>}
+                  <a href={listenUrl(s)} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>{t.listen}</a>
                 </li>
               ))}
             </ul>

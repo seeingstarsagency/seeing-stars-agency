@@ -438,3 +438,12 @@ button.btn { cursor: pointer; }
 
 .songlist__art { width: 44px; height: 44px; border-radius: 8px; border: 1.5px solid var(--ink); object-fit: cover; flex-shrink: 0; }
 .importbox { display: grid; gap: 10px; background: #fff; border: 1.5px dashed var(--ink); border-radius: 14px; padding: 14px 16px; margin: 0 0 16px; }
+.importgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.importgrid .importbox { margin: 0; }
+
+.songs__head { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.platform-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; }
+.platform-toggle span { margin-right: 4px; }
+.platform-toggle button { border: 1.5px solid var(--ink); background: #fff; color: var(--ink); border-radius: 999px; padding: 6px 14px; font: inherit; font-weight: 600; cursor: pointer; }
+.platform-toggle button.is-on { background: var(--ink); color: #fff; }
+.platform-toggle button:disabled { cursor: default; }

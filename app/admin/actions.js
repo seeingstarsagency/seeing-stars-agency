@@ -4,10 +4,11 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getViewer, supabaseAdmin } from "../../lib/supabase";
 import { STEPS, PACKAGES, startingPoint } from "../../lib/steps";
-import { SITE_URL } from "../../lib/env";
+import { SITE_URL, spotifyConfigured } from "../../lib/env";
 import { SECTIONS, readAnswers, cleanUrl } from "../../lib/questions";
 import { applyIntake } from "../../lib/intake";
 import { appleArtistSongs } from "../../lib/apple-music";
+import { spotifyArtistSongs } from "../../lib/spotify";
 
 async function requireAdmin() {
   const v = await getViewer();
@@ -229,39 +230,64 @@ export async function saveIntakeForArtist(formData) {
   redirect(`/admin/artists/${artistId}?ok=intake#intake`);
 }
 
+// Add imported songs without duplicates: a song already on the list (same title)
+// just gets the missing details (other platform's link, artwork, date).
+async function mergeSongs(supabase, artistId, songs) {
+  const { data: existing } = await supabase.from("songs").select("*").eq("artist_id", artistId);
+  const byTitle = new Map((existing || []).map((s) => [s.title.trim().toLowerCase(), s]));
+  let added = 0;
+  for (const s of songs) {
+    const prev = byTitle.get(s.title.trim().toLowerCase());
+    if (prev) {
+      const patch = {};
+      for (const k of ["link", "spotify_url", "artwork_url", "release_date"]) if (s[k] && !prev[k]) patch[k] = s[k];
+      if (!prev.source_id) patch.source_id = s.source_id;
+      if (Object.keys(patch).length) await supabase.from("songs").update(patch).eq("id", prev.id);
+      continue;
+    }
+    const { error } = await supabase.from("songs").insert({ artist_id: artistId, ...s });
+    if (!error) {
+      added++;
+      byTitle.set(s.title.trim().toLowerCase(), s);
+    }
+  }
+  return added;
+}
+
 // Bring the artist's released songs from Apple Music's public catalog.
 export async function importAppleSongs(formData) {
   const supabase = await requireAdmin();
   const id = str(formData, "artist_id", 60);
   const appleId = str(formData, "apple_artist_id", 20).replace(/\D/g, "");
-  if (!appleId) redirect(`/admin/artists/${id}?import_error=1#songs`);
-
+  if (!appleId) redirect(`/admin/artists/${id}?import_error=apple#songs`);
   let songs;
   try {
     songs = await appleArtistSongs(appleId);
   } catch {
-    redirect(`/admin/artists/${id}?import_error=1#songs`);
+    redirect(`/admin/artists/${id}?import_error=apple#songs`);
   }
   await supabase.from("artists").update({ apple_artist_id: appleId }).eq("id", id);
-
-  const { data: existing } = await supabase.from("songs").select("id, title, source_id").eq("artist_id", id);
-  const bySource = new Set((existing || []).map((s) => s.source_id).filter(Boolean));
-  const manual = new Map((existing || []).filter((s) => !s.source_id).map((s) => [s.title.trim().toLowerCase(), s.id]));
-
-  let added = 0;
-  for (const s of songs) {
-    if (bySource.has(s.source_id)) continue;
-    const manualId = manual.get(s.title.trim().toLowerCase());
-    if (manualId) {
-      // Same title added by hand (e.g. the single from the questionnaire): complete it instead of duplicating.
-      await supabase.from("songs").update({ source_id: s.source_id, artwork_url: s.artwork_url, link: s.link, release_date: s.release_date }).eq("id", manualId);
-      manual.delete(s.title.trim().toLowerCase());
-      continue;
-    }
-    const { error } = await supabase.from("songs").insert({ artist_id: id, ...s });
-    if (!error) added++;
-  }
+  const added = await mergeSongs(supabase, id, songs);
   revalidatePath(`/admin/artists/${id}`);
   revalidatePath("/dashboard");
-  redirect(`/admin/artists/${id}?imported=${added}&found=${songs.length}#songs`);
+  redirect(`/admin/artists/${id}?imported=${added}&found=${songs.length}&from=apple#songs`);
+}
+
+// Same, from Spotify (needs the Spotify app keys in Vercel).
+export async function importSpotifySongs(formData) {
+  const supabase = await requireAdmin();
+  const id = str(formData, "artist_id", 60);
+  const spId = str(formData, "spotify_artist_id", 40).replace(/[^A-Za-z0-9]/g, "");
+  if (!spId || !spotifyConfigured()) redirect(`/admin/artists/${id}?import_error=spotify#songs`);
+  let songs;
+  try {
+    songs = await spotifyArtistSongs(spId);
+  } catch {
+    redirect(`/admin/artists/${id}?import_error=spotify#songs`);
+  }
+  await supabase.from("artists").update({ spotify_artist_id: spId }).eq("id", id);
+  const added = await mergeSongs(supabase, id, songs);
+  revalidatePath(`/admin/artists/${id}`);
+  revalidatePath("/dashboard");
+  redirect(`/admin/artists/${id}?imported=${added}&found=${songs.length}&from=spotify#songs`);
 }
