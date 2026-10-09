@@ -139,134 +139,138 @@ export default async function Dashboard({ searchParams }) {
     <div className="app">
       {header}
       <main className="container">
-        <section className="profile">
-          <PhotoUpload sb={browserConfig()} photoUrl={photoUrl} name={artist.name} label={photoUrl ? t.changePhoto : t.addPhoto} busyLabel={t.uploading} errorLabel={t.photoError} editable={!isAdmin} />
-          <div className="profile__main">
-            <div className="kicker">{t.welcome}</div>
-            <h1 className="h1 profile__name">{artist.name}</h1>
-            {(ans.legal_name || artist.legal_name) && <p className="profile__meta">{ans.legal_name || artist.legal_name}</p>}
-            {((artist.packages || []).length > 0 || artist.monthly_member) && (
-              <div className="chips">
-                {(artist.packages || []).map((p) => <span key={p} className="pchip">{p}</span>)}
-                {artist.monthly_member && <span className="pchip">✦ {t.monthlyMember}</span>}
-              </div>
-            )}
-            {links.length > 0 && (
-              <div className="sociallinks">
-                {links.map((l) => (
-                  <a key={l.key + l.url} href={l.url} target="_blank" rel="noopener noreferrer" className="sociallink">
-                    <span className="sociallink__dot" style={{ background: l.color }} aria-hidden="true" />{l.name}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-          {songTitle && (
-            <div className="countdown">
-              <div className="countdown__label">{t.single}</div>
-              <div className="countdown__song">{songTitle}</div>
-              {daysLeft === null ? (
-                <div className="countdown__note">{t.dateTbd}</div>
-              ) : daysLeft > 0 ? (
-                <>
-                  <div className="countdown__num">{daysLeft}</div>
-                  <div className="countdown__note">{daysLeft === 1 ? t.dayToRelease : t.daysToRelease}</div>
-                  <div className="countdown__date">{fmtDate(songDate, lang)}</div>
-                </>
-              ) : daysLeft === 0 ? (
-                <div className="countdown__today">{t.releaseToday}</div>
-              ) : (
-                <>
-                  <div className="countdown__today">{t.outNow}</div>
-                  <div className="countdown__date">{fmtDate(songDate, lang)}</div>
-                </>
-              )}
-            </div>
-          )}
-        </section>
-
-        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: -8 }}>
-          <a href={reportHref} className="btn btn--sm">{t.seeReport}</a>
-        </div>
-
-        <section className="panel panel--yellow" id="songs">
-          <div className="songs__head">
-            <h2 className="h2" style={{ margin: 0 }}>{t.yourSongs}</h2>
-            <form action={setListenPlatform} className="platform-toggle" aria-label={t.listenOn}>
-              <span>{t.listenOn}</span>
-              {[["spotify", "Spotify"], ["apple", "Apple Music"]].map(([k, name]) => (
-                <button key={k} type="submit" name="platform" value={k} className={platform === k ? "is-on" : ""} aria-pressed={platform === k} disabled={isAdmin}>
-                  {name}
-                </button>
-              ))}
-            </form>
-          </div>
-          {songs.length === 0 ? (
-            <p style={{ margin: 0 }}>{t.noSongs}</p>
-          ) : (
-            <ul className="cdgrid">
-              {songs.map((s) => (
-                <li key={s.id} className="cd">
-                  <div className="cd__art">
-                    <a href={listenUrl(s)} target="_blank" rel="noopener noreferrer" className="cd__disc" aria-label={`${t.listen}: ${s.title}`}>
-                      <span className="cd__listen">▶ {t.listen}</span>
-                    </a>
-                    <div className="cd__case">
-                      {s.artwork_url ? <img src={s.artwork_url} alt="" /> : <span className="cd__placeholder" aria-hidden="true">♪</span>}
-                    </div>
+        <div className="dash-l">
+          <div className="dash-l__main">
+            <section className="profile">
+              <PhotoUpload sb={browserConfig()} photoUrl={photoUrl} name={artist.name} label={photoUrl ? t.changePhoto : t.addPhoto} busyLabel={t.uploading} errorLabel={t.photoError} editable={!isAdmin} />
+              <div className="profile__main">
+                <div className="kicker">{t.welcome}</div>
+                <h1 className="h1 profile__name">{artist.name}</h1>
+                {(ans.legal_name || artist.legal_name) && <p className="profile__meta">{ans.legal_name || artist.legal_name}</p>}
+                {((artist.packages || []).length > 0 || artist.monthly_member) && (
+                  <div className="chips">
+                    {(artist.packages || []).map((p) => <span key={p} className="pchip">{p}</span>)}
+                    {artist.monthly_member && <span className="pchip">✦ {t.monthlyMember}</span>}
                   </div>
-                  <div className="cd__title">{s.title}</div>
-                  {s.release_date && <div className="cd__date">{fmtDate(s.release_date, lang)}</div>}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+                )}
+                {links.length > 0 && (
+                  <div className="sociallinks">
+                    {links.map((l) => (
+                      <a key={l.key + l.url} href={l.url} target="_blank" rel="noopener noreferrer" className="sociallink">
+                        <span className="sociallink__dot" style={{ background: l.color }} aria-hidden="true" />{l.name}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {songTitle && (
+                <div className="countdown">
+                  <div className="countdown__label">{t.single}</div>
+                  <div className="countdown__song">{songTitle}</div>
+                  {daysLeft === null ? (
+                    <div className="countdown__note">{t.dateTbd}</div>
+                  ) : daysLeft > 0 ? (
+                    <>
+                      <div className="countdown__num">{daysLeft}</div>
+                      <div className="countdown__note">{daysLeft === 1 ? t.dayToRelease : t.daysToRelease}</div>
+                      <div className="countdown__date">{fmtDate(songDate, lang)}</div>
+                    </>
+                  ) : daysLeft === 0 ? (
+                    <div className="countdown__today">{t.releaseToday}</div>
+                  ) : (
+                    <>
+                      <div className="countdown__today">{t.outNow}</div>
+                      <div className="countdown__date">{fmtDate(songDate, lang)}</div>
+                    </>
+                  )}
+                </div>
+              )}
+            </section>
 
-        <section className="panel" id="cal-release" style={{ borderRadius: 24, padding: 30 }}>
-          <h2 className="h2" style={{ fontSize: 28 }}>{t.releaseCalTitle}</h2>
-          <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.releaseCalLead}</p>
-          <Locked locked={releaseLocked} pkg="Launchpad" text={t.lockedRelease} t={t}>
-          <Calendar
-            {...calProps}
-            items={releaseItems}
-            legend={[{ color: CAL.release, label: t.releaseDay }, { color: CAL.milestone, label: t.milestone }]}
-          >
-            {!releaseLocked && <details className="cal__add">
-              <summary>+ {t.calAdd}</summary>
-              <form action={addCalendarItem} className="cal__form">
-                <input type="hidden" name="kind" value="release" />
-                {adminHidden}
-                <label className="field"><span>{t.calDate}</span><input type="date" name="happens_on" className="input" required /></label>
-                <label className="field cal__wide"><span>{t.milestoneTitle}</span><input name="title" className="input" maxLength={160} placeholder={t.milestonePh} required /></label>
-                <label className="field"><span>{t.calSong}</span>{songOptions}</label>
-                <button type="submit" className="btn btn--dark cal__submit">{t.calSave}</button>
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: -8 }}>
+              <a href={reportHref} className="btn btn--sm">{t.seeReport}</a>
+            </div>
+
+
+            <section className="panel" id="cal-release" style={{ borderRadius: 24, padding: 30 }}>
+              <h2 className="h2" style={{ fontSize: 28 }}>{t.releaseCalTitle}</h2>
+              <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.releaseCalLead}</p>
+              <Locked locked={releaseLocked} pkg="Launchpad" text={t.lockedRelease} t={t}>
+              <Calendar
+                {...calProps}
+                items={releaseItems}
+                legend={[{ color: CAL.release, label: t.releaseDay }, { color: CAL.milestone, label: t.milestone }]}
+              >
+                {!releaseLocked && <details className="cal__add">
+                  <summary>+ {t.calAdd}</summary>
+                  <form action={addCalendarItem} className="cal__form">
+                    <input type="hidden" name="kind" value="release" />
+                    {adminHidden}
+                    <label className="field"><span>{t.calDate}</span><input type="date" name="happens_on" className="input" required /></label>
+                    <label className="field cal__wide"><span>{t.milestoneTitle}</span><input name="title" className="input" maxLength={160} placeholder={t.milestonePh} required /></label>
+                    <label className="field"><span>{t.calSong}</span>{songOptions}</label>
+                    <button type="submit" className="btn btn--dark cal__submit">{t.calSave}</button>
+                  </form>
+                </details>}
+              </Calendar>
+              </Locked>
+            </section>
+
+            {sp?.welcome && <div className="alert alert--ok" role="status">{t.iDone}</div>}
+            {isAdmin && !artist.intake_done_at && <div className="alert" role="status">Preview: this artist hasn't filled in the Launchpad questionnaire yet. They'll see it first when they log in.</div>}
+
+            {songs.length > 0 && (
+              <section className="songbar" aria-label={t.songPickerLabel}>
+                <SongPicker
+                  songs={[...projects, ...songs.filter((x) => !x.is_project)].map((x) => ({ id: x.id, title: x.title, open: !!x.is_project }))}
+                  value={song?.id}
+                  base={isAdmin ? `/dashboard?artist=${artist.id}` : "/dashboard"}
+                  label={t.songPickerLabel}
+                  lockedNote={t.songLocked}
+                  chooseLabel={t.songChoose}
+                />
+                {songs.some((x) => !x.is_project) && (
+                  <p className="songbar__more">{t.songMore} <a href="/#contact">{t.songMoreLink}</a></p>
+                )}
+              </section>
+            )}
+
+            <ProgressSummary rows={allRows} lang={lang} />
+          </div>
+          <section className="panel panel--yellow dash-l__songs" id="songs">
+            <div className="songs__head">
+              <h2 className="h2" style={{ margin: 0 }}>{t.yourSongs}</h2>
+              <form action={setListenPlatform} className="platform-toggle" aria-label={t.listenOn}>
+                <span>{t.listenOn}</span>
+                {[["spotify", "Spotify"], ["apple", "Apple Music"]].map(([k, name]) => (
+                  <button key={k} type="submit" name="platform" value={k} className={platform === k ? "is-on" : ""} aria-pressed={platform === k} disabled={isAdmin}>
+                    {name}
+                  </button>
+                ))}
               </form>
-            </details>}
-          </Calendar>
-          </Locked>
-        </section>
-
-        {sp?.welcome && <div className="alert alert--ok" role="status">{t.iDone}</div>}
-        {isAdmin && !artist.intake_done_at && <div className="alert" role="status">Preview: this artist hasn't filled in the Launchpad questionnaire yet. They'll see it first when they log in.</div>}
-
-        {songs.length > 0 && (
-          <section className="songbar" aria-label={t.songPickerLabel}>
-            <SongPicker
-              songs={[...projects, ...songs.filter((x) => !x.is_project)].map((x) => ({ id: x.id, title: x.title, open: !!x.is_project }))}
-              value={song?.id}
-              base={isAdmin ? `/dashboard?artist=${artist.id}` : "/dashboard"}
-              label={t.songPickerLabel}
-              lockedNote={t.songLocked}
-              chooseLabel={t.songChoose}
-            />
-            {songs.some((x) => !x.is_project) && (
-              <p className="songbar__more">{t.songMore} <a href="/#contact">{t.songMoreLink}</a></p>
+            </div>
+            {songs.length === 0 ? (
+              <p style={{ margin: 0 }}>{t.noSongs}</p>
+            ) : (
+              <ul className="cdgrid cdgrid--sm">
+                {songs.map((s) => (
+                  <li key={s.id} className="cd">
+                    <div className="cd__art">
+                      <a href={listenUrl(s)} target="_blank" rel="noopener noreferrer" className="cd__disc" aria-label={`${t.listen}: ${s.title}`}>
+                        <span className="cd__listen">▶ {t.listen}</span>
+                      </a>
+                      <div className="cd__case">
+                        {s.artwork_url ? <img src={s.artwork_url} alt="" /> : <span className="cd__placeholder" aria-hidden="true">♪</span>}
+                      </div>
+                    </div>
+                    <div className="cd__title">{s.title}</div>
+                    {s.release_date && <div className="cd__date">{fmtDate(s.release_date, lang)}</div>}
+                  </li>
+                ))}
+              </ul>
             )}
           </section>
-        )}
-
-        <ProgressSummary rows={allRows} lang={lang} />
+        </div>
 
         <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
           <h2 className="h2" style={{ fontSize: 28 }}>{t.stepByStep}</h2>
