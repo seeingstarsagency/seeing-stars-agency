@@ -435,3 +435,6 @@ button.btn { cursor: pointer; }
 
 .section__lead.section__lead--small { font-size: 16px; }
 .section__title .soft--sub { display: inline-block; margin-top: 6px; font-size: .68em; }
+
+.songlist__art { width: 44px; height: 44px; border-radius: 8px; border: 1.5px solid var(--ink); object-fit: cover; flex-shrink: 0; }
+.importbox { display: grid; gap: 10px; background: #fff; border: 1.5px dashed var(--ink); border-radius: 14px; padding: 14px 16px; margin: 0 0 16px; }

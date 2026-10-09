@@ -95,9 +95,13 @@ create table if not exists public.songs (
   title text not null,
   release_date date,
   link text,
+  artwork_url text,
+  source_id text,               -- e.g. "am:123" when imported from Apple Music
   created_at timestamptz not null default now()
 );
 create index if not exists songs_artist on public.songs(artist_id);
+create unique index if not exists songs_artist_source on public.songs(artist_id, source_id);
+alter table public.artists add column if not exists apple_artist_id text;
 
 create index if not exists artist_steps_artist on public.artist_steps(artist_id);
 create index if not exists next_steps_artist on public.next_steps(artist_id);

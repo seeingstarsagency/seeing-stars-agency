@@ -133,7 +133,7 @@ export default async function Dashboard({ searchParams }) {
             <ul className="songlist">
               {songs.map((s) => (
                 <li key={s.id}>
-                  <span className="songlist__icon" aria-hidden="true">♪</span>
+                  {s.artwork_url ? <img src={s.artwork_url} alt="" className="songlist__art" /> : <span className="songlist__icon" aria-hidden="true">♪</span>}
                   <span style={{ flexGrow: 1 }}><strong>{s.title}</strong>{s.release_date && <span className="muted"> · {fmtDate(s.release_date, lang)}</span>}</span>
                   {s.link && <a href={s.link} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>{t.listen}</a>}
                 </li>
