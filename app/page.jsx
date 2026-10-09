@@ -98,6 +98,9 @@ export default function Home() {
         {/* Services: everything an independent artist juggles, all connected */}
         <section id="services" className="wrap section">
           <Reveal>
+            <h2 className="section__title">Sometimes things can get a bit overwhelming…</h2>
+          </Reveal>
+          <Reveal>
             <Constellation />
           </Reveal>
         </section>
