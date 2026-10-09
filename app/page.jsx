@@ -76,7 +76,7 @@ export default function Home() {
             <div className="note-wrap pop">
               <div className="note float wobble">
                 <p>
-                  <b>Artists helping artists</b> find their way.
+                  <b>We specialize</b> in supporting emerging independent artists.
                 </p>
               </div>
             </div>
