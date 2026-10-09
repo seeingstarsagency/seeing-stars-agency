@@ -2,7 +2,9 @@ import { redirect } from "next/navigation";
 import { getViewer } from "../../lib/supabase";
 import { loadArtist } from "../../lib/artist-data";
 import { getLang, T, PKG_BLURB, pick } from "../../lib/i18n";
-import { recommendations } from "../../lib/steps";
+import { recommendations, SONG_PILLARS } from "../../lib/steps";
+import { songScope } from "../../lib/song-scope";
+import SongPicker from "../SongPicker";
 import { browserConfig } from "../../lib/env";
 import PhotoUpload from "../PhotoUpload";
 import { setListenPlatform } from "./actions";
@@ -54,7 +56,8 @@ export default async function Dashboard({ searchParams }) {
   const { artist, rows, next, notes, milestones, files, songs, photoUrl } = data;
   // First visit: the artist fills in the Launchpad questionnaire before anything else.
   if (!isAdmin && !artist.intake_done_at) redirect("/dashboard/intake");
-  const recs = recommendations(rows, artist.packages || []);
+  const { projects, current: song, songRows, artistRows, allRows } = songScope(artist, songs, rows, sp?.song);
+  const recs = recommendations(allRows, artist.packages || []);
 
   // Profile details from the Launchpad questionnaire.
   const ans = artist.intake_answers || {};
@@ -78,10 +81,10 @@ export default async function Dashboard({ searchParams }) {
 
   // Days until the single comes out (calendar days, Miami time).
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
-  const daysLeft = artist.release_date
-    ? Math.round((Date.parse(artist.release_date) - Date.parse(today)) / 86400000)
-    : null;
-  const reportHref = isAdmin ? `/report?artist=${artist.id}` : "/report";
+  const songTitle = song?.title || artist.single_title;
+  const songDate = song ? song.release_date : artist.release_date;
+  const daysLeft = songDate ? Math.round((Date.parse(songDate) - Date.parse(today)) / 86400000) : null;
+  const reportHref = (isAdmin ? `/report?artist=${artist.id}` : "/report?") + (song ? `${isAdmin ? "&" : ""}song=${song.id}` : "");
 
   return (
     <div className="app">
@@ -108,24 +111,28 @@ export default async function Dashboard({ searchParams }) {
               </div>
             )}
           </div>
-          {artist.single_title && (
+          {songTitle && (
             <div className="countdown">
-              <div className="countdown__label">{t.single}</div>
-              <div className="countdown__song">{artist.single_title}</div>
+              {projects.length > 1 ? (
+                <SongPicker songs={projects.map((x) => ({ id: x.id, title: x.title }))} value={song.id} base={isAdmin ? `/dashboard?artist=${artist.id}` : "/dashboard"} label={t.single} />
+              ) : (
+                <div className="countdown__label">{t.single}</div>
+              )}
+              <div className="countdown__song">{songTitle}</div>
               {daysLeft === null ? (
                 <div className="countdown__note">{t.dateTbd}</div>
               ) : daysLeft > 0 ? (
                 <>
                   <div className="countdown__num">{daysLeft}</div>
                   <div className="countdown__note">{daysLeft === 1 ? t.dayToRelease : t.daysToRelease}</div>
-                  <div className="countdown__date">{fmtDate(artist.release_date, lang)}</div>
+                  <div className="countdown__date">{fmtDate(songDate, lang)}</div>
                 </>
               ) : daysLeft === 0 ? (
                 <div className="countdown__today">{t.releaseToday}</div>
               ) : (
                 <>
                   <div className="countdown__today">{t.outNow}</div>
-                  <div className="countdown__date">{fmtDate(artist.release_date, lang)}</div>
+                  <div className="countdown__date">{fmtDate(songDate, lang)}</div>
                 </>
               )}
             </div>
@@ -173,19 +180,31 @@ export default async function Dashboard({ searchParams }) {
         {sp?.welcome && <div className="alert alert--ok" role="status">{t.iDone}</div>}
         {isAdmin && !artist.intake_done_at && <div className="alert" role="status">Preview: this artist hasn't filled in the Launchpad questionnaire yet. They'll see it first when they log in.</div>}
 
-        <ProgressSummary rows={rows} lang={lang} />
+        <ProgressSummary rows={allRows} lang={lang} />
 
         <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
           <h2 className="h2" style={{ fontSize: 28 }}>{t.stepByStep}</h2>
           <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.stepByStepLead}</p>
-          <StepsTable rows={rows} lang={lang} pillars={["rights", "release", "campaign"]} />
+          {songRows.length ? (
+            <StepsTable rows={songRows} lang={lang} pillars={SONG_PILLARS} />
+          ) : (
+            <p style={{ margin: 0 }}>{t.noProjectSong}</p>
+          )}
         </section>
 
-        {rows.some((r) => r.step_key && ["bio", "photos", "epk", "visual_identity"].includes(r.step_key)) && (
+        {artistRows.some((r) => ["pro", "mlc", "soundexchange"].includes(r.step_key)) && (
+          <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
+            <h2 className="h2" style={{ fontSize: 28 }}>{t.membershipTitle}</h2>
+            <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.membershipLead}</p>
+            <StepsTable rows={artistRows} lang={lang} pillars={["membership"]} />
+          </section>
+        )}
+
+        {artistRows.some((r) => ["bio", "photos", "epk", "visual_identity"].includes(r.step_key)) && (
           <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
             <h2 className="h2" style={{ fontSize: 28 }}>{t.brandTitle}</h2>
             <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.brandLead}</p>
-            <StepsTable rows={rows} lang={lang} pillars={["brand"]} />
+            <StepsTable rows={artistRows} lang={lang} pillars={["brand"]} />
           </section>
         )}
 

@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { AdminShell, requireAdminPage, OK_MSG } from "../../shell";
 import { loadArtist } from "../../../../lib/artist-data";
-import { PACKAGES, STATUS } from "../../../../lib/steps";
+import { PACKAGES, STATUS, SONG_PILLARS } from "../../../../lib/steps";
+import { songScope } from "../../../../lib/song-scope";
 import { ProgressSummary, StepsTable } from "../../../progress";
 import { fmtDate } from "../../../ui";
 import UploadForm from "./UploadForm";
@@ -14,7 +15,7 @@ import { spotifyArtistIdFromUrl, searchSpotifyArtists } from "../../../../lib/sp
 import { spotifyConfigured } from "../../../../lib/env";
 import {
   updateArtist, updateSteps, addNextStep, toggleNextStep, addNote, addMilestone,
-  toggleMilestone, deleteItem, resendInvite, addSong, importAppleSongs, importSpotifySongs,
+  toggleMilestone, deleteItem, resendInvite, addSong, importAppleSongs, importSpotifySongs, toggleProjectSong,
 } from "../../actions";
 
 function Del({ artistId, table, id }) {
@@ -38,6 +39,12 @@ export default async function ArtistAdmin({ params, searchParams }) {
   if (!data) notFound();
   const { artist, rows, next, notes, milestones, files, songs, photoUrl } = data;
   const hidden = <input type="hidden" name="artist_id" value={artist.id} />;
+  const { projects, current: song, songRows, artistRows, allRows } = songScope(artist, songs, rows, sp?.song);
+  const statusSelect = (r) => (
+    <select name={`status_${r.id}`} defaultValue={r.status} className="select-sm" aria-label="Status">
+      {Object.entries(STATUS).map(([k, v]) => <option key={k} value={k}>{v.en}</option>)}
+    </select>
+  );
 
   // Song import: the linked artist on each platform, or search results to pick from.
   const spOn = spotifyConfigured();
@@ -77,22 +84,31 @@ export default async function ArtistAdmin({ params, searchParams }) {
       </div>
       {sp?.ok && OK_MSG[sp.ok] && <div className="alert alert--ok" role="status">{OK_MSG[sp.ok]}</div>}
 
-      <ProgressSummary rows={rows} lang="en" />
+      <ProgressSummary rows={allRows} lang="en" />
 
       <section className="panel" id="steps">
         <h2 className="h2">Steps</h2>
         <p style={{ margin: "0 0 14px", fontSize: 15 }}>Change the status and click "Save steps". Marking "Done together" saves the date for the report.</p>
+        {projects.length > 0 && (
+          <div className="songtabs" role="tablist" aria-label="Agency projects">
+            {projects.map((p) => (
+              <a key={p.id} href={`/admin/artists/${artist.id}?song=${p.id}#steps`} className={song?.id === p.id ? "is-on" : ""} role="tab" aria-selected={song?.id === p.id}>
+                {p.title}
+              </a>
+            ))}
+          </div>
+        )}
         <form action={updateSteps} className="stack">
           {hidden}
-          <StepsTable
-            rows={rows}
-            lang="en"
-            renderStatus={(r) => (
-              <select name={`status_${r.step_key}`} defaultValue={r.status} className="select-sm" aria-label="Status">
-                {Object.entries(STATUS).map(([k, v]) => <option key={k} value={k}>{v.en}</option>)}
-              </select>
-            )}
-          />
+          <input type="hidden" name="song" value={song?.id || ""} />
+          <h3 className="h3" style={{ margin: "4px 0 0" }}>{song ? `Song · ${song.title}` : "Song steps"}</h3>
+          {songRows.length ? (
+            <StepsTable rows={songRows} lang="en" pillars={SONG_PILLARS} renderStatus={statusSelect} />
+          ) : (
+            <p style={{ margin: 0, fontSize: 15 }}>No agency project yet. In <a href="#songs">Songs</a>, mark a song as &ldquo;Agency project&rdquo; to give it its own steps.</p>
+          )}
+          <h3 className="h3" style={{ margin: "12px 0 0" }}>Once per artist · memberships and brand</h3>
+          <StepsTable rows={artistRows} lang="en" pillars={["membership", "brand"]} renderStatus={statusSelect} />
           <button type="submit" className="btn btn--dark btn--sm" style={{ alignSelf: "flex-start" }}>Save steps</button>
         </form>
       </section>
@@ -201,6 +217,14 @@ export default async function ArtistAdmin({ params, searchParams }) {
             <li key={s.id} style={{ alignItems: "center" }}>
               {s.artwork_url && <img src={s.artwork_url} alt="" width={36} height={36} style={{ borderRadius: 6, border: "1.5px solid #1E1B2E" }} />}
               <span style={{ flexGrow: 1 }}><strong>{s.title}</strong>{s.release_date && <> · {fmtDate(s.release_date, "en")}</>}{s.spotify_url && <> · <a href={s.spotify_url} target="_blank" rel="noopener noreferrer">Spotify</a></>}{s.link && <> · <a href={s.link} target="_blank" rel="noopener noreferrer">{s.link.includes("music.apple.com") ? "Apple Music" : "link"}</a></>}</span>
+              <form action={toggleProjectSong}>
+                {hidden}
+                <input type="hidden" name="song_id" value={s.id} />
+                <input type="hidden" name="on" value={String(!s.is_project)} />
+                <button type="submit" className={s.is_project ? "small-btn small-btn--dark" : "small-btn"} title="Agency projects get their own steps and show in the artist's song menu">
+                  {s.is_project ? "★ Agency project" : "Make agency project"}
+                </button>
+              </form>
               <Del artistId={artist.id} table="songs" id={s.id} />
             </li>
           ))}

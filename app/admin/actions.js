@@ -3,7 +3,8 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getViewer, supabaseAdmin } from "../../lib/supabase";
-import { STEPS, PACKAGES, startingPoint } from "../../lib/steps";
+import { PACKAGES } from "../../lib/steps";
+import { ensureSteps, makeProjectSong } from "../../lib/steps-db";
 import { SITE_URL, spotifyConfigured } from "../../lib/env";
 import { SECTIONS, readAnswers, cleanUrl } from "../../lib/questions";
 import { applyIntake } from "../../lib/intake";
@@ -63,7 +64,9 @@ export async function createArtist(formData) {
     .single();
   if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
 
-  await supabase.from("artist_steps").insert(startingPoint(answers).map((r) => ({ ...r, artist_id: artist.id })));
+  await ensureSteps(supabase, artist.id, null);
+  const single = str(formData, "single_title");
+  if (single) await makeProjectSong(supabase, artist.id, single, str(formData, "release_date", 10) || null);
   if (submissionId) {
     await supabase.from("intake_submissions").update({ status: "converted", artist_id: artist.id }).eq("id", submissionId);
   }
@@ -118,17 +121,33 @@ export async function updateArtist(formData) {
 export async function updateSteps(formData) {
   const supabase = await requireAdmin();
   const id = str(formData, "artist_id", 60);
-  const { data: current } = await supabase.from("artist_steps").select("step_key, status, done_on").eq("artist_id", id);
-  const byKey = Object.fromEntries((current || []).map((r) => [r.step_key, r]));
+  const song = str(formData, "song", 60);
+  const { data: current } = await supabase.from("artist_steps").select("id, status, done_on").eq("artist_id", id);
+  const byId = Object.fromEntries((current || []).map((r) => [r.id, r]));
   const allowed = ["had", "done", "in_progress", "pending"];
-  for (const s of STEPS) {
-    const status = String(formData.get(`status_${s.key}`) || "");
-    if (!allowed.includes(status) || !byKey[s.key] || byKey[s.key].status === status) continue;
-    const done_on = status === "done" ? byKey[s.key].done_on || today() : null;
-    await supabase.from("artist_steps").update({ status, done_on, updated_at: new Date().toISOString() }).eq("artist_id", id).eq("step_key", s.key);
+  for (const [name, value] of formData.entries()) {
+    if (!name.startsWith("status_")) continue;
+    const row = byId[name.slice(7)];
+    const status = String(value);
+    if (!row || !allowed.includes(status) || row.status === status) continue;
+    const done_on = status === "done" ? row.done_on || today() : null;
+    await supabase.from("artist_steps").update({ status, done_on, updated_at: new Date().toISOString() }).eq("id", row.id).eq("artist_id", id);
   }
   revalidatePath(`/admin/artists/${id}`);
-  redirect(`/admin/artists/${id}?ok=saved#steps`);
+  redirect(`/admin/artists/${id}?ok=saved${song ? `&song=${song}` : ""}#steps`);
+}
+
+// Turn a song into an agency project (it gets its own step list) or back.
+export async function toggleProjectSong(formData) {
+  const supabase = await requireAdmin();
+  const id = str(formData, "artist_id", 60);
+  const songId = str(formData, "song_id", 60);
+  const on = formData.get("on") === "true";
+  await supabase.from("songs").update({ is_project: on }).eq("id", songId).eq("artist_id", id);
+  if (on) await ensureSteps(supabase, id, songId);
+  revalidatePath(`/admin/artists/${id}`);
+  revalidatePath("/dashboard");
+  redirect(`/admin/artists/${id}${on ? `?song=${songId}` : ""}#songs`);
 }
 
 export async function addNextStep(formData) {

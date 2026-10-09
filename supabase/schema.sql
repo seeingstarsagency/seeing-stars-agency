@@ -181,3 +181,10 @@ revoke all on all tables in schema public from anon;
 insert into storage.buckets (id, name, public)
 values ('artist-files', 'artist-files', false)
 on conflict (id) do nothing;
+
+-- ============ STEPS PER SONG (October 2026) ============
+-- Song steps have song_id set; once-per-artist steps (memberships, brand) have song_id null.
+alter table public.songs add column if not exists is_project boolean not null default false;
+alter table public.artist_steps add column if not exists song_id uuid references public.songs(id) on delete cascade;
+alter table public.artist_steps drop constraint if exists artist_steps_artist_id_step_key_key;
+create unique index if not exists artist_steps_unique_scope on public.artist_steps (artist_id, step_key, coalesce(song_id, '00000000-0000-0000-0000-000000000000'::uuid));

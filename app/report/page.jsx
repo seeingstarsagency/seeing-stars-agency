@@ -3,6 +3,7 @@ import { getViewer } from "../../lib/supabase";
 import { loadArtist } from "../../lib/artist-data";
 import { getLang, T, pick, PKG_BLURB } from "../../lib/i18n";
 import { STEPS, summarize, recommendations } from "../../lib/steps";
+import { songScope } from "../../lib/song-scope";
 import { AppHeader, StarIcon, fmtDate } from "../ui";
 import PrintButton from "./PrintButton";
 
@@ -20,7 +21,8 @@ export default async function Report({ searchParams }) {
   const data = await loadArtist(supabase, artistId);
   if (!data) redirect("/dashboard");
 
-  const { artist, rows, milestones } = data;
+  const { artist, milestones, songs } = data;
+  const { current: song, allRows: rows } = songScope(artist, songs, data.rows, sp?.song);
   const lang = await getLang(artist.lang);
   const t = T[lang];
   const s = summarize(rows);
@@ -29,7 +31,7 @@ export default async function Report({ searchParams }) {
   const done = rows.filter((r) => r.status === "done").sort((a, b) => String(a.done_on).localeCompare(String(b.done_on)));
   const open = rows.filter((r) => r.status === "in_progress" || r.status === "pending");
   const recs = recommendations(rows, packages);
-  const path = isAdmin ? `/report?artist=${artist.id}` : "/report";
+  const path = (isAdmin ? `/report?artist=${artist.id}` : "/report?") + (song ? `${isAdmin ? "&" : ""}song=${song.id}` : "");
   const back = isAdmin ? `/admin/artists/${artist.id}` : "/dashboard";
   const doneMilestones = milestones.filter((m) => m.done);
 
@@ -51,7 +53,7 @@ export default async function Report({ searchParams }) {
 
           <div className="tag">{t.reportKicker} · {packages.join(" + ") || "—"}</div>
           <h1 className="h1" style={{ fontSize: 44, marginTop: 8 }}>
-            {artist.name}{artist.single_title && <> · <span className="it" style={{ fontWeight: 500 }}>{artist.single_title}</span></>}
+            {artist.name}{(song?.title || artist.single_title) && <> · <span className="it" style={{ fontWeight: 500 }}>{song?.title || artist.single_title}</span></>}
           </h1>
           <p className="muted" style={{ margin: "0 0 8px", fontSize: 15 }}>
             {fmtDate(artist.created_at, lang)} – {fmtDate(artist.closed_at || new Date().toISOString(), lang)}
