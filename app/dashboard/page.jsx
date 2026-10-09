@@ -13,6 +13,7 @@ import { Star } from "../components";
 import { AppHeader, LogoutButton, fmtDate } from "../ui";
 import { ProgressSummary, StepsTable } from "../progress";
 import Locked from "../Locked";
+import IPod from "../IPod";
 
 export const metadata = { title: "Dashboard | Seeing Stars Agency" };
 
@@ -260,22 +261,19 @@ export default async function Dashboard({ searchParams }) {
             {songs.length === 0 ? (
               <p style={{ margin: 0 }}>{t.noSongs}</p>
             ) : (
-              <ul className="cdgrid cdgrid--sm">
-                {songs.map((s) => (
-                  <li key={s.id} className="cd">
-                    <div className="cd__art">
-                      <a href={listenUrl(s)} target="_blank" rel="noopener noreferrer" className="cd__disc" aria-label={`${t.listen}: ${s.title}`}>
-                        <span className="cd__listen">▶ {t.listen}</span>
-                      </a>
-                      <div className="cd__case">
-                        {s.artwork_url ? <img src={s.artwork_url} alt="" /> : <span className="cd__placeholder" aria-hidden="true">♪</span>}
-                      </div>
-                    </div>
-                    <div className="cd__title">{s.title}</div>
-                    {s.release_date && <div className="cd__date">{fmtDate(s.release_date, lang)}</div>}
-                  </li>
-                ))}
-              </ul>
+              <>
+                <IPod
+                  songs={songs.map((s) => ({
+                    id: s.id,
+                    title: s.title,
+                    artwork: s.artwork_url || null,
+                    date: s.release_date ? fmtDate(s.release_date, lang) : "",
+                    url: listenUrl(s),
+                  }))}
+                  labels={{ title: t.yourSongs, list: t.songList, count: t.songCount, prev: t.prevSong, next: t.nextSong, listen: t.listen, hint: t.wheelHint }}
+                />
+                {songs.length > 1 && <p className="ipod__hint">{t.wheelHint}</p>}
+              </>
             )}
           </section>
         </div>
