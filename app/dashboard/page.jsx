@@ -113,11 +113,7 @@ export default async function Dashboard({ searchParams }) {
           </div>
           {songTitle && (
             <div className="countdown">
-              {projects.length > 1 ? (
-                <SongPicker songs={projects.map((x) => ({ id: x.id, title: x.title }))} value={song.id} base={isAdmin ? `/dashboard?artist=${artist.id}` : "/dashboard"} label={t.single} />
-              ) : (
-                <div className="countdown__label">{t.single}</div>
-              )}
+              <div className="countdown__label">{t.single}</div>
               <div className="countdown__song">{songTitle}</div>
               {daysLeft === null ? (
                 <div className="countdown__note">{t.dateTbd}</div>
@@ -179,6 +175,22 @@ export default async function Dashboard({ searchParams }) {
 
         {sp?.welcome && <div className="alert alert--ok" role="status">{t.iDone}</div>}
         {isAdmin && !artist.intake_done_at && <div className="alert" role="status">Preview: this artist hasn't filled in the Launchpad questionnaire yet. They'll see it first when they log in.</div>}
+
+        {songs.length > 0 && (
+          <section className="songbar" aria-label={t.songPickerLabel}>
+            <SongPicker
+              songs={[...projects, ...songs.filter((x) => !x.is_project)].map((x) => ({ id: x.id, title: x.title, open: !!x.is_project }))}
+              value={song?.id}
+              base={isAdmin ? `/dashboard?artist=${artist.id}` : "/dashboard"}
+              label={t.songPickerLabel}
+              lockedNote={t.songLocked}
+              chooseLabel={t.songChoose}
+            />
+            {songs.some((x) => !x.is_project) && (
+              <p className="songbar__more">{t.songMore} <a href="/#contact">{t.songMoreLink}</a></p>
+            )}
+          </section>
+        )}
 
         <ProgressSummary rows={allRows} lang={lang} />
 

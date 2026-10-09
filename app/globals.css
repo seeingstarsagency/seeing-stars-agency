@@ -501,3 +501,12 @@ button.btn { cursor: pointer; }
 
 /* Bundles: 2 × 2 so four cards sit evenly */
 .grid.grid--bundles { gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); }
+
+/* Song picker above the progress (dashboard) */
+.songbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; background: var(--ink); color: #fff; border-radius: 22px; padding: 18px 24px; }
+.songbar__picker { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; flex: 1 1 320px; min-width: 0; }
+.songbar__label { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--yellow); }
+.songbar select { flex: 1 1 220px; min-width: 0; max-width: 460px; min-height: 48px; background: #2c2840; color: #fff; border: 2px solid var(--yellow); border-radius: 999px; padding: 10px 18px; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
+.songbar select option:disabled { color: #9A96A8; }
+.songbar__more { margin: 0; font-size: 15px; }
+.songbar__more a { color: var(--yellow); font-weight: 700; }
