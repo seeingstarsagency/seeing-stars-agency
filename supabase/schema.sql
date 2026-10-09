@@ -188,3 +188,25 @@ alter table public.songs add column if not exists is_project boolean not null de
 alter table public.artist_steps add column if not exists song_id uuid references public.songs(id) on delete cascade;
 alter table public.artist_steps drop constraint if exists artist_steps_artist_id_step_key_key;
 create unique index if not exists artist_steps_unique_scope on public.artist_steps (artist_id, step_key, coalesce(song_id, '00000000-0000-0000-0000-000000000000'::uuid));
+
+-- Release & content calendars (artist and agency both add dates)
+create table if not exists public.calendar_items (
+  id uuid primary key default gen_random_uuid(),
+  artist_id uuid not null references public.artists(id) on delete cascade,
+  kind text not null check (kind in ('release','content')),
+  happens_on date not null,
+  title text not null,
+  song_id uuid references public.songs(id) on delete set null,
+  platform text,
+  format text,
+  status text not null default 'pending' check (status in ('pending','ready','posted','done')),
+  created_by text not null default 'artist' check (created_by in ('artist','agency')),
+  created_at timestamptz not null default now()
+);
+create index if not exists calendar_items_artist on public.calendar_items(artist_id, kind, happens_on);
+alter table public.calendar_items enable row level security;
+create policy "read own" on public.calendar_items for select using (artist_id = public.my_artist_id());
+create policy "admin all" on public.calendar_items for all using (public.is_admin()) with check (public.is_admin());
+grant select on public.calendar_items to authenticated;
+grant all on public.calendar_items to service_role;
+revoke all on public.calendar_items from anon;

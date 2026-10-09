@@ -529,3 +529,67 @@ button.btn { cursor: pointer; }
   .table--steps .steps__row td[data-label]:last-child { display: none; }
   .table--steps .steps__row .chip { padding: 3px 10px; font-size: 13px; }
 }
+
+/* Release & content calendars (dashboard) */
+.cal { display: flex; flex-direction: column; gap: 18px; }
+.cal__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.cal__nav { display: flex; align-items: center; gap: 10px; }
+.cal__month { font-family: var(--display); font-size: 22px; font-weight: 800; font-style: italic; min-width: 170px; text-align: center; text-transform: capitalize; }
+.cal__arrow { width: 44px; height: 44px; border: 2px solid var(--ink); border-radius: 999px; background: #fff; font-size: 24px; line-height: 1; cursor: pointer; color: var(--ink); }
+.cal__arrow:hover { background: #FFF6D6; }
+.cal__today { min-height: 40px; padding: 6px 16px; border: 1.5px solid var(--ink); border-radius: 999px; background: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--ink); }
+.cal__body { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal__wd { text-align: center; font-size: 12px; font-weight: 700; color: #6B6680; padding-bottom: 4px; }
+.cal__cell { aspect-ratio: 1 / 1; min-height: 40px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font: inherit; color: var(--ink); cursor: pointer; padding: 0; }
+.cal__cell--empty { border: 0; background: transparent; cursor: default; }
+.cal__cell.has-items { border-color: var(--ink); }
+.cal__cell.is-today .cal__num { background: var(--ink); color: #fff; border-radius: 999px; padding: 1px 7px; }
+.cal__cell.is-picked { background: #FFF6D6; outline: 2px solid var(--ink); }
+.cal__num { font-size: 14px; font-weight: 600; }
+.cal__dots { display: flex; gap: 3px; }
+.cal__dots span { width: 8px; height: 8px; border-radius: 999px; border: 1px solid var(--ink); }
+.cal__side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.cal__legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; }
+.cal__legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.cal__sw { width: 12px; height: 12px; border-radius: 999px; border: 1.5px solid var(--ink); display: inline-block; }
+.cal__listhead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; font-size: 15px; text-transform: capitalize; }
+.cal__clear { background: none; border: 0; padding: 4px 0; font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; color: var(--ink); text-transform: none; }
+.cal__empty { margin: 0; font-size: 14px; color: #4A4659; }
+.cal__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.cal__item { display: flex; gap: 12px; align-items: flex-start; border: 1.5px solid var(--ink); border-radius: 14px; padding: 10px 12px; background: #fff; }
+.cal__item.is-done .cal__title { text-decoration: line-through; opacity: .65; }
+.cal__date { flex-shrink: 0; width: 46px; border: 3px solid; border-radius: 10px; display: flex; flex-direction: column; align-items: center; padding: 3px 0; line-height: 1.1; }
+.cal__date span { font-size: 11px; text-transform: uppercase; font-weight: 700; }
+.cal__date strong { font-family: var(--display); font-size: 20px; font-weight: 900; }
+.cal__info { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.cal__title { font-weight: 700; font-size: 15px; line-height: 1.3; overflow-wrap: anywhere; }
+.cal__sub { font-size: 13px; color: #4A4659; }
+.cal__tag { align-self: flex-start; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; border: 1.5px solid var(--ink); }
+.cal__actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cal__actions form { margin: 0; }
+.cal__status { min-height: 36px; padding: 4px 10px; border: 1.5px solid var(--ink); border-radius: 999px; background: #fff; font: inherit; font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.cal__del { background: none; border: 0; padding: 8px 4px; font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; color: #B4235A; }
+.cal__add { border-top: 1.5px dashed var(--ink); padding-top: 14px; }
+.cal__add summary { cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; min-height: 44px; }
+.cal__form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px 16px; margin-top: 12px; align-items: end; }
+.cal__form .field > span { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.cal__form .cal__wide { grid-column: 1 / -1; }
+.cal__submit { justify-self: start; min-height: 48px; }
+@media (max-width: 820px) {
+  .cal__body { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .cal__cell { min-height: 36px; border-radius: 8px; }
+  .cal__num { font-size: 13px; }
+  .cal__dots span { width: 6px; height: 6px; }
+  .cal__month { font-size: 19px; min-width: 0; }
+}
+
+/* Locked sections: visible, but only usable with the package */
+.locked { position: relative; }
+.locked__inner { opacity: .38; filter: grayscale(.5); pointer-events: none; user-select: none; max-height: 560px; overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent); mask-image: linear-gradient(to bottom, #000 60%, transparent); }
+.locked__card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(440px, calc(100% - 24px)); background: var(--ink); color: #fff; border-radius: 20px; padding: 22px 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; box-shadow: 8px 8px 0 var(--yellow); }
+.locked__card p { margin: 0; font-size: 15px; line-height: 1.5; }
+.locked__tag { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--yellow); }
+.locked__card .btn { min-height: 44px; }

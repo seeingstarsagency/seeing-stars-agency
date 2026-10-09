@@ -2,14 +2,30 @@ import { redirect } from "next/navigation";
 import { getViewer } from "../../lib/supabase";
 import { loadArtist } from "../../lib/artist-data";
 import { getLang, T, PKG_BLURB, pick } from "../../lib/i18n";
-import { recommendations, SONG_PILLARS } from "../../lib/steps";
+import { recommendations, SONG_PILLARS, STEPS } from "../../lib/steps";
 import { songScope } from "../../lib/song-scope";
 import SongPicker from "../SongPicker";
 import { browserConfig } from "../../lib/env";
 import PhotoUpload from "../PhotoUpload";
-import { setListenPlatform } from "./actions";
+import { setListenPlatform, addCalendarItem, setCalendarStatus, deleteCalendarItem } from "./actions";
+import Calendar from "../Calendar";
 import { AppHeader, LogoutButton, fmtDate } from "../ui";
 import { ProgressSummary, StepsTable } from "../progress";
+
+// A section the artist can see but not use until they have the package.
+function Locked({ locked, pkg, text, t, children }) {
+  if (!locked) return children;
+  return (
+    <div className="locked">
+      <div className="locked__inner" inert aria-hidden="true">{children}</div>
+      <div className="locked__card">
+        <span className="locked__tag">✦ {t.lockedTag.replace("{pkg}", pkg)}</span>
+        <p>{text}</p>
+        <a href="/#contact" className="btn btn--accent btn--sm">{t.lockedCta.replace("{pkg}", pkg)}</a>
+      </div>
+    </div>
+  );
+}
 
 export const metadata = { title: "Dashboard | Seeing Stars Agency" };
 
@@ -53,7 +69,7 @@ export default async function Dashboard({ searchParams }) {
     );
   }
 
-  const { artist, rows, next, notes, milestones, files, songs, photoUrl } = data;
+  const { artist, rows, next, notes, milestones, files, songs, photoUrl, calendar } = data;
   // First visit: the artist fills in the Launchpad questionnaire before anything else.
   if (!isAdmin && !artist.intake_done_at) redirect("/dashboard/intake");
   const { projects, current: song, songRows, artistRows, allRows } = songScope(artist, songs, rows, sp?.song);
@@ -85,6 +101,52 @@ export default async function Dashboard({ searchParams }) {
   const songDate = song ? song.release_date : artist.release_date;
   const daysLeft = songDate ? Math.round((Date.parse(songDate) - Date.parse(today)) / 86400000) : null;
   const reportHref = (isAdmin ? `/report?artist=${artist.id}` : "/report?") + (song ? `${isAdmin ? "&" : ""}song=${song.id}` : "");
+
+  // Release & content calendars.
+  const calMonth = /^\d{4}-\d{2}$/.test(sp?.cal || "") ? sp.cal : null;
+  const songTitleById = Object.fromEntries(songs.map((x) => [x.id, x.title]));
+  const CAL = { release: "#F2C94C", milestone: "#9CCBE0", instagram: "#F4A6C9", tiktok: "#9CCBE0", youtube: "#F2C94C", other: "#C9B8F0" };
+  const PLATFORMS = [["instagram", "Instagram"], ["tiktok", "TikTok"], ["youtube", "YouTube"], ["other", lang === "es" ? "Otra" : "Other"]];
+  const FORMATS = lang === "es"
+    ? ["Reel", "Post", "Carrusel", "Story", "Video corto", "En vivo", "Otro"]
+    : ["Reel", "Post", "Carousel", "Story", "Short video", "Live", "Other"];
+  const ST = { pending: t.stPending, done: t.stDone, ready: t.stReady, posted: t.stPosted };
+  const releaseItems = [
+    ...songs.filter((x) => x.release_date).map((x) => ({
+      id: `song-${x.id}`, date: x.release_date, title: x.title, color: CAL.release, auto: true, tag: t.releaseDay,
+    })),
+    ...calendar.filter((c) => c.kind === "release").map((c) => ({
+      id: c.id, date: c.happens_on, title: c.title, color: CAL.milestone, status: c.status,
+      statusDone: c.status === "done",
+      statuses: [["pending", ST.pending], ["done", ST.done]],
+      sub: [c.song_id && songTitleById[c.song_id], c.created_by === "agency" && t.fromAgency].filter(Boolean).join(" · "),
+      canDelete: isAdmin || c.created_by === "artist",
+    })),
+  ].sort((a, b) => a.date.localeCompare(b.date));
+  const platformName = Object.fromEntries(PLATFORMS);
+  const contentItems = calendar.filter((c) => c.kind === "content").map((c) => ({
+    id: c.id, date: c.happens_on, title: c.title, color: CAL[c.platform] || CAL.other, status: c.status,
+    statusDone: c.status === "posted",
+    statuses: [["pending", ST.pending], ["ready", ST.ready], ["posted", ST.posted]],
+    sub: [platformName[c.platform] || c.platform, c.format, c.song_id && songTitleById[c.song_id], c.created_by === "agency" && t.fromAgency].filter(Boolean).join(" · "),
+    canDelete: isAdmin || c.created_by === "artist",
+  }));
+  const calLabels = {
+    prev: t.calPrev, next: t.calNext, today: t.calToday, items: t.calItems, thisMonth: t.calThisMonth,
+    showAll: t.calShowAll, empty: t.calEmpty, status: t.calStatus, remove: t.calRemove,
+  };
+  const calProps = { lang, labels: calLabels, today, initialMonth: calMonth, artistId: isAdmin ? artist.id : null, setStatus: setCalendarStatus, remove: deleteCalendarItem };
+  const songOptions = (
+    <select name="song_id" className="input" defaultValue="">
+      <option value="">{t.calNoSong}</option>
+      {songs.map((x) => <option key={x.id} value={x.id}>{x.title}</option>)}
+    </select>
+  );
+  const adminHidden = isAdmin ? <input type="hidden" name="artist_id" value={artist.id} /> : null;
+  const hasPkg = (p) => (artist.packages || []).includes(p);
+  const releaseLocked = !hasPkg("Launchpad");
+  const contentLocked = !hasPkg("Astro");
+  const brandLocked = !hasPkg("Astro");
 
   return (
     <div className="app">
@@ -173,6 +235,30 @@ export default async function Dashboard({ searchParams }) {
           )}
         </section>
 
+        <section className="panel" id="cal-release" style={{ borderRadius: 24, padding: 30 }}>
+          <h2 className="h2" style={{ fontSize: 28 }}>{t.releaseCalTitle}</h2>
+          <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.releaseCalLead}</p>
+          <Locked locked={releaseLocked} pkg="Launchpad" text={t.lockedRelease} t={t}>
+          <Calendar
+            {...calProps}
+            items={releaseItems}
+            legend={[{ color: CAL.release, label: t.releaseDay }, { color: CAL.milestone, label: t.milestone }]}
+          >
+            {!releaseLocked && <details className="cal__add">
+              <summary>+ {t.calAdd}</summary>
+              <form action={addCalendarItem} className="cal__form">
+                <input type="hidden" name="kind" value="release" />
+                {adminHidden}
+                <label className="field"><span>{t.calDate}</span><input type="date" name="happens_on" className="input" required /></label>
+                <label className="field cal__wide"><span>{t.milestoneTitle}</span><input name="title" className="input" maxLength={160} placeholder={t.milestonePh} required /></label>
+                <label className="field"><span>{t.calSong}</span>{songOptions}</label>
+                <button type="submit" className="btn btn--dark cal__submit">{t.calSave}</button>
+              </form>
+            </details>}
+          </Calendar>
+          </Locked>
+        </section>
+
         {sp?.welcome && <div className="alert alert--ok" role="status">{t.iDone}</div>}
         {isAdmin && !artist.intake_done_at && <div className="alert" role="status">Preview: this artist hasn't filled in the Launchpad questionnaire yet. They'll see it first when they log in.</div>}
 
@@ -212,13 +298,60 @@ export default async function Dashboard({ searchParams }) {
           </section>
         )}
 
-        {artistRows.some((r) => ["bio", "photos", "epk", "visual_identity"].includes(r.step_key)) && (
-          <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
-            <h2 className="h2" style={{ fontSize: 28 }}>{t.brandTitle}</h2>
-            <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.brandLead}</p>
-            <StepsTable rows={artistRows} lang={lang} pillars={["brand"]} />
-          </section>
-        )}
+        <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
+          <h2 className="h2" style={{ fontSize: 28 }}>{t.brandTitle}</h2>
+          <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.brandLead}</p>
+          <Locked locked={brandLocked} pkg="Astro" text={t.lockedBrand} t={t}>
+            <StepsTable
+              rows={brandLocked
+                ? STEPS.filter((x) => x.pillar === "brand").map((x) => artistRows.find((r) => r.step_key === x.key) || { step_key: x.key, status: "pending", start_status: "pending" })
+                : artistRows}
+              lang={lang}
+              pillars={["brand"]}
+            />
+          </Locked>
+        </section>
+
+        <section className="panel" id="cal-content" style={{ borderRadius: 24, padding: 30 }}>
+          <h2 className="h2" style={{ fontSize: 28 }}>{t.contentCalTitle}</h2>
+          <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.contentCalLead}</p>
+          <Locked locked={contentLocked} pkg="Astro" text={t.lockedContent} t={t}>
+          <Calendar
+            {...calProps}
+            items={contentItems}
+            legend={PLATFORMS.map(([k, n]) => ({ color: CAL[k], label: n }))}
+          >
+            {!contentLocked && <details className="cal__add">
+              <summary>+ {t.calAdd}</summary>
+              <form action={addCalendarItem} className="cal__form">
+                <input type="hidden" name="kind" value="content" />
+                {adminHidden}
+                <label className="field"><span>{t.calDate}</span><input type="date" name="happens_on" className="input" required /></label>
+                <label className="field"><span>{t.contentPlatform}</span>
+                  <select name="platform" className="input" defaultValue="instagram">
+                    {PLATFORMS.map(([k, n]) => <option key={k} value={k}>{n}</option>)}
+                  </select>
+                </label>
+                <label className="field"><span>{t.contentFormat}</span>
+                  <select name="format" className="input" defaultValue={FORMATS[0]}>
+                    {FORMATS.map((f) => <option key={f} value={f}>{f}</option>)}
+                  </select>
+                </label>
+                <label className="field cal__wide"><span>{t.contentIdea}</span><input name="title" className="input" maxLength={160} placeholder={t.contentIdeaPh} required /></label>
+                <label className="field"><span>{t.calSong}</span>{songOptions}</label>
+                <label className="field"><span>{t.calStatus}</span>
+                  <select name="status" className="input" defaultValue="pending">
+                    <option value="pending">{ST.pending}</option>
+                    <option value="ready">{ST.ready}</option>
+                    <option value="posted">{ST.posted}</option>
+                  </select>
+                </label>
+                <button type="submit" className="btn btn--dark cal__submit">{t.calSave}</button>
+              </form>
+            </details>}
+          </Calendar>
+          </Locked>
+        </section>
 
         <div className="row">
           <section className="panel panel--yellow">
