@@ -276,7 +276,7 @@ export default async function Dashboard({ searchParams }) {
           )}
         </section>
 
-        {artistRows.some((r) => ["pro", "mlc", "soundexchange"].includes(r.step_key)) && (
+        {artistRows.some((r) => ["pro", "mlc", "soundexchange", "distributor_account"].includes(r.step_key)) && (
           <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
             <h2 className="h2" style={{ fontSize: 28 }}>{t.membershipTitle}</h2>
             <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.membershipLead}</p>
