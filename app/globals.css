@@ -871,7 +871,7 @@ button.btn { cursor: pointer; }
 .table .group--campaign td { background: #FCE4EF; } .group--campaign { --g: #F4A6C9; }
 .table .group--membership td { background: #E4EAF7; } .group--membership { --g: #5B84C4; }
 .table .group--brand td { background: #EEE8FA; } .group--brand { --g: #C9B8F0; }
-.table .group td { border-top-left-radius: 0; }
+.table .group td { border-top-left-radius: 0; border-top: 2px solid var(--ink); }
 .table tbody .group td { padding-left: 12px; }
 @media (max-width: 640px) {
   .table--steps .group td { border-radius: 12px; padding: 10px 12px !important; margin-top: 10px; border: 1.5px solid var(--ink); }
