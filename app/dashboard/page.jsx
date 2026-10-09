@@ -14,7 +14,6 @@ import { AppHeader, LogoutButton, fmtDate } from "../ui";
 import { ProgressSummary, StepsTable } from "../progress";
 import Locked from "../Locked";
 import IPod from "../IPod";
-import { DASH_NOTES } from "../content";
 
 export const metadata = { title: "Dashboard | Seeing Stars Agency" };
 
@@ -254,13 +253,6 @@ export default async function Dashboard({ searchParams }) {
               </>
             )}
           </section>
-          {DASH_NOTES.length > 0 && (
-            <aside className="dnote" aria-label="Note">
-              <div className="dnote__paper">
-                <p className="dnote__text">{DASH_NOTES[Math.floor(Date.now() / 864e5) % DASH_NOTES.length]}</p>
-              </div>
-            </aside>
-          )}
         </div>
 
         <section className="panel" style={{ borderRadius: 24, padding: 30 }}>
