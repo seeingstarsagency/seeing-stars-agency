@@ -16,6 +16,7 @@ import Locked from "../Locked";
 import IPod from "../IPod";
 import Roadmap from "../Roadmap";
 import RoadmapButton from "../RoadmapButton";
+import ContentCamera from "../ContentCamera";
 import { buildRoadmap } from "../../lib/roadmap";
 
 export const metadata = { title: "Dashboard | Seeing Stars Agency" };
@@ -123,6 +124,7 @@ export default async function Dashboard({ searchParams }) {
     statuses: [["pending", ST.pending], ["ready", ST.ready], ["posted", ST.posted]],
     sub: [platformName[c.platform] || c.platform, c.format, c.song_id && songTitleById[c.song_id], c.created_by === "agency" && t.fromAgency].filter(Boolean).join(" · "),
     canDelete: isAdmin || c.created_by === "artist",
+    platform: platformName[c.platform] || c.platform, format: c.format, song: c.song_id ? songTitleById[c.song_id] : null,
   }));
   const calLabels = {
     prev: t.calPrev, next: t.calNext, today: t.calToday, items: t.calItems, thisMonth: t.calThisMonth,
@@ -362,14 +364,19 @@ export default async function Dashboard({ searchParams }) {
             </section>
 
         <section className="panel" id="cal-content" style={{ borderRadius: 24, padding: 30 }}>
+          <div className="kicker">{t.camKicker}</div>
           <h2 className="h2" style={{ fontSize: 28 }}>{t.contentCalTitle}</h2>
           <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.contentCalLead}</p>
           <Locked locked={contentLocked} pkg="Astro" text={t.lockedContent} t={t}>
-          <Calendar
-            {...calProps}
+          <ContentCamera
             items={contentItems}
-            legend={PLATFORMS.map(([k, n]) => ({ color: CAL[k], label: n }))}
-          >
+            lang={lang}
+            today={today}
+            artistId={isAdmin ? artist.id : null}
+            setStatus={setCalendarStatus}
+            remove={deleteCalendarItem}
+            labels={{ title: t.contentCalTitle, status: t.calStatus, remove: t.calRemove, empty: t.calEmpty, noImages: t.camNoImages, prevMonth: t.calPrev, nextMonth: t.calNext, prev: t.camPrev, next: t.camNext, menu: t.camMenu, disp: t.camDisp, ok: t.camOk, hint: t.camHint }}
+          />
             {!contentLocked && <details className="cal__add">
               <summary>+ {t.calAdd}</summary>
               <form action={addCalendarItem} className="cal__form">
@@ -398,7 +405,6 @@ export default async function Dashboard({ searchParams }) {
                 <button type="submit" className="btn btn--dark cal__submit">{t.calSave}</button>
               </form>
             </details>}
-          </Calendar>
           </Locked>
         </section>
 
