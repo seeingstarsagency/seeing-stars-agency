@@ -98,7 +98,7 @@ function PillarRows({ pillar, byKey, lang, t, renderStatus }) {
             </td>
             <td className="muted" data-label={t.colStart}>{r.start_status === "had" ? t.yes : t.no}</td>
             <td data-label={t.colToday}>{renderStatus ? renderStatus(r) : <span className="chip" style={{ background: STATUS[r.status].bg }}>{STATUS[r.status][lang]}</span>}</td>
-            <td className="muted" data-label={t.colPkg}>{r.start_status === "had" ? "—" : s.pkg}</td>
+            <td className="muted" data-label={t.colPkg}>{s.pkg}</td>
           </tr>
         );
       })}
