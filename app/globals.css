@@ -1240,3 +1240,22 @@ button.btn { cursor: pointer; }
 .script-page__script { min-height: 300px; font-family: "Courier New", ui-monospace, monospace !important; }
 .script-page .btn { align-self: flex-start; }
 @media (max-width: 640px) { .script-page { padding: 26px 18px 20px; box-shadow: 5px 5px 0 var(--ink); } .script-page__title { font-size: 24px; } }
+
+/* "Write script" lives on each post's screen */
+.cam__bottom { justify-content: flex-start; } .cam__bottom .cam__stamp { margin-left: auto; }
+.cam__scriptbtn {
+  display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 13px; font-weight: 800; color: var(--ink);
+  padding: 6px 14px; border: 1.5px solid var(--ink); border-radius: 999px; cursor: pointer;
+  background: linear-gradient(135deg, #FCE4EF, #FFF6D6 55%, #E3F1F8); box-shadow: 2px 2px 0 var(--ink);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.cam__scriptbtn span { color: var(--rose); }
+.cam__scriptbtn:hover, .cam__scriptbtn:focus-visible { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); background: var(--yellow); }
+@media (max-width: 680px) { .cam__bottom { flex-wrap: wrap; } .cam__scriptbtn { font-size: 12px; padding: 5px 10px; } }
+@media (max-width: 680px) {
+  .cam__screen { min-height: 320px; }
+  .cam__shot { justify-content: flex-start; overflow-y: auto; padding-bottom: 14px; }
+  .cam__shot::after { display: none; }
+  .cam__bottom { position: static; margin-top: auto; padding-top: 12px; }
+  .cam__desc { margin-bottom: 0; }
+}

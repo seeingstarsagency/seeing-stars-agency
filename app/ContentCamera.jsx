@@ -93,6 +93,9 @@ export default function ContentCamera({ items, lang, labels, today, artistId, se
                         {cur.statuses.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
                       </select>
                     </form>
+                    <button type="button" className="cam__scriptbtn" onClick={() => dlg.current?.showModal()}>
+                      <span aria-hidden="true">✎</span> {labels.script}{cur.script ? " ✓" : ""}
+                    </button>
                     <div className="cam__stamp" title={weekday(cur.date)}>{stamp(cur.date)}</div>
                   </div>
                 </div>
@@ -177,9 +180,6 @@ export default function ContentCamera({ items, lang, labels, today, artistId, se
         </div>
       </div>
       <div className="cam__below">
-        <button type="button" className="btn btn--sm road-btn" onClick={() => dlg.current?.showModal()} disabled={!cur}>
-          <span aria-hidden="true">✎</span> {labels.script}{cur?.script ? " ✓" : ""}
-        </button>
         <p className="cam__hint">{labels.hint}</p>
       </div>
 
