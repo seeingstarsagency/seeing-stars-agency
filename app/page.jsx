@@ -1,5 +1,6 @@
 import { Star, Reveal } from "./components";
 import Constellation from "./Constellation";
+import MobileMenu from "./MobileMenu";
 import {
   CONTACT,
   COLORS,
@@ -30,9 +31,13 @@ export default function Home() {
           <span className="nav-item"><a href="#bundles">Bundles</a></span>
           <span className="nav-item"><a href="/login">Client login</a></span>
         </nav>
-        <a href="#contact" className="btn btn--dark btn--sm">
+        <a href="#contact" className="btn btn--dark btn--sm header__contact">
           Get in contact!
         </a>
+        <MobileMenu
+          links={[["#services", "Services"], ["#packages", "Packages"], ["#bundles", "Bundles"], ["/login", "Client login"]]}
+          contactHref="#contact"
+        />
       </header>
 
       <main>
