@@ -98,13 +98,13 @@ export default function Home() {
         {/* Services: everything an independent artist juggles, all connected */}
         <section id="services" className="wrap section">
           <Reveal>
-            <h2 className="section__title section__title--md">Sometimes things can get a bit overwhelming…</h2>
+            <h2 className="section__title section__title--md">It&apos;s a lot to keep track of…</h2>
           </Reveal>
           <Reveal>
             <Constellation />
           </Reveal>
           <Reveal>
-            <h2 className="section__title section__title--right"><span className="soft soft--sub">But you don&apos;t have to figure it out on your own!</span></h2>
+            <h2 className="section__title section__title--right"><span className="soft soft--sub">But you don&apos;t have to do it alone!</span></h2>
           </Reveal>
         </section>
 
