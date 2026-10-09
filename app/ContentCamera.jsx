@@ -14,7 +14,7 @@ export default function ContentCamera({ items, lang, labels, today, artistId, se
   // Start on the next post coming up (or today's month).
   const first = sorted.find((it) => it.id === initialId) || sorted.find((it) => it.date >= today);
   const dlg = useRef(null);
-  const [month, setMonth] = useState((first?.date || today).slice(0, 7));
+  const [month, setMonth] = useState((initialId && first ? first.date : today).slice(0, 7));
   const [mode, setMode] = useState(initialId ? "play" : "disp");
   const inMonth = sorted.filter((it) => it.date.startsWith(month));
   const [idx, setIdx] = useState(() => Math.max(0, inMonth.findIndex((it) => it.id === first?.id)));
