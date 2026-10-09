@@ -6,10 +6,9 @@ import { songScope } from "../../../../lib/song-scope";
 import { ProgressSummary, StepsTable } from "../../../progress";
 import { fmtDate } from "../../../ui";
 import UploadForm from "./UploadForm";
+import SongPicker from "../../../SongPicker";
 import PhotoUpload from "../../../PhotoUpload";
 import { browserConfig } from "../../../../lib/env";
-import { SECTIONS, answerLabel } from "../../../../lib/questions";
-import { AnswersList } from "../../../form-fields";
 import { appleArtistIdFromUrl, searchAppleArtists } from "../../../../lib/apple-music";
 import { spotifyArtistIdFromUrl, searchSpotifyArtists } from "../../../../lib/spotify";
 import { spotifyConfigured } from "../../../../lib/env";
@@ -79,6 +78,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
         </div>
         <div className="inline">
           <a href={`/dashboard?artist=${artist.id}`} className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>View their dashboard</a>
+          <a href={`/admin/artists/${artist.id}/questionnaire`} className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", background: "#E3F1F8" }}>{artist.intake_done_at ? "Questionnaire" : "Questionnaire · pending"}</a>
           <a href={`/admin/artists/${artist.id}/astro`} className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", background: "#F2C94C" }}>✦ Astro · Brandbook</a>
           <a href={`/report?artist=${artist.id}`} className="small-btn small-btn--dark" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>Final report</a>
         </div>
@@ -88,17 +88,25 @@ export default async function ArtistAdmin({ params, searchParams }) {
       <ProgressSummary rows={allRows} lang="en" />
 
       <section className="panel" id="steps">
-        <h2 className="h2">Steps</h2>
-        <p style={{ margin: "0 0 14px", fontSize: 15 }}>Change the status and click "Save steps". Marking "Done together" saves the date for the report.</p>
-        {projects.length > 0 && (
-          <div className="songtabs" role="tablist" aria-label="Agency projects">
-            {projects.map((p) => (
-              <a key={p.id} href={`/admin/artists/${artist.id}?song=${p.id}#steps`} className={song?.id === p.id ? "is-on" : ""} role="tab" aria-selected={song?.id === p.id}>
-                {p.title}
-              </a>
-            ))}
+        <div className="steps__head">
+          <div>
+            <h2 className="h2">Steps</h2>
+            <p style={{ margin: 0, fontSize: 15 }}>Change the status and click "Save steps". Marking "Done together" saves the date for the report.</p>
           </div>
-        )}
+          {projects.length > 0 && (
+            <div className="stepsong">
+              <SongPicker
+                songs={projects.map((p) => ({ id: p.id, title: p.title, open: true }))}
+                value={song?.id}
+                base={`/admin/artists/${artist.id}`}
+                hash="#steps"
+                label="Song"
+                lockedNote=""
+                chooseLabel="Choose a song"
+              />
+            </div>
+          )}
+        </div>
         <form action={updateSteps} className="stack">
           {hidden}
           <input type="hidden" name="song" value={song?.id || ""} />
@@ -282,22 +290,6 @@ export default async function ArtistAdmin({ params, searchParams }) {
         </section>
       </div>
 
-      <section className="panel" id="intake">
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <h2 className="h2" style={{ margin: 0 }}>Launchpad questionnaire</h2>
-          <a href={`/admin/artists/${artist.id}/intake`} className="small-btn small-btn--dark" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
-            {artist.intake_done_at ? "Edit answers" : "Fill in for the artist"}
-          </a>
-        </div>
-        {artist.intake_done_at ? (
-          <>
-            <p style={{ margin: "0 0 16px", fontSize: 15 }}>Filled in on {fmtDate(artist.intake_done_at, "en")}. Their answers set the "Already had it" steps above.</p>
-            <AnswersList sections={SECTIONS} answers={artist.intake_answers || {}} lang="en" answerLabel={answerLabel} />
-          </>
-        ) : (
-          <p style={{ margin: 0, fontSize: 15 }}>Not filled in yet. The artist will see it first when they log in to their dashboard. If they filled it in on paper, use "Fill in for the artist".</p>
-        )}
-      </section>
 
       <section className="panel panel--lilac">
         <h2 className="h2">Artist details</h2>

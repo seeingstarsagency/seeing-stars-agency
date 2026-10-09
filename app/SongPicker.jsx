@@ -2,13 +2,13 @@
 
 // Dropdown above the progress: every song of the artist is listed,
 // but only the ones the agency works on (activated in admin) can be opened.
-export default function SongPicker({ songs, value, base, label, lockedNote, chooseLabel }) {
+export default function SongPicker({ songs, value, base, label, lockedNote, chooseLabel, hash = "" }) {
   return (
     <label className="songbar__picker">
       <span className="songbar__label">{label}</span>
       <select
         value={value || ""}
-        onChange={(e) => { if (e.target.value) window.location.href = `${base}${base.includes("?") ? "&" : "?"}song=${e.target.value}`; }}
+        onChange={(e) => { if (e.target.value) window.location.href = `${base}${base.includes("?") ? "&" : "?"}song=${e.target.value}${hash}`; }}
         aria-label={label}
       >
         {!value && <option value="" disabled>{chooseLabel}</option>}

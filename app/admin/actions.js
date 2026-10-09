@@ -251,7 +251,7 @@ export async function saveIntakeForArtist(formData) {
   const res = await applyIntake(supabaseAdmin(), artistId, answers);
   if (res.error) redirect(`/admin/artists/${artistId}/intake?error=${encodeURIComponent(res.error)}`);
   revalidatePath(`/admin/artists/${artistId}`);
-  redirect(`/admin/artists/${artistId}?ok=intake#intake`);
+  redirect(`/admin/artists/${artistId}/questionnaire?ok=intake`);
 }
 
 // Add imported songs without duplicates: a song already on the list (same title)

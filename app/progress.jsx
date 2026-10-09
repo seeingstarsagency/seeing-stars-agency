@@ -78,11 +78,11 @@ function PillarRows({ pillar, byKey, lang, t, renderStatus }) {
   if (!steps.length) return null;
   return (
     <>
-      <tr className="group"><td colSpan={4}>{pick(lang, pillar)}</td></tr>
+      <tr className={`group group--${pillar.key}`}><td colSpan={4}><span className="group__dot" aria-hidden="true" />{pick(lang, pillar)}</td></tr>
       {steps.map((s) => {
         const r = byKey[s.key];
         return (
-          <tr key={s.key} className="steps__row">
+          <tr key={s.key} className={`steps__row steps__row--${pillar.key}`}>
             <td className="steps__name">{pick(lang, s)}</td>
             <td className="muted" data-label={t.colStart}>{r.start_status === "had" ? t.yes : t.no}</td>
             <td data-label={t.colToday}>{renderStatus ? renderStatus(r) : <span className="chip" style={{ background: STATUS[r.status].bg }}>{STATUS[r.status][lang]}</span>}</td>

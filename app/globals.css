@@ -840,3 +840,31 @@ button.btn { cursor: pointer; }
   .artists-panel__star1 { width: 48px; height: 48px; right: 16px; top: 16px; }
   .artists-panel__star2, .artists-panel__star3 { display: none; }
 }
+
+/* Admin artist page: song dropdown at the top right of Steps */
+.steps__head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 14px 24px; margin-bottom: 14px; }
+.steps__head > div:first-child { flex: 1 1 340px; min-width: 0; }
+.stepsong .songbar__picker { flex: 0 1 auto; gap: 8px 10px; }
+.stepsong .songbar__label { color: var(--ink); }
+.stepsong select { min-height: 44px; max-width: 320px; padding: 8px 16px; border: 2px solid var(--ink); border-radius: 999px; background: #fff; color: var(--ink); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+@media (max-width: 640px) { .stepsong, .stepsong .songbar__picker, .stepsong select { width: 100%; max-width: none; } }
+
+/* Steps: each area has its own color from the brand palette */
+.table .group td { position: relative; }
+.group__dot { display: inline-block; width: 12px; height: 12px; border-radius: 999px; border: 1.5px solid var(--ink); margin-right: 10px; vertical-align: -1px; background: var(--g, #fff); }
+.table .group--rights td { background: #FFF6D6; } .group--rights { --g: #F2C94C; }
+.table .group--release td { background: #E3F1F8; } .group--release { --g: #9CCBE0; }
+.table .group--campaign td { background: #FCE4EF; } .group--campaign { --g: #F4A6C9; }
+.table .group--membership td { background: #E4EAF7; } .group--membership { --g: #5B84C4; }
+.table .group--brand td { background: #EEE8FA; } .group--brand { --g: #C9B8F0; }
+.table .group td { border-top-left-radius: 0; }
+.table tbody .group td { padding-left: 12px; }
+@media (max-width: 640px) {
+  .table--steps .group td { border-radius: 12px; padding: 10px 12px !important; margin-top: 10px; border: 1.5px solid var(--ink); }
+  .table--steps tbody > .group:first-child td { margin-top: 0; }
+  .table--steps .steps__row--rights { background: #FFFCF0; }
+  .table--steps .steps__row--release { background: #F4FAFD; }
+  .table--steps .steps__row--campaign { background: #FEF5F9; }
+  .table--steps .steps__row--membership { background: #F5F7FC; }
+  .table--steps .steps__row--brand { background: #F8F5FD; }
+}
