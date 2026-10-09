@@ -25,7 +25,19 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 a { color: var(--ink); }
-a:hover { color: #5b3fd6; }
+/* Links: on hover / click they get the brand's yellow highlighter (never purple). */
+a { transition: color .15s ease, background-size .2s ease; }
+a:not([class]):hover, a:not([class]):focus-visible, a:not([class]):active,
+.price-link:hover, .price-link:active, .linkbtn:hover, .linkbtn:active {
+  color: var(--ink);
+  background-image: linear-gradient(transparent 55%, rgba(242, 201, 76, .8) 55%);
+}
+/* On dark backgrounds the link itself turns yellow instead. */
+.apphead--dark a:hover, .apphead--dark a:active, .apphead--dark .linkbtn:hover,
+.panel--dark a:not(.btn):hover, .panel--dark a:not(.btn):active,
+.countdown a:hover, .countdown a:active {
+  color: var(--yellow); background-image: none;
+}
 img, svg { display: block; }
 
 .page {
