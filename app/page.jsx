@@ -103,6 +103,9 @@ export default function Home() {
           <Reveal>
             <Constellation />
           </Reveal>
+          <Reveal>
+            <h2 className="section__title section__title--right">But you don&apos;t have to figure it out on your own!</h2>
+          </Reveal>
         </section>
 
         {/* Packages */}
