@@ -796,3 +796,22 @@ button.btn { cursor: pointer; }
 @media (max-width: 760px) { .mnav { display: block; } }
 .mnav__panel.nav { align-items: stretch; gap: 14px; font-size: 16px; }
 .mnav__panel.nav a.mnav__contact { background: var(--ink); background-image: none; color: var(--paper); clip-path: none; transform: none; border: 2px solid var(--ink); border-radius: 999px; }
+
+/* Admin: new requests page */
+.stat--link { display: block; text-decoration: none; color: var(--ink); transition: transform .15s ease, box-shadow .15s ease; }
+.stat--link:hover, .stat--link:focus-visible { transform: translateY(-2px); box-shadow: 5px 5px 0 var(--ink); }
+.reqlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.req { display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: center; justify-content: space-between; background: #fff; border: 1.5px solid var(--ink); border-radius: 16px; padding: 16px 18px; }
+.req--done { background: #F7F5F0; }
+.req__main { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.req__top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.req__name { font-size: 17px; }
+.req__date { font-size: 13px; color: #4A4659; }
+.req__meta { font-size: 14px; overflow-wrap: anywhere; }
+.req__msg { font-size: 14px; color: #4A4659; }
+.req__open { font-weight: 600; font-size: 14px; }
+.req__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.req__actions form { margin: 0; }
+.req__btn { min-height: 44px; padding: 8px 16px; }
+.reqdone summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+@media (max-width: 640px) { .req__actions { width: 100%; } .req__actions form { flex: 1; } .req__btn { width: 100%; } }

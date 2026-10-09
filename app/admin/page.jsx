@@ -12,7 +12,7 @@ export default async function Admin({ searchParams }) {
   const [{ data: artists }, { data: steps }, { data: subs }, { data: waiting }] = await Promise.all([
     supabase.from("artists").select("id, name, packages, release_date, closed_at, user_id, intake_done_at").order("created_at", { ascending: false }),
     supabase.from("artist_steps").select("artist_id, status, start_status"),
-    supabase.from("intake_submissions").select("id, created_at, artist_name, email, lang, answers").eq("status", "new").order("created_at", { ascending: false }),
+    supabase.from("intake_submissions").select("id").eq("status", "new"),
     supabase.from("next_steps").select("artist_id, owner, body").eq("done", false),
   ]);
 
@@ -35,34 +35,12 @@ export default async function Admin({ searchParams }) {
       </div>
 
       <div className="stats">
-        <div className="stat" style={{ background: "#FFF6D6" }}><div className="stat__v">{subs?.length || 0}</div><div>New requests</div></div>
+        <a href="/admin/requests" className="stat stat--link" style={{ background: "#FFF6D6" }} aria-label={`New requests: ${subs?.length || 0}. Open the list`}><div className="stat__v">{subs?.length || 0}</div><div>New requests →</div></a>
         <div className="stat" style={{ background: "#E3F1F8" }}><div className="stat__v">{active.length}</div><div>Active artists</div></div>
         <div className="stat" style={{ background: "#FCE4EF" }}><div className="stat__v">{active.filter((a) => (waitBy[a.id] || []).some((n) => n.owner === "artist")).length}</div><div>Waiting on the artist</div></div>
         <div className="stat" style={{ background: "#E4EAF7" }}><div className="stat__v">{active.filter((a) => a.release_date?.startsWith(thisMonth)).length}</div><div>Releases this month</div></div>
       </div>
 
-      <section className="panel panel--yellow">
-        <h2 className="h2">New requests · Find your package</h2>
-        <p style={{ margin: "0 0 16px", fontSize: 14 }}>People who used "Find your package" on the website. When someone hires you, create their account: they'll fill in the Launchpad questionnaire inside their dashboard.</p>
-        {!subs?.length ? (
-          <p style={{ margin: 0 }}>No new requests.</p>
-        ) : (
-          <div className="cards">
-            {subs.map((s) => (
-              <div key={s.id} className="panel stack" style={{ padding: 18, borderWidth: 1.5, gap: 8 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                  <strong>{s.artist_name}</strong>
-                  <span style={{ fontSize: 13 }}>{fmtDate(s.created_at, "en")}</span>
-                </div>
-                <div style={{ fontSize: 14 }}>{s.email} · {s.lang.toUpperCase()}</div>
-                {s.answers?.recommended?.length > 0 && <div style={{ fontSize: 14 }}>Recommended: <strong>{s.answers.recommended.join(" + ")}</strong></div>}
-                {s.answers?.message && <div className="muted" style={{ fontSize: 14 }}>"{s.answers.message.slice(0, 140)}"</div>}
-                <a href={`/admin/submissions/${s.id}`} style={{ fontWeight: 600, fontSize: 14 }}>View answers →</a>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
 
       <section className="panel">
         <h2 className="h2" style={{ marginBottom: 16 }}>Artists</h2>

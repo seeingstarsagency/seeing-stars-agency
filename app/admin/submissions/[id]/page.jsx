@@ -20,7 +20,7 @@ export default async function Submission({ params, searchParams }) {
 
   return (
     <AdminShell>
-      <a href="/admin">← Back</a>
+      <a href="/admin/requests">← Back to new requests</a>
       <div>
         <div className="kicker">questionnaire · {fmtDate(sub.created_at, "en")} · {sub.lang.toUpperCase()}</div>
         <h1 className="h1">{sub.artist_name}</h1>

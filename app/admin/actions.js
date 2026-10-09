@@ -238,7 +238,7 @@ export async function registerFile(artistId, name, path) {
 export async function archiveSubmission(formData) {
   const supabase = await requireAdmin();
   await supabase.from("intake_submissions").update({ status: "archived" }).eq("id", str(formData, "id", 60));
-  redirect("/admin");
+  redirect("/admin/requests");
 }
 
 // The admin types in (or corrects) an artist's Launchpad questionnaire, e.g. from a paper copy.
@@ -313,4 +313,24 @@ export async function importSpotifySongs(formData) {
   revalidatePath(`/admin/artists/${id}`);
   revalidatePath("/dashboard");
   redirect(`/admin/artists/${id}?imported=${added}&found=${songs.length}&from=spotify#songs`);
+}
+
+// ---------- New requests ("Find your package") ----------
+// Spam: removed for good.
+export async function deleteSubmission(formData) {
+  const supabase = await requireAdmin();
+  await supabase.from("intake_submissions").delete().eq("id", str(formData, "id", 60));
+  revalidatePath("/admin");
+  revalidatePath("/admin/requests");
+  redirect("/admin/requests?ok=deleted");
+}
+
+// Already working with us: leaves the "new" list but stays on record (and can be undone).
+export async function markSubmissionWithUs(formData) {
+  const supabase = await requireAdmin();
+  const undo = formData.get("undo") === "1";
+  await supabase.from("intake_submissions").update({ status: undo ? "new" : "converted" }).eq("id", str(formData, "id", 60));
+  revalidatePath("/admin");
+  revalidatePath("/admin/requests");
+  redirect(`/admin/requests?ok=${undo ? "restored" : "checked"}`);
 }
