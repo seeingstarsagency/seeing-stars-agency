@@ -87,7 +87,15 @@ function PillarRows({ pillar, byKey, lang, t, renderStatus }) {
         const r = byKey[s.key];
         return (
           <tr key={s.key} className={`steps__row steps__row--${pillar.key}`}>
-            <td className="steps__name">{pick(lang, s)}</td>
+            <td className="steps__name">
+              {pick(lang, s)}
+              {s.info && (
+                <span className="tip" tabIndex={0} role="note" aria-label={s.info[lang] || s.info.en}>
+                  <span className="tip__i" aria-hidden="true">i</span>
+                  <span className="tip__box" aria-hidden="true">{s.info[lang] || s.info.en}</span>
+                </span>
+              )}
+            </td>
             <td className="muted" data-label={t.colStart}>{r.start_status === "had" ? t.yes : t.no}</td>
             <td data-label={t.colToday}>{renderStatus ? renderStatus(r) : <span className="chip" style={{ background: STATUS[r.status].bg }}>{STATUS[r.status][lang]}</span>}</td>
             <td className="muted" data-label={t.colPkg}>{r.start_status === "had" ? "—" : s.pkg}</td>
