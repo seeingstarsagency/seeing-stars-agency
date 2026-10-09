@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 const W = 1600;
 const H = 900;
 const ACCENT = "#C2417F";
-const MAX_SCALE = 0.72; // keeps title + sky + closing line on one screen
+const MAX_SCALE = 0.612; // keeps title + sky + closing line on one screen
 
 const N = {
   cover: [254, 153, "Cover Art", "a"], copyright: [140, 287, "Copyright", "a"], pitch: [358, 292, "Pitch", "a"],
@@ -85,11 +85,11 @@ export default function Constellation() {
   useEffect(() => {
     const el = wrap.current;
     if (!el) return;
-    const fit = () => setScale(Math.max(0.42, Math.min(MAX_SCALE, el.clientWidth / W)));
+    const fit = () => setScale(Math.max(0.42, Math.min(MAX_SCALE, (el.clientWidth / W) * 0.85)));
     fit();
     // On narrow screens the sky scrolls sideways: start centered on "Artist DNA".
     requestAnimationFrame(() => {
-      const sc = Math.max(0.42, Math.min(MAX_SCALE, el.clientWidth / W));
+      const sc = Math.max(0.42, Math.min(MAX_SCALE, (el.clientWidth / W) * 0.85));
       if (W * sc > el.clientWidth) el.scrollLeft = 651 * sc - el.clientWidth / 2;
     });
     const ro = new ResizeObserver(fit);
