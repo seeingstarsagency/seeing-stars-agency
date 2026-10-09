@@ -1085,3 +1085,27 @@ button.btn { cursor: pointer; }
   .road__when { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; }
   .road__item--release .road__title { font-size: 22px; }
 }
+
+/* "Road to release day" opens from the release calendar in a popup */
+.road-btn { background: linear-gradient(135deg, #FCE4EF, #FFF6D6 55%, #E3F1F8); border: 2px solid var(--ink); }
+.road-btn { gap: 8px; }
+.road-btn span { color: var(--rose); }
+.road-modal {
+  width: min(880px, calc(100% - 24px)); max-width: none; max-height: calc(100dvh - 32px); margin: auto;
+  padding: 34px 26px 26px; border: 0; background: transparent; overflow-y: auto; overscroll-behavior: contain;
+}
+.road-modal::backdrop { background: rgba(30, 27, 46, .55); backdrop-filter: blur(2px); }
+.road-modal[open] { animation: roadIn .25s ease; }
+@keyframes roadIn { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+.road-modal__close {
+  position: absolute; top: 44px; right: 40px; z-index: 5; width: 38px; height: 38px; border-radius: 50%;
+  border: 2px solid var(--ink); background: #fff; color: var(--ink); font-size: 24px; line-height: 1; cursor: pointer;
+}
+.road-modal__close:hover, .road-modal__close:focus-visible { background: var(--yellow); }
+.road-modal .road-panel__s1 { right: 70px; }
+.road-modal .road-panel__s2 { right: 150px; }
+@media (max-width: 640px) {
+  .road-modal { padding: 30px 10px 16px; }
+  .road-modal__close { top: 40px; right: 20px; }
+  .road-modal .road-panel__s1 { right: 60px; }
+}
