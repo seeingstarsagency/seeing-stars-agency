@@ -27,7 +27,7 @@ export function ProgressSummary({ rows, lang, aside, id }) {
           <div className="stat__v">{s.now}<small> / {s.total}</small></div>
           <div style={{ fontSize: 14 }}>{t.todaySub}</div>
         </div>
-        <div className="stat" style={{ background: "#FFF6D6" }}>
+        <div className="stat" style={{ background: "#F2C94C" }}>
           <div className="stat__k">{t.withUs}</div>
           <div className="stat__v">+{s.done}</div>
           <div style={{ fontSize: 14 }}>{t.withUsSub}</div>
