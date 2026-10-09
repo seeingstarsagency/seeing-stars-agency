@@ -734,7 +734,7 @@ button.btn { cursor: pointer; }
   .bed__save { margin-left: 0; width: 100%; padding: 4px 6px; }
 }
 /* Artist constellation (homepage services) */
-.constel { width: 100%; overflow-x: auto; overflow-y: hidden; background: #fff; border-radius: 24px; -webkit-overflow-scrolling: touch; }
+.constel { width: 100%; overflow-x: auto; overflow-y: hidden; background: transparent; -webkit-overflow-scrolling: touch; }
 .constel__sizer { position: relative; }
 .constel__canvas { position: absolute; left: 0; top: 0; transform-origin: 0 0; overflow: hidden; font-family: var(--body); color: var(--ink); }
 .constel__layer { position: absolute; left: 0; top: 0; pointer-events: none; }
