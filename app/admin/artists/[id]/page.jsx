@@ -146,7 +146,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
         {sp?.imported !== undefined && (
           <div className="alert alert--ok" role="status">Found {sp.found} songs on {sp.from === "spotify" ? "Spotify" : "Apple Music"} · {sp.imported} new added.</div>
         )}
-        {sp?.import_error && <div className="alert" role="alert">Couldn&apos;t get the songs from {sp.import_error === "spotify" ? "Spotify" : "Apple Music"}. Try again in a moment.</div>}
+        {sp?.import_error && <div className="alert" role="alert">Couldn&apos;t get the songs from {sp.import_error === "spotify" ? "Spotify" : "Apple Music"}. Try again in a moment.{sp.detail && <span className="muted" style={{ display: "block", fontSize: 13, marginTop: 4 }}>Detail: {String(sp.detail)}</span>}</div>}
         <p style={{ margin: "0 0 10px", fontSize: 14 }}>
           The artist listens on: <strong>{artist.listen_platform === "apple" ? "Apple Music" : "Spotify"}</strong> (they choose it in their dashboard).
         </p>

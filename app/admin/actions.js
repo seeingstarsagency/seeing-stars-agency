@@ -246,6 +246,7 @@ async function mergeSongs(supabase, artistId, songs) {
       continue;
     }
     const { error } = await supabase.from("songs").insert({ artist_id: artistId, ...s });
+    if (error) console.error("song insert failed", error.message);
     if (!error) {
       added++;
       byTitle.set(s.title.trim().toLowerCase(), s);
@@ -263,8 +264,8 @@ export async function importAppleSongs(formData) {
   let songs;
   try {
     songs = await appleArtistSongs(appleId);
-  } catch {
-    redirect(`/admin/artists/${id}?import_error=apple#songs`);
+  } catch (e) {
+    redirect(`/admin/artists/${id}?import_error=apple&detail=${encodeURIComponent(String(e?.message || e).slice(0, 160))}#songs`);
   }
   await supabase.from("artists").update({ apple_artist_id: appleId }).eq("id", id);
   const added = await mergeSongs(supabase, id, songs);
@@ -282,8 +283,8 @@ export async function importSpotifySongs(formData) {
   let songs;
   try {
     songs = await spotifyArtistSongs(spId);
-  } catch {
-    redirect(`/admin/artists/${id}?import_error=spotify#songs`);
+  } catch (e) {
+    redirect(`/admin/artists/${id}?import_error=spotify&detail=${encodeURIComponent(String(e?.message || e).slice(0, 160))}#songs`);
   }
   await supabase.from("artists").update({ spotify_artist_id: spId }).eq("id", id);
   const added = await mergeSongs(supabase, id, songs);
