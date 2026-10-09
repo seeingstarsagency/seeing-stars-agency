@@ -11,6 +11,7 @@ export async function setListenPlatform(formData) {
   const value = formData.get("platform") === "apple" ? "apple" : "spotify";
   await supabaseAdmin().from("artists").update({ listen_platform: value }).eq("id", profile.artist_id);
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/astro");
   redirect("/dashboard#songs");
 }
 
@@ -22,7 +23,9 @@ async function calendarViewer(formData) {
   const isAdmin = profile?.role === "admin";
   const artistId = isAdmin ? String(formData.get("artist_id") || "") : profile?.artist_id;
   if (!artistId) redirect("/login");
-  const back = isAdmin ? `/dashboard?artist=${artistId}` : "/dashboard";
+  // Which page to come back to: the dashboard or the Astro page (both show the content calendar).
+  const page = formData.get("from") === "astro" ? "/dashboard/astro" : "/dashboard";
+  const back = isAdmin ? `${page}?artist=${artistId}` : page;
   return { isAdmin, artistId, back };
 }
 
@@ -56,6 +59,7 @@ export async function addCalendarItem(formData) {
     created_by: isAdmin ? "agency" : "artist",
   });
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/astro");
   redirect(`${back}${back.includes("?") ? "&" : "?"}cal=${date.slice(0, 7)}#cal-${kind}`);
 }
 
@@ -75,6 +79,7 @@ export async function saveContentScript(formData) {
     }).eq("id", id);
   }
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/astro");
   redirect(item ? toPost(back, id, item.kind) : `${back}#cal-content`);
 }
 
@@ -87,6 +92,7 @@ export async function setCalendarStatus(formData) {
     await db.from("calendar_items").update({ status: formData.get("status") }).eq("id", id);
   }
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/astro");
   redirect(item?.kind === "content" ? toPost(back, id, "content") : `${back}#cal-${item?.kind || "release"}`);
 }
 
@@ -98,5 +104,6 @@ export async function deleteCalendarItem(formData) {
   // Artists can remove what they added; the agency's dates stay unless an admin removes them.
   if (item && (isAdmin || item.created_by === "artist")) await db.from("calendar_items").delete().eq("id", id);
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/astro");
   redirect(`${back}#cal-${item?.kind || "release"}`);
 }

@@ -7,7 +7,7 @@ import { songScope } from "../../lib/song-scope";
 import SongPicker from "../SongPicker";
 import { browserConfig } from "../../lib/env";
 import PhotoUpload from "../PhotoUpload";
-import { setListenPlatform, addCalendarItem, setCalendarStatus, deleteCalendarItem, saveContentScript } from "./actions";
+import { setListenPlatform, addCalendarItem, setCalendarStatus, deleteCalendarItem } from "./actions";
 import Calendar from "../Calendar";
 import { Star } from "../components";
 import { AppHeader, LogoutButton, fmtDate } from "../ui";
@@ -16,7 +16,7 @@ import Locked from "../Locked";
 import IPod from "../IPod";
 import Roadmap from "../Roadmap";
 import RoadmapButton from "../RoadmapButton";
-import ContentCamera from "../ContentCamera";
+import ContentCalendar from "../ContentCalendar";
 import { buildRoadmap } from "../../lib/roadmap";
 
 export const metadata = { title: "Dashboard | Seeing Stars Agency" };
@@ -98,10 +98,6 @@ export default async function Dashboard({ searchParams }) {
   const calMonth = /^\d{4}-\d{2}$/.test(sp?.cal || "") ? sp.cal : null;
   const songTitleById = Object.fromEntries(songs.map((x) => [x.id, x.title]));
   const CAL = { release: "#F2C94C", milestone: "#9CCBE0", instagram: "#F4A6C9", tiktok: "#9CCBE0", youtube: "#F2C94C", other: "#C9B8F0" };
-  const PLATFORMS = [["instagram", "Instagram"], ["tiktok", "TikTok"], ["youtube", "YouTube"], ["other", lang === "es" ? "Otra" : "Other"]];
-  const FORMATS = lang === "es"
-    ? ["Reel", "Post", "Carrusel", "Story", "Video corto", "En vivo", "Otro"]
-    : ["Reel", "Post", "Carousel", "Story", "Short video", "Live", "Other"];
   const ST = { pending: t.stPending, done: t.stDone, ready: t.stReady, posted: t.stPosted };
   // Road to release day: suggested deadlines for the current song.
   const road = buildRoadmap(songDate, songRows, today);
@@ -117,16 +113,6 @@ export default async function Dashboard({ searchParams }) {
       canDelete: isAdmin || c.created_by === "artist",
     })),
   ].sort((a, b) => a.date.localeCompare(b.date));
-  const platformName = Object.fromEntries(PLATFORMS);
-  const contentItems = calendar.filter((c) => c.kind === "content").map((c) => ({
-    id: c.id, date: c.happens_on, title: c.title, color: CAL[c.platform] || CAL.other, status: c.status,
-    statusDone: c.status === "posted",
-    statuses: [["pending", ST.pending], ["ready", ST.ready], ["posted", ST.posted]],
-    sub: [platformName[c.platform] || c.platform, c.format, c.song_id && songTitleById[c.song_id], c.created_by === "agency" && t.fromAgency].filter(Boolean).join(" · "),
-    canDelete: isAdmin || c.created_by === "artist",
-    platform: platformName[c.platform] || c.platform, format: c.format, song: c.song_id ? songTitleById[c.song_id] : null,
-    description: c.description || "", script: c.script || "",
-  }));
   const calLabels = {
     prev: t.calPrev, next: t.calNext, today: t.calToday, items: t.calItems, thisMonth: t.calThisMonth,
     showAll: t.calShowAll, empty: t.calEmpty, status: t.calStatus, remove: t.calRemove,
@@ -364,53 +350,7 @@ export default async function Dashboard({ searchParams }) {
               </Locked>
             </section>
 
-        <section className="panel" id="cal-content" style={{ borderRadius: 24, padding: 30 }}>
-          <div className="kicker">{t.camKicker}</div>
-          <h2 className="h2" style={{ fontSize: 28 }}>{t.contentCalTitle}</h2>
-          <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.contentCalLead}</p>
-          <Locked locked={contentLocked} pkg="Astro" text={t.lockedContent} t={t}>
-          <ContentCamera
-            items={contentItems}
-            lang={lang}
-            today={today}
-            artistId={isAdmin ? artist.id : null}
-            setStatus={setCalendarStatus}
-            remove={deleteCalendarItem}
-            saveScript={saveContentScript}
-            initialId={sp?.post || null}
-            labels={{ title: t.contentCalTitle, script: t.camScript, scriptTitle: t.camScriptTitle, scriptLead: t.camScriptLead, description: t.contentDesc, descriptionPh: t.contentDescPh, scriptLabel: t.camScriptLabel, scriptPh: t.camScriptPh, save: t.camSave, close: t.roadClose, noScript: t.camNoScript, status: t.calStatus, remove: t.calRemove, empty: t.calEmpty, noImages: t.camNoImages, prevMonth: t.calPrev, nextMonth: t.calNext, prev: t.camPrev, next: t.camNext, menu: t.camMenu, disp: t.camDisp, ok: t.camOk, hint: t.camHint }}
-          />
-            {!contentLocked && <details className="cal__add">
-              <summary>+ {t.calAdd}</summary>
-              <form action={addCalendarItem} className="cal__form">
-                <input type="hidden" name="kind" value="content" />
-                {adminHidden}
-                <label className="field"><span>{t.calDate}</span><input type="date" name="happens_on" className="input" required /></label>
-                <label className="field"><span>{t.contentPlatform}</span>
-                  <select name="platform" className="input" defaultValue="instagram">
-                    {PLATFORMS.map(([k, n]) => <option key={k} value={k}>{n}</option>)}
-                  </select>
-                </label>
-                <label className="field"><span>{t.contentFormat}</span>
-                  <select name="format" className="input" defaultValue={FORMATS[0]}>
-                    {FORMATS.map((f) => <option key={f} value={f}>{f}</option>)}
-                  </select>
-                </label>
-                <label className="field cal__wide"><span>{t.contentIdea}</span><input name="title" className="input" maxLength={160} placeholder={t.contentIdeaPh} required /></label>
-                <label className="field cal__wide"><span>{t.contentDesc}</span><textarea name="description" className="input" rows={3} maxLength={2000} placeholder={t.contentDescPh} /></label>
-                <label className="field"><span>{t.calSong}</span>{songOptions}</label>
-                <label className="field"><span>{t.calStatus}</span>
-                  <select name="status" className="input" defaultValue="pending">
-                    <option value="pending">{ST.pending}</option>
-                    <option value="ready">{ST.ready}</option>
-                    <option value="posted">{ST.posted}</option>
-                  </select>
-                </label>
-                <button type="submit" className="btn btn--dark cal__submit">{t.calSave}</button>
-              </form>
-            </details>}
-          </Locked>
-        </section>
+        <ContentCalendar artist={artist} songs={songs} calendar={calendar} isAdmin={isAdmin} lang={lang} today={today} locked={contentLocked} post={sp?.post} />
 
         <div className="row">
           <section className="panel panel--yellow">

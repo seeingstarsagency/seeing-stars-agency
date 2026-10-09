@@ -12,6 +12,7 @@ import Locked from "../../Locked";
 import BookPage from "../../brandbook/BookPage";
 import Viewer from "../../brandbook/Viewer";
 import PrintButton from "../../report/PrintButton";
+import ContentCalendar from "../../ContentCalendar";
 
 export const metadata = { title: "Astro | Seeing Stars Agency" };
 export const dynamic = "force-dynamic";
@@ -25,7 +26,7 @@ export default async function AstroPage({ searchParams }) {
   if (isAdmin && !artistId) redirect("/admin");
   const data = artistId ? await loadArtist(supabase, artistId) : null;
   if (!data) redirect("/dashboard");
-  const { artist, rows, songs } = data;
+  const { artist, rows, songs, calendar } = data;
   if (!isAdmin && !artist.intake_done_at) redirect("/dashboard/intake");
 
   const lang = await getLang(artist.lang);
@@ -39,6 +40,7 @@ export default async function AstroPage({ searchParams }) {
   const book = locked ? { pages: [], urls: {} } : await loadBrandbook(supabase, artist.id);
   const pages = book.pages.filter((p) => p.visible);
   const teaser = brandbookTemplate(artist.name, lang).slice(0, 3);
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 
   return (
     <div className="app astro">
@@ -100,6 +102,8 @@ export default async function AstroPage({ searchParams }) {
             <Viewer pages={pages} urls={book.urls} labels={{ open: t.bookOpen, close: t.bookClose, prev: t.bookPrev, next: t.bookNext }} />
           )}
         </section>
+
+        <ContentCalendar artist={artist} songs={songs} calendar={calendar || []} isAdmin={isAdmin} lang={lang} today={today} locked={locked} post={sp?.post} from="astro" />
       </main>
     </div>
   );

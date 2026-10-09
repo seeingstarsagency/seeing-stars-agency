@@ -8,7 +8,7 @@ import { useMemo, useRef, useState } from "react";
 const pad = (n) => String(n).padStart(2, "0");
 const ym = (y, m) => `${y}-${pad(m + 1)}`;
 
-export default function ContentCamera({ items, lang, labels, today, artistId, setStatus, remove, saveScript, initialId }) {
+export default function ContentCamera({ items, lang, labels, today, artistId, setStatus, remove, saveScript, initialId, from = "dashboard" }) {
   const locale = lang === "es" ? "es-US" : "en-US";
   const sorted = useMemo(() => [...items].sort((a, b) => a.date.localeCompare(b.date)), [items]);
   // Start on the next post coming up (or today's month).
@@ -82,6 +82,7 @@ export default function ContentCamera({ items, lang, labels, today, artistId, se
                     <form action={setStatus} className="cam__statusform">
                       <input type="hidden" name="id" value={cur.id} />
                       {artistId && <input type="hidden" name="artist_id" value={artistId} />}
+                      <input type="hidden" name="from" value={from} />
                       <select
                         key={cur.id}
                         name="status"
@@ -172,6 +173,7 @@ export default function ContentCamera({ items, lang, labels, today, artistId, se
             >
               <input type="hidden" name="id" value={cur.id} />
               {artistId && <input type="hidden" name="artist_id" value={artistId} />}
+                      <input type="hidden" name="from" value={from} />
               <button type="submit" className="cam__trash" aria-label={`${labels.remove}: ${cur.title}`} title={labels.remove}>🗑</button>
             </form>
           ) : (
@@ -189,6 +191,7 @@ export default function ContentCamera({ items, lang, labels, today, artistId, se
           <form action={saveScript} className="script-page" key={cur.id}>
             <input type="hidden" name="id" value={cur.id} />
             {artistId && <input type="hidden" name="artist_id" value={artistId} />}
+                      <input type="hidden" name="from" value={from} />
             <div className="script-page__meta" style={{ "--pc": cur.color }}>
               <span>{cur.platform}{cur.format ? ` · ${cur.format}` : ""}</span>
               <span className="cam__stamp">{stamp(cur.date)}</span>
