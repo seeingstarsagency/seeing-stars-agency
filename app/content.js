@@ -141,3 +141,9 @@ export const TERMS = [
   ["Orbit is monthly,", "billed at the start of each month. Cancel with 30 days' notice after the first 3."],
   ["No surprises.", "Third-party fees (Copyright Office, distributor plans) are paid directly by you."],
 ];
+
+// Motivational notes on the artist dashboard (taped paper under "Your songs").
+// Add or change phrases here — one is shown per day, rotating through the list.
+export const DASH_NOTES = [
+  "Do it scared",
+];
