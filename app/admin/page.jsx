@@ -1,5 +1,5 @@
 import { AdminShell, requireAdminPage } from "./shell";
-import { summarize } from "../../lib/steps";
+import { summarize, rowsInPlan } from "../../lib/steps";
 import { fmtDate } from "../ui";
 import { Star } from "../components";
 
@@ -11,8 +11,8 @@ export default async function Admin({ searchParams }) {
   const { supabase } = await requireAdminPage();
   const sp = await searchParams;
   const [{ data: artists }, { data: steps }, { data: subs }, { data: waiting }, { data: help }] = await Promise.all([
-    supabase.from("artists").select("id, name, packages, release_date, closed_at, user_id, intake_done_at").order("created_at", { ascending: false }),
-    supabase.from("artist_steps").select("artist_id, status, start_status"),
+    supabase.from("artists").select("id, name, packages, monthly_member, release_date, closed_at, user_id, intake_done_at").order("created_at", { ascending: false }),
+    supabase.from("artist_steps").select("artist_id, step_key, status, start_status"),
     supabase.from("intake_submissions").select("id").eq("status", "new"),
     supabase.from("next_steps").select("artist_id, owner, body").eq("done", false),
     supabase.from("help_messages").select("artist_id").eq("status", "open").eq("sender", "artist"),
@@ -63,7 +63,7 @@ export default async function Admin({ searchParams }) {
               </thead>
               <tbody>
                 {artists.map((a) => {
-                  const s = summarize(stepsBy[a.id] || []);
+                  const s = summarize(rowsInPlan(stepsBy[a.id] || [], a.packages, a.monthly_member));
                   const pct = Math.round((s.now / s.total) * 100);
                   const w = waitBy[a.id] || [];
                   const waitArtist = w.find((n) => n.owner === "artist");

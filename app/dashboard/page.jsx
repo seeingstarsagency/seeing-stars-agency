@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getViewer } from "../../lib/supabase";
 import { loadArtist } from "../../lib/artist-data";
 import { getLang, T, PKG_BLURB, pick } from "../../lib/i18n";
-import { recommendations, SONG_PILLARS, STEPS } from "../../lib/steps";
+import { recommendations, SONG_PILLARS, STEPS, rowsInPlan } from "../../lib/steps";
 import { songScope } from "../../lib/song-scope";
 import SongPicker from "../SongPicker";
 import { browserConfig } from "../../lib/env";
@@ -234,7 +234,7 @@ export default async function Dashboard({ searchParams }) {
               </section>
             )}
 
-            <ProgressSummary rows={allRows} lang={lang} />
+            <ProgressSummary rows={rowsInPlan(allRows, artist.packages, artist.monthly_member)} lang={lang} />
           </div>
           <section className="panel panel--yellow dash-l__songs" id="songs">
             <div className="songs__head">

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getViewer } from "../../lib/supabase";
 import { loadArtist } from "../../lib/artist-data";
 import { getLang, T, pick, PKG_BLURB } from "../../lib/i18n";
-import { STEPS, summarize, recommendations } from "../../lib/steps";
+import { STEPS, summarize, recommendations, rowsInPlan } from "../../lib/steps";
 import { songScope } from "../../lib/song-scope";
 import { AppHeader, StarIcon, fmtDate } from "../ui";
 import PrintButton from "./PrintButton";
@@ -25,7 +25,7 @@ export default async function Report({ searchParams }) {
   const { current: song, allRows: rows } = songScope(artist, songs, data.rows, sp?.song);
   const lang = await getLang(artist.lang);
   const t = T[lang];
-  const s = summarize(rows);
+  const s = summarize(rowsInPlan(rows, artist.packages, artist.monthly_member));
   const byKey = Object.fromEntries(STEPS.map((x) => [x.key, x]));
   const packages = artist.packages || [];
   const done = rows.filter((r) => r.status === "done").sort((a, b) => String(a.done_on).localeCompare(String(b.done_on)));

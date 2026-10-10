@@ -2,7 +2,7 @@ import PendingSubmit from "../../PendingSubmit";
 import { notFound } from "next/navigation";
 import { AdminShell, requireAdminPage, OK_MSG } from "../../shell";
 import { loadArtist } from "../../../../lib/artist-data";
-import { PACKAGES, STATUS, SONG_PILLARS } from "../../../../lib/steps";
+import { PACKAGES, STATUS, SONG_PILLARS, rowsInPlan } from "../../../../lib/steps";
 import { songScope } from "../../../../lib/song-scope";
 import { ProgressSummary, StepsTable } from "../../../progress";
 import { fmtDate } from "../../../ui";
@@ -90,7 +90,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
       {sp?.ok && OK_MSG[sp.ok] && <div className="alert alert--ok" role="status">{OK_MSG[sp.ok]}</div>}
 
       <ProgressSummary
-        rows={allRows}
+        rows={rowsInPlan(allRows, artist.packages, artist.monthly_member)}
         lang="en"
         id="progress"
         aside={projects.length > 0 && (
