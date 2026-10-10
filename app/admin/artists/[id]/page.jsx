@@ -187,6 +187,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
           initial={normalizeQuote(savedQuote?.data, startingQuote(projects, rows))}
           savedAt={savedQuote?.updated_at || null}
           saved={!!savedQuote}
+          lang={artist.lang}
         />
       </section>
 

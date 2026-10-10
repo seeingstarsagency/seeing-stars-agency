@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { FIXED_ITEMS, ARTIST_ITEMS, SONG_ITEMS, computeQuote } from "../../../../lib/pricing";
+import { FIXED_ITEMS, ARTIST_ITEMS, SONG_ITEMS, computeQuote, quoteGroups, quoteText } from "../../../../lib/pricing";
 import { saveQuote, quoteToPayments } from "../../actions";
 
-const money = (v) => "$" + Math.round(v).toLocaleString("en-US");
+const money = (v) => "$" + (Math.round(v * 100) / 100).toLocaleString("en-US", { maximumFractionDigits: 2 });
 const cell = { padding: "8px 6px", borderBottom: "1px solid var(--line)", verticalAlign: "middle" };
 const num = { ...cell, textAlign: "center", fontVariantNumeric: "tabular-nums" };
 const priceInput = { width: 64, minHeight: 34, padding: "4px 6px", border: "1.5px solid #1E1B2E", borderRadius: 8, font: "14px var(--body)", textAlign: "right" };
@@ -19,7 +19,7 @@ function Name({ i }) {
   );
 }
 
-export default function PriceCalculator({ artistId, initial, savedAt, saved }) {
+export default function PriceCalculator({ artistId, initial, savedAt, saved, lang = "en" }) {
   const [q, setQ] = useState(initial);
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -52,14 +52,19 @@ export default function PriceCalculator({ artistId, initial, savedAt, saved }) {
     window.location.reload();
   }
 
-  const lines = [
-    ["Fixed (diagnosis + passport)", c.fixed],
-    ["Once per artist", c.artist],
-    ...c.perSong.map((v, j) => [q.songs[j].title || `Song ${j + 1}`, v]),
-    ...(c.discount ? [["Volume discount", -c.discount]] : []),
+  const groups = quoteGroups(q, c);
+  const extras = [
     ...(c.rush ? [["Rush fee", c.rush]] : []),
-    ...(c.minApplied ? [["Minimum applied", c.min - c.sub]] : []),
+    ...(c.minApplied ? [["Adjustment to the minimum", c.min - c.sub]] : []),
+    ...(Math.abs(c.rounding) >= 0.01 ? [["Rounding", c.rounding]] : []),
   ];
+  const [copied, setCopied] = useState(false);
+  async function copyText() {
+    const text = quoteText(q, c, lang);
+    try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2500); }
+    catch { setMsg({ bad: true, text: "Could not copy. Select the text below instead." }); setShowText(true); }
+  }
+  const [showText, setShowText] = useState(false);
 
   return (
     <div className="stack" style={{ gap: 22 }}>
@@ -146,8 +151,20 @@ export default function PriceCalculator({ artistId, initial, savedAt, saved }) {
 
         <aside className="panel stack" style={{ background: "#FFF6D6", gap: 10, flexBasis: 280, position: "sticky", top: 16 }}>
           <strong style={{ fontSize: 13, letterSpacing: 2, textTransform: "uppercase" }}>Price for {q.songs.length === 1 ? "1 song" : `${q.songs.length} songs`}</strong>
-          {lines.map(([t, v]) => (
-            <div key={t} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 15, fontVariantNumeric: "tabular-nums", color: v < 0 ? "#C2457E" : undefined }}>
+          <div className="muted" style={{ fontSize: 13 }}>What the artist reads: the areas each part covers, not the individual tasks.</div>
+          {groups.map((g, j) => (
+            <div key={j} style={{ display: "flex", flexDirection: "column", gap: 3, paddingBottom: 8, borderBottom: "1px solid rgba(30,27,46,.15)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontWeight: 600, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>
+                <span>{g.title.en}</span><span>{money(g.amount)}</span>
+              </div>
+              {g.areas.length ? g.areas.map((a) => (
+                <div key={a.key} style={{ fontSize: 14, paddingLeft: 16, position: "relative" }}><span style={{ position: "absolute", left: 0 }}>✓</span>{a.en}</div>
+              )) : <div className="muted" style={{ fontSize: 14 }}>Nothing to do on this song.</div>}
+              {g.discount > 0 && <div style={{ fontSize: 13, color: "#C2457E" }}>Includes a {g.discountPct}% discount (−{money(g.discount)})</div>}
+            </div>
+          ))}
+          {extras.map(([t, v]) => (
+            <div key={t} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>
               <span>{t}</span><span>{v < 0 ? "−" : ""}{money(Math.abs(v))}</span>
             </div>
           ))}
@@ -157,6 +174,8 @@ export default function PriceCalculator({ artistId, initial, savedAt, saved }) {
           </div>
           <div className="muted" style={{ fontSize: 13 }}>Full Launchpad for these songs: {money(c.full)}. Third-party fees (Copyright Office, distributor) are paid by the artist.</div>
           <button type="button" className="small-btn small-btn--dark" onClick={save} disabled={busy || !dirty}>{dirty ? "Save quote" : "Saved"}</button>
+          <button type="button" className="small-btn" onClick={copyText}>{copied ? "Copied ✓" : `Copy for email (${lang === "es" ? "Spanish" : "English"})`}</button>
+          {showText && <textarea readOnly className="input" aria-label="Quote text" style={{ minHeight: 180, fontSize: 13 }} value={quoteText(q, c, lang)} onFocus={(e) => e.target.select()} />}
           <div className="inline" style={{ gap: 8 }}>
             <button type="button" className="small-btn" onClick={() => toPayments(true)} disabled={busy || dirty}>Add as 2 payments</button>
             <button type="button" className="small-btn" onClick={() => toPayments(false)} disabled={busy || dirty}>Add as 1 payment</button>
