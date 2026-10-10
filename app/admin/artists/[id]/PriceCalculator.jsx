@@ -3,6 +3,10 @@
 import { useMemo, useState } from "react";
 import { FIXED_ITEMS, ARTIST_ITEMS, SONG_ITEMS, computeQuote, quoteGroups, quoteText } from "../../../../lib/pricing";
 import { saveQuote, quoteToPayments } from "../../actions";
+import { Star } from "../../../components";
+import { PACKAGES as PKG_INFO } from "../../../content";
+
+const LAUNCHPAD_COLOR = PKG_INFO.find((p) => p.name === "Launchpad")?.color || "#9CCBE0";
 
 const money = (v) => "$" + (Math.round(v * 100) / 100).toLocaleString("en-US", { maximumFractionDigits: 2 });
 const cell = { padding: "8px 6px", borderBottom: "1px solid var(--line)", verticalAlign: "middle" };
@@ -19,7 +23,7 @@ function Name({ i }) {
   );
 }
 
-export default function PriceCalculator({ artistId, initial, savedAt, saved, lang = "en" }) {
+export default function PriceCalculator({ artistId, artistName = "", initial, savedAt, saved, lang = "en" }) {
   const [q, setQ] = useState(initial);
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -149,7 +153,13 @@ export default function PriceCalculator({ artistId, initial, savedAt, saved, lan
         </div>
 
         <aside className="panel stack" style={{ background: "#FFF6D6", gap: 10, flexBasis: 280, position: "sticky", top: 16 }}>
-          <strong style={{ fontSize: 13, letterSpacing: 2, textTransform: "uppercase" }}>Price for {q.songs.length === 1 ? "1 song" : `${q.songs.length} songs`}</strong>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <strong className="disp" style={{ fontSize: 22, lineHeight: 1.15 }}>Artist Quote - {artistName}</strong>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 600 }}>
+              <Star size={22} fill={LAUNCHPAD_COLOR} stroke="#1E1B2E" strokeWidth={4} />
+              Launchpad
+            </span>
+          </div>
           <div className="muted" style={{ fontSize: 13 }}>What the artist reads: the areas each part covers, not the individual tasks.</div>
           {groups.map((g, j) => (
             <div key={j} style={{ display: "flex", flexDirection: "column", gap: 3, paddingBottom: 8, borderBottom: "1px solid rgba(30,27,46,.15)" }}>

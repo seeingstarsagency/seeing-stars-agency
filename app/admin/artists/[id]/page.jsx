@@ -184,6 +184,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
         </p>
         <PriceCalculator
           artistId={artist.id}
+          artistName={artist.name}
           initial={normalizeQuote(savedQuote?.data, startingQuote(projects, rows))}
           savedAt={savedQuote?.updated_at || null}
           saved={!!savedQuote}
