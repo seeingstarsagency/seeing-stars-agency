@@ -160,7 +160,7 @@ export default function PriceCalculator({ artistId, initial, savedAt, saved, lan
               {g.areas.length ? g.areas.map((a) => (
                 <div key={a.key} style={{ fontSize: 14, paddingLeft: 16, position: "relative" }}><span style={{ position: "absolute", left: 0 }}>✓</span>{a.en}</div>
               )) : <div className="muted" style={{ fontSize: 14 }}>Nothing to do on this song.</div>}
-              {g.discount > 0 && <div style={{ fontSize: 13, color: "#C2457E" }}>Includes a {g.discountPct}% discount (−{money(g.discount)})</div>}
+              {g.discount > 0 && <div style={{ fontSize: 13, color: "#C2457E" }}>Includes a {g.discountPct}% discount</div>}
             </div>
           ))}
           {extras.map(([t, v]) => (
