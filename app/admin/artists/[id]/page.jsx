@@ -7,6 +7,8 @@ import { songScope } from "../../../../lib/song-scope";
 import { ProgressSummary, StepsTable } from "../../../progress";
 import { fmtDate } from "../../../ui";
 import UploadForm from "./UploadForm";
+import PriceCalculator from "./PriceCalculator";
+import { startingQuote, normalizeQuote } from "../../../../lib/pricing";
 import SongPicker from "../../../SongPicker";
 import PhotoUpload from "../../../PhotoUpload";
 import { browserConfig } from "../../../../lib/env";
@@ -42,6 +44,8 @@ export default async function ArtistAdmin({ params, searchParams }) {
   const money = (n) => `$${Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const owed = payments.filter((p) => p.status !== "paid").reduce((a, p) => a + Number(p.amount), 0);
   const hidden = <input type="hidden" name="artist_id" value={artist.id} />;
+  // Launchpad price calculator: the saved quote, or a first version built from the checklist.
+  const { data: savedQuote } = await supabase.from("artist_quotes").select("data, updated_at").eq("artist_id", id).maybeSingle();
   const { projects, current: song, songRows, artistRows, allRows } = songScope(artist, songs, rows, sp?.song);
   const statusSelect = (r) => (
     <select name={`status_${r.id}`} defaultValue={r.status} className="select-sm" aria-label="Status">
@@ -84,6 +88,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
           <a href={`/dashboard?artist=${artist.id}`} className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>View their dashboard</a>
           <a href={`/admin/artists/${artist.id}/questionnaire`} className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", background: "#E3F1F8" }}>{artist.intake_done_at ? "Questionnaire" : "Questionnaire · pending"}</a>
           <a href={`/admin/artists/${artist.id}/astro`} className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", background: "#F2C94C" }}>✦ Astro · Brandbook</a>
+          <a href="#pricing" className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", background: "#FCE4EF" }}>$ Price</a>
           <a href={`/report?artist=${artist.id}`} className="small-btn small-btn--dark" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>Final report</a>
         </div>
       </div>
@@ -171,6 +176,19 @@ export default async function ArtistAdmin({ params, searchParams }) {
           <UploadForm artistId={artist.id} sb={browserConfig()} />
         </section>
       </div>
+
+      <section className="panel" id="pricing">
+        <h2 className="h2">Launchpad price</h2>
+        <p style={{ margin: "0 0 16px", fontSize: 15 }}>
+          Only you see this. Untick what the artist already has (the first version already leaves out what their checklist marks as done), add their songs and save. Each artist keeps their own quote.
+        </p>
+        <PriceCalculator
+          artistId={artist.id}
+          initial={normalizeQuote(savedQuote?.data, startingQuote(projects, rows))}
+          savedAt={savedQuote?.updated_at || null}
+          saved={!!savedQuote}
+        />
+      </section>
 
       <section className="panel panel--blue" id="payments">
         <h2 className="h2">Payments</h2>

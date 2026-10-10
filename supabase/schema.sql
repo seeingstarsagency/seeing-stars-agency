@@ -286,3 +286,17 @@ create index if not exists help_messages_artist on public.help_messages(artist_i
 
 -- The artist's email is optional (added later when they need an invitation)
 alter table public.artists alter column email drop not null;
+
+-- ============ PRICE QUOTES ============
+-- One Launchpad price calculation per artist. Internal: only the admin can see it.
+create table if not exists public.artist_quotes (
+  artist_id uuid primary key references public.artists(id) on delete cascade,
+  data jsonb not null default '{}'::jsonb,
+  total numeric(10,2) not null default 0,
+  updated_at timestamptz not null default now()
+);
+alter table public.artist_quotes enable row level security;
+drop policy if exists "admin all" on public.artist_quotes;
+create policy "admin all" on public.artist_quotes for all using (public.is_admin()) with check (public.is_admin());
+grant select, insert, update, delete on public.artist_quotes to authenticated;
+grant all on public.artist_quotes to service_role;

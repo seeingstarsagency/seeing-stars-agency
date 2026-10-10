@@ -385,3 +385,33 @@ export async function replyHelp(formData) {
   revalidatePath("/dashboard");
   redirect(`/admin/help?ok=sent#t-${artistId}`);
 }
+
+// Launchpad price calculator: one saved quote per artist (admin only).
+export async function saveQuote(artistId, data, total) {
+  const supabase = await requireAdmin();
+  const id = String(artistId).slice(0, 60);
+  const amount = Math.round(Number(total) * 100) / 100;
+  if (!Number.isFinite(amount) || !data || typeof data !== "object") return { error: "Invalid quote" };
+  const { error } = await supabase
+    .from("artist_quotes")
+    .upsert({ artist_id: id, data, total: amount, updated_at: new Date().toISOString() });
+  revalidatePath(`/admin/artists/${id}`);
+  return error ? { error: error.message } : { ok: true };
+}
+
+// Turn the quote into payments the artist sees: one, or two halves.
+export async function quoteToPayments(artistId, total, halves) {
+  const supabase = await requireAdmin();
+  const id = String(artistId).slice(0, 60);
+  const amount = Math.round(Number(total) * 100) / 100;
+  if (!Number.isFinite(amount) || amount <= 0) return { error: "Invalid amount" };
+  const rows = halves
+    ? [
+        { artist_id: id, description: "Launchpad · 1st half", amount: Math.ceil(amount / 2) },
+        { artist_id: id, description: "Launchpad · 2nd half", amount: amount - Math.ceil(amount / 2) },
+      ]
+    : [{ artist_id: id, description: "Launchpad", amount }];
+  const { error } = await supabase.from("payments").insert(rows);
+  revalidatePath(`/admin/artists/${id}`);
+  return error ? { error: error.message } : { ok: true };
+}
