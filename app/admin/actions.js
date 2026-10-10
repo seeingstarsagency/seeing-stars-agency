@@ -400,17 +400,21 @@ export async function saveQuote(artistId, data, total) {
 }
 
 // Turn the quote into payments the artist sees: one, or two halves.
-export async function quoteToPayments(artistId, total, halves) {
+export async function quoteToPayments(artistId, total, halves, lang = "en") {
   const supabase = await requireAdmin();
   const id = String(artistId).slice(0, 60);
   const amount = Math.round(Number(total) * 100) / 100;
   if (!Number.isFinite(amount) || amount <= 0) return { error: "Invalid amount" };
+  // 50% to start the work; 50% once the final report (release passport) is delivered, so no due date yet.
+  const es = lang === "es";
+  const first = Math.round((amount / 2) * 100) / 100;
+  const start = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
   const rows = halves
     ? [
-        { artist_id: id, description: "Launchpad · 1st half", amount: Math.ceil(amount / 2) },
-        { artist_id: id, description: "Launchpad · 2nd half", amount: amount - Math.ceil(amount / 2) },
+        { artist_id: id, description: es ? "Launchpad · 50% para comenzar" : "Launchpad · 50% to get started", amount: first, due_on: start },
+        { artist_id: id, description: es ? "Launchpad · 50% al entregar el informe final" : "Launchpad · 50% on delivery of the final report", amount: Math.round((amount - first) * 100) / 100 },
       ]
-    : [{ artist_id: id, description: "Launchpad", amount }];
+    : [{ artist_id: id, description: "Launchpad", amount, due_on: start }];
   const { error } = await supabase.from("payments").insert(rows);
   revalidatePath(`/admin/artists/${id}`);
   return error ? { error: error.message } : { ok: true };
