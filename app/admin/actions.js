@@ -204,13 +204,36 @@ export async function toggleMilestone(formData) {
   redirect(`/admin/artists/${id}#timeline`);
 }
 
+// ---------- Payments (the artist sees them under "Your payments") ----------
+export async function addPayment(formData) {
+  const supabase = await requireAdmin();
+  const id = str(formData, "artist_id", 60);
+  const description = str(formData, "description", 200);
+  const amount = Math.round(Number(String(formData.get("amount") || "").replace(/[^0-9.]/g, "")) * 100) / 100;
+  const due = str(formData, "due_on", 10);
+  if (description && Number.isFinite(amount)) {
+    await supabase.from("payments").insert({ artist_id: id, description, amount, due_on: /^\d{4}-\d{2}-\d{2}$/.test(due) ? due : null });
+  }
+  redirect(`/admin/artists/${id}#payments`);
+}
+
+export async function togglePayment(formData) {
+  const supabase = await requireAdmin();
+  const id = str(formData, "artist_id", 60);
+  const paid = formData.get("paid") === "true";
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  await supabase.from("payments").update({ status: paid ? "paid" : "pending", paid_on: paid ? today : null }).eq("id", str(formData, "id", 60)).eq("artist_id", id);
+  revalidatePath("/dashboard");
+  redirect(`/admin/artists/${id}#payments`);
+}
+
 // Delete a row from one of the artist's lists.
 export async function deleteItem(formData) {
   const supabase = await requireAdmin();
   const id = str(formData, "artist_id", 60);
   const table = String(formData.get("table"));
   const itemId = str(formData, "id", 60);
-  if (!["next_steps", "notes", "milestones", "artist_files", "songs"].includes(table)) redirect(`/admin/artists/${id}`);
+  if (!["next_steps", "notes", "milestones", "artist_files", "songs", "payments"].includes(table)) redirect(`/admin/artists/${id}`);
   if (table === "artist_files") {
     const { data } = await supabase.from("artist_files").select("path").eq("id", itemId).maybeSingle();
     if (data?.path) await supabaseAdmin().storage.from("artist-files").remove([data.path]);

@@ -16,6 +16,7 @@ import { spotifyConfigured } from "../../../../lib/env";
 import {
   updateArtist, updateSteps, addNextStep, toggleNextStep, addNote, addMilestone,
   toggleMilestone, deleteItem, resendInvite, addSong, importAppleSongs, importSpotifySongs, toggleProjectSong,
+  addPayment, togglePayment,
 } from "../../actions";
 
 function Del({ artistId, table, id }) {
@@ -37,7 +38,9 @@ export default async function ArtistAdmin({ params, searchParams }) {
   const sp = await searchParams;
   const data = await loadArtist(supabase, id);
   if (!data) notFound();
-  const { artist, rows, next, notes, milestones, files, songs, photoUrl } = data;
+  const { artist, rows, next, notes, milestones, files, songs, photoUrl, payments } = data;
+  const money = (n) => `$${Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const owed = payments.filter((p) => p.status !== "paid").reduce((a, p) => a + Number(p.amount), 0);
   const hidden = <input type="hidden" name="artist_id" value={artist.id} />;
   const { projects, current: song, songRows, artistRows, allRows } = songScope(artist, songs, rows, sp?.song);
   const statusSelect = (r) => (
@@ -168,6 +171,35 @@ export default async function ArtistAdmin({ params, searchParams }) {
           <UploadForm artistId={artist.id} sb={browserConfig()} />
         </section>
       </div>
+
+      <section className="panel panel--blue" id="payments">
+        <h2 className="h2">Payments</h2>
+        <p style={{ margin: "0 0 12px", fontSize: 15 }}>The artist sees these under &ldquo;Your payments&rdquo;. Tick the box when a payment comes in. Still to pay: <strong>{money(owed)}</strong></p>
+        <ul className="checks" style={{ margin: "0 0 16px" }}>
+          {payments.map((p) => (
+            <li key={p.id} style={{ alignItems: "center" }}>
+              <form action={togglePayment}>
+                {hidden}
+                <input type="hidden" name="id" value={p.id} />
+                <input type="hidden" name="paid" value={String(p.status !== "paid")} />
+                <button type="submit" className="box" aria-label={p.status === "paid" ? "Mark as not paid" : "Mark as paid"} style={{ cursor: "pointer", background: p.status === "paid" ? "#F2C94C" : "#fff" }}>{p.status === "paid" ? "✓" : ""}</button>
+              </form>
+              <span style={{ flexGrow: 1 }}>
+                <strong>{money(p.amount)}</strong> · {p.description}
+                <span className="muted" style={{ fontSize: 13 }}>{p.due_on ? ` · due ${p.due_on}` : ""}{p.status === "paid" && p.paid_on ? ` · paid ${p.paid_on}` : ""}</span>
+              </span>
+              <Del artistId={artist.id} table="payments" id={p.id} />
+            </li>
+          ))}
+        </ul>
+        <form action={addPayment} className="inline">
+          {hidden}
+          <input name="description" className="input" placeholder="What it's for (e.g. Launchpad · 1st half)" aria-label="Description" required style={{ flex: "2 1 220px" }} />
+          <input name="amount" className="input" inputMode="decimal" placeholder="Amount ($)" aria-label="Amount" required style={{ flex: "1 1 110px" }} />
+          <input name="due_on" type="date" className="input" aria-label="Due date" style={{ flex: "1 1 150px" }} />
+          <button type="submit" className="small-btn small-btn--dark">Add</button>
+        </form>
+      </section>
 
       <section className="panel panel--yellow" id="songs">
         <h2 className="h2">Songs</h2>

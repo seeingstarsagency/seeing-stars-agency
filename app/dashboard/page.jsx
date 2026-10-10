@@ -62,7 +62,7 @@ export default async function Dashboard({ searchParams }) {
     );
   }
 
-  const { artist, rows, next, notes, milestones, files, songs, photoUrl, calendar } = data;
+  const { artist, rows, next, notes, milestones, files, songs, photoUrl, calendar, payments } = data;
   // First visit: the artist fills in the Launchpad questionnaire before anything else.
   if (!isAdmin && !artist.intake_done_at) redirect("/dashboard/intake");
   const { projects, current: song, songRows, artistRows, allRows } = songScope(artist, songs, rows, sp?.song);
@@ -90,6 +90,7 @@ export default async function Dashboard({ searchParams }) {
 
   // Days until the single comes out (calendar days, Miami time).
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const money = (n) => `$${Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const songTitle = song?.title || artist.single_title;
   const songDate = song ? song.release_date : artist.release_date;
   const daysLeft = songDate ? Math.round((Date.parse(songDate) - Date.parse(today)) / 86400000) : null;
@@ -381,6 +382,41 @@ export default async function Dashboard({ searchParams }) {
                   <li key={f.id}><span>{f.name}</span><a href={`/files/${f.id}`} style={{ fontWeight: 600 }}>{t.download}</a></li>
                 ))}
               </ul>
+            )}
+          </section>
+
+          <section className="panel panel--blue" id="payments">
+            <h2 className="h2" style={{ marginBottom: 6 }}>{t.payTitle}</h2>
+            {payments.length === 0 ? (
+              <p style={{ margin: 0 }}>{t.payNone}</p>
+            ) : (
+              <>
+                <div className="paysum">
+                  <span>{t.payOwed}</span>
+                  <strong>{money(payments.filter((p) => p.status !== "paid").reduce((a, p) => a + Number(p.amount), 0))}</strong>
+                </div>
+                <ul className="paylist">
+                  {payments.map((p) => (
+                    <li key={p.id} className={p.status === "paid" ? "is-paid" : p.due_on && p.due_on < today ? "is-late" : ""}>
+                      <div className="paylist__main">
+                        <span className="paylist__desc">{p.description}</span>
+                        <span className="paylist__when">
+                          {p.status === "paid"
+                            ? (p.paid_on ? `${t.payPaidOn} ${fmtDate(p.paid_on, lang)}` : t.payPaid)
+                            : p.due_on ? `${p.due_on < today ? t.payWasDue : t.payDue} ${fmtDate(p.due_on, lang)}` : t.payNoDate}
+                        </span>
+                      </div>
+                      <div className="paylist__right">
+                        <strong>{money(p.amount)}</strong>
+                        <span className={`paychip paychip--${p.status === "paid" ? "paid" : p.due_on && p.due_on < today ? "late" : "pending"}`}>
+                          {p.status === "paid" ? `✓ ${t.payPaid}` : p.due_on && p.due_on < today ? t.payLate : t.payPending}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <p className="payhelp">{t.payHelp} <a href="mailto:seeingstarsagency@gmail.com">seeingstarsagency@gmail.com</a></p>
+              </>
             )}
           </section>
         </div>

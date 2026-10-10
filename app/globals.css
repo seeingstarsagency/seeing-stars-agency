@@ -1332,3 +1332,21 @@ button.btn { cursor: pointer; }
   29% { transform: translate(calc(1.12 * var(--w, 100vw)), calc(1.12 * var(--h, 100vh))) rotate(var(--ang, 30deg)); opacity: 0; }
   100% { transform: translate(calc(1.12 * var(--w, 100vw)), calc(1.12 * var(--h, 100vh))) rotate(var(--ang, 30deg)); opacity: 0; }
 }
+
+/* "Your payments" on the artist dashboard */
+.paysum { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 6px 0 14px; padding: 12px 16px; background: #fff; border: 2px solid var(--ink); border-radius: 14px; box-shadow: 4px 4px 0 var(--ink); }
+.paysum span { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.paysum strong { font-family: var(--display); font-size: 30px; font-weight: 900; }
+.paylist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.paylist li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; background: rgba(255,255,255,.75); border: 1.5px solid var(--ink); border-radius: 12px; }
+.paylist li.is-paid { background: rgba(255,255,255,.45); }
+.paylist li.is-paid .paylist__desc { text-decoration: line-through; text-decoration-color: #F2C94C; text-decoration-thickness: 2px; }
+.paylist li.is-late { border-color: #C2417F; }
+.paylist__main { display: flex; flex-direction: column; min-width: 0; }
+.paylist__desc { font-weight: 700; overflow-wrap: anywhere; }
+.paylist__when { font-size: 13px; color: #555; }
+.paylist__right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; white-space: nowrap; }
+.paychip { font-size: 12px; font-weight: 700; padding: 2px 10px; border: 1.5px solid var(--ink); border-radius: 999px; background: #fff; }
+.paychip--paid { background: #F2C94C; }
+.paychip--late { background: #F28C8C; }
+.payhelp { margin: 12px 0 0; font-size: 13px; }

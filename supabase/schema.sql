@@ -242,3 +242,22 @@ alter table public.calendar_items add column if not exists script text;
 -- EPK: same table and editor as the brandbook, told apart by `book`
 alter table public.brandbook_pages add column if not exists book text not null default 'brandbook';
 create index if not exists brandbook_pages_book on public.brandbook_pages(artist_id, book, position);
+
+-- ============ PAYMENTS ============
+-- What the artist owes / has paid. The agency manages them; the artist only reads their own.
+create table if not exists public.payments (
+  id uuid primary key default gen_random_uuid(),
+  artist_id uuid not null references public.artists(id) on delete cascade,
+  description text not null,
+  amount numeric(10,2) not null default 0,
+  due_on date,
+  status text not null default 'pending' check (status in ('pending','paid')),
+  paid_on date,
+  created_at timestamptz not null default now()
+);
+create index if not exists payments_artist on public.payments(artist_id, due_on);
+alter table public.payments enable row level security;
+create policy "read own" on public.payments for select using (artist_id = public.my_artist_id());
+create policy "admin all" on public.payments for all using (public.is_admin()) with check (public.is_admin());
+grant select on public.payments to authenticated;
+grant all on public.payments to service_role;
