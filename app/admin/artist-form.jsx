@@ -7,7 +7,7 @@ export function NewArtistFields({ defaults = {} }) {
     <>
       <div className="fgrid">
         <div className="field"><label htmlFor="na-name">Artist name *</label><input id="na-name" name="name" className="input" required defaultValue={defaults.name} /></div>
-        <div className="field"><label htmlFor="na-email">Email *</label><input id="na-email" name="email" type="email" className="input" required defaultValue={defaults.email} /></div>
+        <div className="field"><label htmlFor="na-email">Email <span className="muted" style={{ fontWeight: 400 }}>(optional)</span></label><input id="na-email" name="email" type="email" className="input" defaultValue={defaults.email} /></div>
         <div className="field"><label htmlFor="na-legal">Legal name</label><input id="na-legal" name="legal_name" className="input" defaultValue={defaults.legal_name} /></div>
         <div className="field">
           <label htmlFor="na-lang">Artist's language</label>
@@ -30,7 +30,7 @@ export function NewArtistFields({ defaults = {} }) {
         </fieldset>
       </div>
       <label className="opt" style={{ alignSelf: "flex-start" }}>
-        <input type="checkbox" name="send_invite" defaultChecked /> Email an invitation so they can create their password
+        <input type="checkbox" name="send_invite" defaultChecked /> Email an invitation so they can create their password (only if you added an email)
       </label>
     </>
   );

@@ -283,3 +283,6 @@ alter table public.help_messages add column if not exists sender text not null d
 alter table public.help_messages add column if not exists seen_by_artist boolean not null default true;
 create policy "read own" on public.help_messages for select using (artist_id = public.my_artist_id());
 create index if not exists help_messages_artist on public.help_messages(artist_id, created_at);
+
+-- The artist's email is optional (added later when they need an invitation)
+alter table public.artists alter column email drop not null;

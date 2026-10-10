@@ -43,4 +43,5 @@ export const OK_MSG = {
   saved: "Changes saved.",
   uploaded: "File uploaded.",
   intake: "Questionnaire saved. The starting point and progress were updated from the answers.",
+  no_email: "This artist has no email yet. Add it in \u201cArtist details\u201d to send the invitation.",
 };

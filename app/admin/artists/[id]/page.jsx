@@ -75,7 +75,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
         <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
           <PhotoUpload artistId={artist.id} sb={browserConfig()} photoUrl={photoUrl} name={artist.name} label="Change photo" busyLabel="Uploading…" errorLabel="Could not upload the photo (images up to 10 MB)." size={96} />
           <div>
-          <div className="kicker">{artist.email}</div>
+          <div className="kicker">{artist.email || "No email yet"}</div>
           <h1 className="h1">{artist.name}</h1>
           <p className="lead">{artist.user_id ? "Has an account" : "No account yet"} · Language: {artist.lang.toUpperCase()}</p>
           </div>
@@ -334,6 +334,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
           {hidden}
           <div className="fgrid">
             <div className="field"><label htmlFor="ar-name">Artist name</label><input id="ar-name" name="name" className="input" defaultValue={artist.name} required /></div>
+            <div className="field"><label htmlFor="ar-email">Email <span className="muted" style={{ fontWeight: 400 }}>(needed for the invitation)</span></label><input id="ar-email" name="email" type="email" className="input" defaultValue={artist.email || ""} /></div>
             <div className="field">
               <label htmlFor="ar-lang">Language</label>
               <select id="ar-lang" name="lang" className="input" defaultValue={artist.lang}><option value="es">Spanish</option><option value="en">English</option></select>
@@ -360,10 +361,14 @@ export default async function ArtistAdmin({ params, searchParams }) {
           </div>
           <button type="submit" className="btn btn--dark btn--sm" style={{ alignSelf: "flex-start" }}>Save details</button>
         </form>
-        <form action={resendInvite} style={{ marginTop: 16 }}>
-          {hidden}
-          <PendingSubmit className="small-btn">{artist.user_id ? "Resend invitation" : "Send invitation"}</PendingSubmit>
-        </form>
+        {artist.email ? (
+          <form action={resendInvite} style={{ marginTop: 16 }}>
+            {hidden}
+            <PendingSubmit className="small-btn">{artist.user_id ? "Resend invitation" : "Send invitation"}</PendingSubmit>
+          </form>
+        ) : (
+          <p className="muted" style={{ margin: "16px 0 0", fontSize: 14 }}>Add the artist&apos;s email above and save to be able to send them an invitation.</p>
+        )}
       </section>
     </AdminShell>
   );

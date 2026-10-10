@@ -40,7 +40,8 @@ export async function createArtist(formData) {
   const submissionId = str(formData, "submission_id", 60) || null;
   const email = str(formData, "email").toLowerCase();
   const name = str(formData, "name");
-  if (!name || !email) redirect(`${submissionId ? `/admin/submissions/${submissionId}` : "/admin/artists/new"}?error=missing`);
+  // Email is optional: it can be added later from "Artist details" (needed only for the invitation).
+  if (!name) redirect(`${submissionId ? `/admin/submissions/${submissionId}` : "/admin/artists/new"}?error=missing`);
 
   let answers = {};
   if (submissionId) {
@@ -54,7 +55,7 @@ export async function createArtist(formData) {
     .from("artists")
     .insert({
       name,
-      email,
+      email: email || null,
       lang,
       packages,
       legal_name: str(formData, "legal_name") || answers.legal_name || null,
@@ -73,7 +74,7 @@ export async function createArtist(formData) {
     await supabase.from("intake_submissions").update({ status: "converted", artist_id: artist.id }).eq("id", submissionId);
   }
 
-  const sendInvite = formData.get("send_invite") === "on";
+  const sendInvite = formData.get("send_invite") === "on" && Boolean(email);
   let note = "created";
   if (sendInvite) {
     const res = await invite(email, lang, name, packages);
@@ -94,6 +95,7 @@ export async function resendInvite(formData) {
   const admin = supabaseAdmin();
   const id = str(formData, "artist_id", 60);
   const { data: artist } = await admin.from("artists").select("id, email, lang, name, packages").eq("id", id).single();
+  if (!artist?.email) redirect(`/admin/artists/${id}?ok=no_email`);
   const res = await invite(artist.email, artist.lang, artist.name, artist.packages);
   if (res.userId) {
     await admin.from("profiles").upsert({ id: res.userId, role: "artist", artist_id: artist.id });
@@ -109,6 +111,7 @@ export async function updateArtist(formData) {
     .from("artists")
     .update({
       name: str(formData, "name"),
+      email: str(formData, "email").toLowerCase() || null,
       lang: formData.get("lang") === "es" ? "es" : "en",
       packages: formData.getAll("packages").map(String).filter((p) => PACKAGES.includes(p)),
       monthly_member: formData.get("monthly_member") === "on",
