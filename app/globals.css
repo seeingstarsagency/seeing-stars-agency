@@ -1350,3 +1350,33 @@ button.btn { cursor: pointer; }
 .paychip--paid { background: #F2C94C; }
 .paychip--late { background: #F28C8C; }
 .payhelp { margin: 12px 0 0; font-size: 13px; }
+
+/* "Help" button in the dashboard header + its popup */
+.help-btn {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 4px 14px 4px 6px;
+  border: 2px solid var(--yellow); border-radius: 999px; background: var(--yellow); color: var(--ink);
+  font: 800 14px var(--body); cursor: pointer; transition: transform .15s ease, background .15s ease;
+}
+.help-btn span { width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: var(--yellow); display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
+.help-btn:hover, .help-btn:focus-visible { background: #fff; border-color: #fff; transform: translateY(-1px); }
+.help-modal {
+  width: min(560px, calc(100% - 24px)); max-height: calc(100dvh - 32px); margin: auto; padding: 30px 28px 26px;
+  border: 2px solid var(--ink); border-radius: 24px; background: #fff; color: var(--ink); box-shadow: 8px 8px 0 var(--yellow); overflow-y: auto;
+}
+.help-modal::backdrop { background: rgba(30, 27, 46, .55); backdrop-filter: blur(2px); }
+.help-modal[open] { animation: roadIn .25s ease; }
+.help-modal__close { top: 16px; right: 16px; }
+.help-modal textarea { width: 100%; resize: vertical; font: inherit; }
+.help-modal__done { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 10px 0; }
+.help-modal__done p { margin: 0 0 6px; }
+.help-modal__star { font-size: 44px; color: var(--yellow); line-height: 1; }
+
+/* Admin: help inbox */
+.helpalert { display: block; text-decoration: none; background: #FFF6D6; border-color: var(--ink); }
+.helplist { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.helpmsg { background: #fff; border: 1.5px solid var(--ink); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.helpmsg.is-done { opacity: .65; }
+.helpmsg__top { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.helpmsg__who { font-weight: 800; }
+.helpmsg__topic { font-size: 12px; font-weight: 700; padding: 2px 10px; border: 1.5px solid var(--ink); border-radius: 999px; background: #E3F1F8; }
+.helpmsg__body { margin: 0; white-space: pre-wrap; line-height: 1.5; }

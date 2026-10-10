@@ -359,3 +359,12 @@ export async function markSubmissionWithUs(formData) {
   revalidatePath("/admin/requests");
   redirect(`/admin/requests?ok=${undo ? "restored" : "checked"}`);
 }
+
+// Help inbox: mark a message as solved (or reopen it).
+export async function setHelpStatus(formData) {
+  const supabase = await requireAdmin();
+  const status = formData.get("status") === "resolved" ? "resolved" : "open";
+  await supabase.from("help_messages").update({ status }).eq("id", str(formData, "id", 60));
+  revalidatePath("/admin");
+  redirect("/admin/help");
+}

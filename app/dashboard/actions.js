@@ -107,3 +107,18 @@ export async function deleteCalendarItem(formData) {
   revalidatePath("/dashboard/astro");
   redirect(`${back}#cal-${item?.kind || "release"}`);
 }
+
+// ---------- Help ----------
+// The artist sends a message from the "Help" button; it shows up in the admin's Help inbox.
+const TOPICS = ["question", "problem", "payment", "other"];
+export async function sendHelpMessage(formData) {
+  const { user, profile } = await getViewer();
+  if (!user || !profile?.artist_id) return { error: "not allowed" };
+  const body = String(formData.get("body") || "").trim().slice(0, 4000);
+  if (!body) return { error: "empty" };
+  const topic = TOPICS.includes(formData.get("topic")) ? formData.get("topic") : "other";
+  const { error } = await supabaseAdmin().from("help_messages").insert({ artist_id: profile.artist_id, email: user.email || null, topic, body });
+  if (error) return { error: error.message };
+  revalidatePath("/admin");
+  return { ok: true };
+}

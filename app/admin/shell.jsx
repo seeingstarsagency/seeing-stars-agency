@@ -23,6 +23,7 @@ export function AdminShell({ children }) {
           <div className="apphead__right">
             <a href="/admin">Artists</a>
             <a href="/admin/requests">New requests</a>
+            <a href="/admin/help">Help messages</a>
             <a href="/admin/artists/new">+ New artist</a>
             <a href="/questionnaire" target="_blank" rel="noopener noreferrer">Find your package ↗</a>
             <a href="/" target="_blank" rel="noopener noreferrer">View site</a>

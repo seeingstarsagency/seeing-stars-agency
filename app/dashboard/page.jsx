@@ -7,7 +7,7 @@ import { songScope } from "../../lib/song-scope";
 import SongPicker from "../SongPicker";
 import { browserConfig } from "../../lib/env";
 import PhotoUpload from "../PhotoUpload";
-import { setListenPlatform, addCalendarItem, setCalendarStatus, deleteCalendarItem } from "./actions";
+import { setListenPlatform, addCalendarItem, setCalendarStatus, deleteCalendarItem, sendHelpMessage } from "./actions";
 import Calendar from "../Calendar";
 import { Star } from "../components";
 import { AppHeader, LogoutButton, fmtDate } from "../ui";
@@ -15,6 +15,7 @@ import { ProgressSummary, StepsTable } from "../progress";
 import Locked from "../Locked";
 import IPod from "../IPod";
 import DashSky from "../DashSky";
+import HelpButton from "../HelpButton";
 import Roadmap from "../Roadmap";
 import RoadmapButton from "../RoadmapButton";
 import ContentCalendar from "../ContentCalendar";
@@ -45,6 +46,12 @@ export default async function Dashboard({ searchParams }) {
       badge={isAdmin ? "Admin preview" : null}
       right={
         <>
+          {data && !isAdmin && (
+            <HelpButton
+              send={sendHelpMessage}
+              labels={{ button: t.helpBtn, kicker: t.helpKicker, title: t.helpTitle, lead: t.helpLead, topic: t.helpTopic, topics: t.helpTopics, message: t.helpMessage, placeholder: t.helpPh, send: t.helpSend, sending: t.helpSending, error: t.helpError, sentTitle: t.helpSentTitle, sentText: t.helpSentText, close: t.roadClose }}
+            />
+          )}
           {data && <span>{data.artist.name}</span>}
           {isAdmin && <a href={`/admin/artists/${artistId}`}>Admin</a>}
           <LogoutButton lang={lang} />

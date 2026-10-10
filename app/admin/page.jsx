@@ -10,11 +10,12 @@ export const dynamic = "force-dynamic";
 export default async function Admin({ searchParams }) {
   const { supabase } = await requireAdminPage();
   const sp = await searchParams;
-  const [{ data: artists }, { data: steps }, { data: subs }, { data: waiting }] = await Promise.all([
+  const [{ data: artists }, { data: steps }, { data: subs }, { data: waiting }, { data: help }] = await Promise.all([
     supabase.from("artists").select("id, name, packages, release_date, closed_at, user_id, intake_done_at").order("created_at", { ascending: false }),
     supabase.from("artist_steps").select("artist_id, status, start_status"),
     supabase.from("intake_submissions").select("id").eq("status", "new"),
     supabase.from("next_steps").select("artist_id, owner, body").eq("done", false),
+    supabase.from("help_messages").select("id").eq("status", "open"),
   ]);
 
   const stepsBy = {};
@@ -35,6 +36,9 @@ export default async function Admin({ searchParams }) {
         <a href="/admin/artists/new" className="btn btn--accent btn--sm">+ New artist</a>
       </div>
 
+      {(help?.length || 0) > 0 && (
+        <a href="/admin/help" className="alert helpalert" role="status">✦ You have {help.length} open help {help.length === 1 ? "message" : "messages"} from artists. <strong>Read {help.length === 1 ? "it" : "them"} →</strong></a>
+      )}
       <div className="stats">
         <a href="/admin/requests" className="stat stat--link" style={{ background: "#FFF6D6" }} aria-label={`New requests: ${subs?.length || 0}. Open the list`}><div className="stat__v">{subs?.length || 0}</div><div>New requests →</div></a>
         <div className="stat" style={{ background: "#E3F1F8" }}><div className="stat__v">{active.length}</div><div>Active artists</div></div>

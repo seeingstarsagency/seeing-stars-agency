@@ -261,3 +261,20 @@ create policy "read own" on public.payments for select using (artist_id = public
 create policy "admin all" on public.payments for all using (public.is_admin()) with check (public.is_admin());
 grant select on public.payments to authenticated;
 grant all on public.payments to service_role;
+
+-- ============ HELP MESSAGES ============
+-- Sent by artists from the "Help" button (inserted server-side); only the admin can read them.
+create table if not exists public.help_messages (
+  id uuid primary key default gen_random_uuid(),
+  artist_id uuid not null references public.artists(id) on delete cascade,
+  email text,
+  topic text,
+  body text not null,
+  status text not null default 'open' check (status in ('open','resolved')),
+  created_at timestamptz not null default now()
+);
+create index if not exists help_messages_status on public.help_messages(status, created_at desc);
+alter table public.help_messages enable row level security;
+create policy "admin all" on public.help_messages for all using (public.is_admin()) with check (public.is_admin());
+grant select, update, delete on public.help_messages to authenticated;
+grant all on public.help_messages to service_role;
