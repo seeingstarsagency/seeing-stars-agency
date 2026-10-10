@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { getViewer } from "../../lib/supabase";
 import { StarIcon } from "../ui";
+import Toaster from "./Toaster";
 
 export async function requireAdminPage() {
   const v = await getViewer();
@@ -33,6 +34,7 @@ export function AdminShell({ children }) {
         </div>
       </header>
       <main className="container">{children}</main>
+      <Toaster />
     </div>
   );
 }

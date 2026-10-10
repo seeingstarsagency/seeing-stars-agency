@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { supabaseBrowser } from "../../../lib/supabase-browser";
 import { getAgreementTicket, registerAgreement } from "../actions";
+import { toastAfterReload } from "../Toaster";
 
 export default function AgreementUpload({ lang, label, current, sb }) {
   const [msg, setMsg] = useState(null);
@@ -21,6 +22,7 @@ export default function AgreementUpload({ lang, label, current, sb }) {
     const res = await registerAgreement(lang, ticket.path);
     setBusy(false);
     if (res.error) return setMsg({ bad: true, text: "Uploaded, but could not save it: " + res.error });
+    toastAfterReload(`${lang === "es" ? "Spanish" : "English"} Service Agreement uploaded ✓`);
     window.location.reload();
   }
 

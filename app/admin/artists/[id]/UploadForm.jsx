@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { supabaseBrowser } from "../../../../lib/supabase-browser";
 import { getUploadTicket, registerFile } from "../../actions";
+import { toastAfterReload } from "../../Toaster";
 
 export default function UploadForm({ artistId, sb }) {
   const [msg, setMsg] = useState(null);
@@ -28,6 +29,7 @@ export default function UploadForm({ artistId, sb }) {
     const res = await registerFile(artistId, form.name.value.trim() || file.name, ticket.path);
     setBusy(false);
     if (res.error) return setMsg("Uploaded but could not be saved: " + res.error);
+    toastAfterReload("File uploaded ✓");
     window.location.reload();
   }
 

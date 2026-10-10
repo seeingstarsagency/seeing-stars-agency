@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { FIXED_ITEMS, ARTIST_ITEMS, SONG_ITEMS, computeQuote, quoteGroups, quoteText } from "../../../../lib/pricing";
 import { saveQuote, quoteToPayments, sendQuote } from "../../actions";
+import { showToast, toastAfterReload } from "../../Toaster";
 import { Star } from "../../../components";
 import { PACKAGES as PKG_INFO } from "../../../content";
 
@@ -29,7 +30,9 @@ function Name({ i }) {
 
 export default function PriceCalculator({ artistId, artistName = "", hasEmail = false, sent = null, initial, savedAt, saved, lang = "en" }) {
   const [q, setQ] = useState(initial);
-  const [msg, setMsg] = useState(null);
+  const [msg, setMsgRaw] = useState(null);
+  // Every result also shows as a message at the bottom of the screen.
+  const setMsg = (m) => { setMsgRaw(m); if (m) showToast(m.text, m.bad ? "bad" : "ok"); };
   const [busy, setBusy] = useState(false);
   const [dirty, setDirty] = useState(!saved);
   const c = useMemo(() => computeQuote(q), [q]);
@@ -48,7 +51,7 @@ export default function PriceCalculator({ artistId, artistName = "", hasEmail = 
     setBusy(false);
     if (res.error) return setMsg({ bad: true, text: "Could not save: " + res.error });
     setDirty(false);
-    setMsg({ text: "Quote saved for this artist." });
+    setMsg({ text: "Quote saved ✓" });
   }
 
   async function toPayments(halves) {
@@ -56,6 +59,7 @@ export default function PriceCalculator({ artistId, artistName = "", hasEmail = 
     const res = await quoteToPayments(artistId, c.total, halves, lang);
     setBusy(false);
     if (res.error) return setMsg({ bad: true, text: "Could not add the payments: " + res.error });
+    toastAfterReload(halves ? "2 installments added to Payments ✓" : "Payment added ✓");
     window.location.hash = "payments";
     window.location.reload();
   }
@@ -77,7 +81,7 @@ export default function PriceCalculator({ artistId, artistName = "", hasEmail = 
   const [copied, setCopied] = useState(false);
   async function copyText() {
     const text = quoteText(q, c, lang);
-    try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2500); }
+    try { await navigator.clipboard.writeText(text); setCopied(true); showToast("Copied ✓ Paste it into your email"); setTimeout(() => setCopied(false), 2500); }
     catch { setMsg({ bad: true, text: "Could not copy. Select the text below instead." }); setShowText(true); }
   }
   const [showText, setShowText] = useState(false);
@@ -95,7 +99,7 @@ export default function PriceCalculator({ artistId, artistName = "", hasEmail = 
     setConfirmSend(false);
     if (res.error) return setMsg({ bad: true, text: res.error });
     setSentInfo({ sentAt: res.sentAt });
-    setMsg({ text: `Quote sent to ${artistName}. A copy went to your inbox.` });
+    setMsg({ text: `Quote sent to ${artistName} ✓ A copy went to your inbox.` });
   }
 
   // Download the quote box as a PDF that looks exactly like it does here.
@@ -123,6 +127,7 @@ export default function PriceCalculator({ artistId, artistName = "", hasEmail = 
       pdf.addImage(png, "PNG", (pageW - w) / 2, margin, w, h);
       const safe = String(artistName || "artist").replace(/[^\p{L}\p{N}\- ]+/gu, "").trim() || "artist";
       pdf.save(`Artist Quote - ${safe}.pdf`);
+      showToast("PDF downloaded ✓");
     } catch (e) {
       setMsg({ bad: true, text: "Could not create the PDF. Try again, or take a screenshot of the box." });
     }
@@ -270,6 +275,7 @@ export default function PriceCalculator({ artistId, artistName = "", hasEmail = 
                 {sentInfo?.sentAt ? "Send quote again" : "Send quote to artist"}
               </button>
             )}
+            {!accepted && !confirmSend && dirty && hasEmail && <div className="muted" style={{ fontSize: 13 }}>Save the quote first to send it.</div>}
             {!accepted && !hasEmail && <div className="muted" style={{ fontSize: 13 }}>Add the artist&apos;s email in Artist details to send the quote.</div>}
             {!accepted && sentInfo?.sentAt && <div className="muted" style={{ fontSize: 13 }}>Sent {fmtDay(sentInfo.sentAt)}{sentInfo.expiresAt ? ` · link open until ${fmtDay(sentInfo.expiresAt)}` : ""}{sentInfo.link ? <> · <a href={sentInfo.link} target="_blank" rel="noopener noreferrer">open their page</a></> : ""}</div>}
             <button type="button" className="small-btn small-btn--dark" onClick={save} disabled={busy || !dirty}>{dirty ? "Save quote" : "Saved"}</button>
