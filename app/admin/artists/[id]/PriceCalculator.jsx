@@ -160,7 +160,6 @@ export default function PriceCalculator({ artistId, artistName = "", initial, sa
               Launchpad
             </span>
           </div>
-          <div className="muted" style={{ fontSize: 13 }}>What the artist reads: the areas each part covers, not the individual tasks.</div>
           {groups.map((g, j) => (
             <div key={j} style={{ display: "flex", flexDirection: "column", gap: 3, paddingBottom: 8, borderBottom: "1px solid rgba(30,27,46,.15)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontWeight: 600, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>
