@@ -178,7 +178,7 @@ export default function PriceCalculator({ artistId, initial, savedAt, saved, lan
           {showText && <textarea readOnly className="input" aria-label="Quote text" style={{ minHeight: 180, fontSize: 13 }} value={quoteText(q, c, lang)} onFocus={(e) => e.target.select()} />}
           <div className="inline" style={{ gap: 8 }}>
             <button type="button" className="small-btn" onClick={() => toPayments(true)} disabled={busy || dirty}>Pay in 2 installments</button>
-            <button type="button" className="small-btn" onClick={() => toPayments(false)} disabled={busy || dirty}>Add as 1 payment</button>
+            <button type="button" className="small-btn" onClick={() => toPayments(false)} disabled={busy || dirty}>Pay in full</button>
           </div>
           {dirty && <div className="muted" style={{ fontSize: 13 }}>Save the quote before adding it to payments.</div>}
           {savedAt && !dirty && <div className="muted" style={{ fontSize: 13 }}>Last saved {new Date(savedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>}
