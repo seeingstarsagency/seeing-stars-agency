@@ -1315,17 +1315,18 @@ button.btn { cursor: pointer; }
 .dshoot--down { top: 0; animation-name: dshootDown; animation-delay: 2.5s; }
 .dshoot--late { animation-delay: 5s; animation-duration: 12s; }
 .dshoot--later { animation-delay: 7.5s; animation-duration: 12s; }
+/* The head starts exactly on one corner and reaches the opposite corner before fading out. */
 @keyframes dshootUp {
-  0% { transform: translate(-5vw, 5vh) rotate(calc(-1 * var(--ang, 30deg))); opacity: 0; }
-  2% { opacity: 1; }
-  22% { opacity: 1; }
-  26% { transform: translate(110vw, -110vh) rotate(calc(-1 * var(--ang, 30deg))); opacity: 0; }
-  100% { transform: translate(110vw, -110vh) rotate(calc(-1 * var(--ang, 30deg))); opacity: 0; }
+  0% { transform: translate(0, 0) rotate(calc(-1 * var(--ang, 30deg))); opacity: 0; }
+  1% { opacity: 1; }
+  25% { transform: translate(var(--w, 100vw), calc(-1 * var(--h, 100vh))) rotate(calc(-1 * var(--ang, 30deg))); opacity: 1; }
+  29% { transform: translate(calc(1.12 * var(--w, 100vw)), calc(-1.12 * var(--h, 100vh))) rotate(calc(-1 * var(--ang, 30deg))); opacity: 0; }
+  100% { transform: translate(calc(1.12 * var(--w, 100vw)), calc(-1.12 * var(--h, 100vh))) rotate(calc(-1 * var(--ang, 30deg))); opacity: 0; }
 }
 @keyframes dshootDown {
-  0% { transform: translate(-5vw, -5vh) rotate(var(--ang, 30deg)); opacity: 0; }
-  2% { opacity: 1; }
-  22% { opacity: 1; }
-  26% { transform: translate(110vw, 110vh) rotate(var(--ang, 30deg)); opacity: 0; }
-  100% { transform: translate(110vw, 110vh) rotate(var(--ang, 30deg)); opacity: 0; }
+  0% { transform: translate(0, 0) rotate(var(--ang, 30deg)); opacity: 0; }
+  1% { opacity: 1; }
+  25% { transform: translate(var(--w, 100vw), var(--h, 100vh)) rotate(var(--ang, 30deg)); opacity: 1; }
+  29% { transform: translate(calc(1.12 * var(--w, 100vw)), calc(1.12 * var(--h, 100vh))) rotate(var(--ang, 30deg)); opacity: 0; }
+  100% { transform: translate(calc(1.12 * var(--w, 100vw)), calc(1.12 * var(--h, 100vh))) rotate(var(--ang, 30deg)); opacity: 0; }
 }

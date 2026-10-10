@@ -8,8 +8,12 @@ export default function DashSky() {
   const ref = useRef(null);
   useEffect(() => {
     const set = () => {
-      const a = (Math.atan2(window.innerHeight, window.innerWidth) * 180) / Math.PI;
-      ref.current?.style.setProperty("--ang", `${a}deg`);
+      const el = ref.current;
+      if (!el) return;
+      const w = el.clientWidth, h = el.clientHeight;
+      el.style.setProperty("--w", `${w}px`);
+      el.style.setProperty("--h", `${h}px`);
+      el.style.setProperty("--ang", `${(Math.atan2(h, w) * 180) / Math.PI}deg`);
     };
     set();
     window.addEventListener("resize", set);
