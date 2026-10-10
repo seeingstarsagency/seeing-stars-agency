@@ -14,6 +14,7 @@ import { AppHeader, LogoutButton, fmtDate } from "../ui";
 import { ProgressSummary, StepsTable } from "../progress";
 import Locked from "../Locked";
 import IPod from "../IPod";
+import DashSky from "../DashSky";
 import Roadmap from "../Roadmap";
 import RoadmapButton from "../RoadmapButton";
 import ContentCalendar from "../ContentCalendar";
@@ -134,13 +135,8 @@ export default async function Dashboard({ searchParams }) {
   return (
     <div className="app">
       {header}
-      {/* Shooting stars now and then, like on the home page */}
-      <div className="dash-sky" aria-hidden="true">
-        <div className="shoot" style={{ left: "-8%", top: "45%" }} />
-        <div className="shoot shoot--pink" style={{ left: "30%", top: "80%" }} />
-        <div className="shoot shoot--slow" style={{ left: "55%", top: "40%" }} />
-        <div className="shoot shoot--pink shoot--late" style={{ left: "8%", top: "100%" }} />
-      </div>
+      {/* Shooting stars crossing the screen corner to corner, like on the home page */}
+      <DashSky />
       <main className="container dash-main">
         <div className="dash-l">
           <div className="dash-l__main">

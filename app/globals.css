@@ -1301,6 +1301,31 @@ button.btn { cursor: pointer; }
 
 /* Dashboard: a few shooting stars crossing the page now and then (in front, but never in the way of clicks) */
 .dash-sky { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 30; }
-.shoot--slow { animation-duration: 11s; animation-delay: 6s; }
-.shoot--late { animation-duration: 13s; animation-delay: 9s; }
 @media (prefers-reduced-motion: reduce) { .dash-sky { display: none; } }
+.dshoot {
+  position: absolute; left: 0; width: 180px; height: 3px; margin-top: -1.5px; border-radius: 3px; opacity: 0;
+  transform-origin: 100% 50%; translate: -180px 0;
+  background: linear-gradient(90deg, rgba(242, 201, 76, 0), var(--yellow));
+  animation-duration: 10s; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+.dshoot--pink { background: linear-gradient(90deg, rgba(244, 166, 201, 0), var(--pink)); }
+/* bottom-left corner → top-right corner */
+.dshoot--up { top: 100%; animation-name: dshootUp; }
+/* top-left corner → bottom-right corner */
+.dshoot--down { top: 0; animation-name: dshootDown; animation-delay: 2.5s; }
+.dshoot--late { animation-delay: 5s; animation-duration: 12s; }
+.dshoot--later { animation-delay: 7.5s; animation-duration: 12s; }
+@keyframes dshootUp {
+  0% { transform: translate(-5vw, 5vh) rotate(calc(-1 * var(--ang, 30deg))); opacity: 0; }
+  2% { opacity: 1; }
+  22% { opacity: 1; }
+  26% { transform: translate(110vw, -110vh) rotate(calc(-1 * var(--ang, 30deg))); opacity: 0; }
+  100% { transform: translate(110vw, -110vh) rotate(calc(-1 * var(--ang, 30deg))); opacity: 0; }
+}
+@keyframes dshootDown {
+  0% { transform: translate(-5vw, -5vh) rotate(var(--ang, 30deg)); opacity: 0; }
+  2% { opacity: 1; }
+  22% { opacity: 1; }
+  26% { transform: translate(110vw, 110vh) rotate(var(--ang, 30deg)); opacity: 0; }
+  100% { transform: translate(110vw, 110vh) rotate(var(--ang, 30deg)); opacity: 0; }
+}
