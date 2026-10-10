@@ -56,7 +56,6 @@ export default function PriceCalculator({ artistId, initial, savedAt, saved, lan
   const extras = [
     ...(c.rush ? [["Rush fee", c.rush]] : []),
     ...(c.minApplied ? [["Adjustment to the minimum", c.min - c.sub]] : []),
-    ...(Math.abs(c.rounding) >= 0.01 ? [["Rounding", c.rounding]] : []),
   ];
   const [copied, setCopied] = useState(false);
   async function copyText() {
