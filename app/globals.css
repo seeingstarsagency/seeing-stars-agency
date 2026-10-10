@@ -1259,3 +1259,14 @@ button.btn { cursor: pointer; }
   .cam__bottom { position: static; margin-top: auto; padding-top: 12px; }
   .cam__desc { margin-bottom: 0; }
 }
+
+/* A step from a package the artist doesn't have yet (e.g. Comet's campaign plan) */
+.steps__row--locked .steps__blur { filter: blur(4px); opacity: .55; user-select: none; pointer-events: none; }
+.steps__row--locked .steps__name { position: relative; }
+.steps__unlock {
+  display: inline-block; margin-left: 10px; vertical-align: middle; font-size: 12px; font-weight: 800; letter-spacing: .02em;
+  color: #fff; background: var(--ink); padding: 4px 12px; border-radius: 999px; text-decoration: none; white-space: nowrap;
+  box-shadow: 2px 2px 0 var(--yellow);
+}
+.steps__unlock:hover, .steps__unlock:focus-visible { color: var(--ink); background: var(--yellow); box-shadow: 2px 2px 0 var(--ink); }
+@media (max-width: 640px) { .steps__unlock { margin: 6px 0 0; } }

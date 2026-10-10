@@ -53,7 +53,8 @@ export function ProgressSummary({ rows, lang, aside, id }) {
   );
 }
 
-export function StepsTable({ rows, lang, renderStatus, pillars }) {
+// `lockedPkgs`: packages the artist doesn't have; their steps show blurred with an unlock tag.
+export function StepsTable({ rows, lang, renderStatus, pillars, lockedPkgs = [] }) {
   const t = T[lang];
   const byKey = Object.fromEntries(rows.map((r) => [r.step_key, r]));
   return (
@@ -69,7 +70,7 @@ export function StepsTable({ rows, lang, renderStatus, pillars }) {
         </thead>
         <tbody>
           {PILLARS.filter((p) => !pillars || pillars.includes(p.key)).map((p) => (
-            <PillarRows key={p.key} pillar={p} byKey={byKey} lang={lang} t={t} renderStatus={renderStatus} />
+            <PillarRows key={p.key} pillar={p} byKey={byKey} lang={lang} t={t} renderStatus={renderStatus} lockedPkgs={lockedPkgs} />
           ))}
         </tbody>
       </table>
@@ -77,7 +78,7 @@ export function StepsTable({ rows, lang, renderStatus, pillars }) {
   );
 }
 
-function PillarRows({ pillar, byKey, lang, t, renderStatus }) {
+function PillarRows({ pillar, byKey, lang, t, renderStatus, lockedPkgs }) {
   const steps = STEPS.filter((s) => s.pillar === pillar.key && byKey[s.key]);
   if (!steps.length) return null;
   return (
@@ -85,6 +86,20 @@ function PillarRows({ pillar, byKey, lang, t, renderStatus }) {
       <tr className={`group group--${pillar.key}`}><td colSpan={4}><span className="group__dot" aria-hidden="true" />{pick(lang, pillar)}</td></tr>
       {steps.map((s) => {
         const r = byKey[s.key];
+        const locked = lockedPkgs.includes(s.pkg);
+        if (locked) {
+          return (
+            <tr key={s.key} className={`steps__row steps__row--${pillar.key} steps__row--locked`}>
+              <td className="steps__name">
+                <span className="steps__blur" aria-hidden="true"><StepName text={pick(lang, s)} /></span>
+                <a href="/#contact" className="steps__unlock">✦ {t.lockedCta.replace("{pkg}", s.pkg)}</a>
+              </td>
+              <td className="muted" data-label={t.colStart}><span className="steps__blur" aria-hidden="true">{t.no}</span></td>
+              <td data-label={t.colToday}><span className="steps__blur chip" aria-hidden="true" style={{ background: STATUS.pending.bg }}>{STATUS.pending[lang]}</span></td>
+              <td className="muted" data-label={t.colPkg}>{s.pkg}</td>
+            </tr>
+          );
+        }
         return (
           <tr key={s.key} className={`steps__row steps__row--${pillar.key}`}>
             <td className="steps__name">

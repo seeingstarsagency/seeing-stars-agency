@@ -264,7 +264,7 @@ export default async function Dashboard({ searchParams }) {
           <h2 className="h2" style={{ fontSize: 28 }}>{t.stepByStep}</h2>
           <p style={{ margin: "0 0 18px", fontSize: 15 }}>{t.stepByStepLead}</p>
           {songRows.length ? (
-            <StepsTable rows={songRows} lang={lang} pillars={SONG_PILLARS} />
+            <StepsTable rows={songRows} lang={lang} pillars={SONG_PILLARS} lockedPkgs={hasPkg("Comet") ? [] : ["Comet"]} />
           ) : (
             <p style={{ margin: 0 }}>{t.noProjectSong}</p>
           )}
