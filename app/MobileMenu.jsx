@@ -23,8 +23,8 @@ export default function MobileMenu({ links, contactHref }) {
         Menu
       </summary>
       <div className="mnav__panel nav">
-        {links.map(([href, label]) => (
-          <span key={href} className="nav-item"><a href={href} onClick={shut}>{label}</a></span>
+        {links.map(([href, label, kind]) => (
+          <span key={href} className={`nav-item${kind ? ` nav-item--${kind}` : ""}`}><a href={href} onClick={shut}>{label}</a></span>
         ))}
         <a href={contactHref} className="btn btn--dark btn--sm mnav__contact" onClick={shut}>Get in contact!</a>
       </div>

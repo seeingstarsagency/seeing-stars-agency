@@ -29,13 +29,13 @@ export default function Home() {
           <span className="nav-item"><a href="#services">Services</a></span>
           <span className="nav-item"><a href="#packages">Packages</a></span>
           <span className="nav-item"><a href="#bundles">Bundles</a></span>
-          <span className="nav-item"><a href="/login">Client login</a></span>
+          <span className="nav-item nav-item--artist"><a href="/login">Artist Login</a></span>
         </nav>
         <a href="#contact" className="btn btn--dark btn--sm header__contact">
           Get in contact!
         </a>
         <MobileMenu
-          links={[["#services", "Services"], ["#packages", "Packages"], ["#bundles", "Bundles"], ["/login", "Client login"]]}
+          links={[["#services", "Services"], ["#packages", "Packages"], ["#bundles", "Bundles"], ["/login", "Artist Login", "artist"]]}
           contactHref="#contact"
         />
       </header>
