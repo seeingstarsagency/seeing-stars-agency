@@ -171,6 +171,7 @@ export default function PriceCalculator({ artistId, initial, savedAt, saved, lan
             <span>Total</span>
             <span className="disp" style={{ fontSize: 40, fontWeight: 900, fontVariantNumeric: "tabular-nums" }}>{money(c.total)}</span>
           </div>
+          <div style={{ fontSize: 14, display: "flex", gap: 8 }}><span aria-hidden="true">✦</span><span>Includes access to your own dashboard on seeingstarsagency.com, where you can manage all your information in one place.</span></div>
           <div className="muted" style={{ fontSize: 13 }}>Full Launchpad for these songs: {money(c.full)}. Third-party fees (Copyright Office, distributor) are paid by the artist.</div>
           <button type="button" className="small-btn small-btn--dark" onClick={save} disabled={busy || !dirty}>{dirty ? "Save quote" : "Saved"}</button>
           <button type="button" className="small-btn" onClick={copyText}>{copied ? "Copied ✓" : `Copy for email (${lang === "es" ? "Spanish" : "English"})`}</button>
