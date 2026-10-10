@@ -450,15 +450,21 @@ export async function sendQuote(artistId) {
   const { data: artist } = await admin.from("artists").select("id, name, email, lang").eq("id", id).maybeSingle();
   if (!artist) return { error: "Artist not found." };
   if (!artist.email) return { error: "Add the artist's email in Artist details first." };
-  const { data: row } = await admin.from("artist_quotes").select("data, accepted_at").eq("artist_id", id).maybeSingle();
+  const { data: row } = await admin.from("artist_quotes").select("data, accepted_at, agreement_path").eq("artist_id", id).maybeSingle();
   if (!row) return { error: "Save the quote first." };
   if (row.accepted_at) return { error: "This quote was already accepted." };
 
   const lang = artist.lang === "es" ? "es" : "en";
-  const { data: setting } = await admin.from("agency_settings").select("value").eq("key", `agreement_${lang}`).maybeSingle();
-  if (!setting?.value) return { error: `Upload the Service Agreement PDF (${lang === "es" ? "Spanish" : "English"}) in Settings first.` };
-  const file = await admin.storage.from("artist-files").download(setting.value);
-  if (file.error) return { error: "Could not read the Service Agreement PDF. Upload it again in Settings." };
+  // This artist's own agreement if there is one; otherwise the general one from Settings.
+  const own = row.agreement_path || "";
+  let agreementPath = own;
+  if (!agreementPath) {
+    const { data: setting } = await admin.from("agency_settings").select("value").eq("key", `agreement_${lang}`).maybeSingle();
+    if (!setting?.value) return { error: `Upload ${artist.name}'s Service Agreement below, or the general one (${lang === "es" ? "Spanish" : "English"}) in Settings, first.` };
+    agreementPath = setting.value;
+  }
+  const file = await admin.storage.from("artist-files").download(agreementPath);
+  if (file.error) return { error: own ? "Could not read this artist's Service Agreement PDF. Upload it again." : "Could not read the Service Agreement PDF. Upload it again in Settings." };
   const pdf = Buffer.from(await file.data.arrayBuffer()).toString("base64");
 
   const q = normalizeQuote(row.data, startingQuote([], []));
@@ -471,7 +477,7 @@ export async function sendQuote(artistId) {
     bcc: ADMIN_EMAIL(),
     replyTo: ADMIN_EMAIL(),
     ...mail,
-    attachments: [{ filename: lang === "es" ? "Contrato de Servicio Launchpad.pdf" : "Launchpad Service Agreement.pdf", content: pdf }],
+    attachments: [{ filename: agreementFilename(lang, own ? artist.name : ""), content: pdf }],
   });
   if (res.error) return { error: res.error };
 
@@ -485,10 +491,49 @@ export async function sendQuote(artistId) {
       sent_lang: lang,
       sent_data: snap,
       sent_total: snap.total,
+      sent_agreement: agreementPath,
     })
     .eq("artist_id", id);
   revalidatePath(`/admin/artists/${id}`);
   return error ? { error: "The email was sent, but saving the link failed: " + error.message } : { ok: true, sentAt: now.toISOString() };
+}
+
+// File name of the attached agreement: the artist's name when it was written for them.
+function agreementFilename(lang, artistName) {
+  const base = lang === "es" ? "Contrato de Servicio Launchpad" : "Launchpad Service Agreement";
+  const who = String(artistName || "").replace(/[\\/:*?"<>|]+/g, "").trim().slice(0, 80);
+  return who ? `${base} - ${who}.pdf` : `${base}.pdf`;
+}
+
+// One artist's own Service Agreement: the PDF goes straight from the browser to storage.
+export async function getArtistAgreementTicket(artistId) {
+  await requireAdmin();
+  const id = String(artistId).replace(/[^a-zA-Z0-9-]/g, "").slice(0, 60);
+  const { data: row } = await supabaseAdmin().from("artist_quotes").select("artist_id, accepted_at").eq("artist_id", id).maybeSingle();
+  if (!row) return { error: "Save the quote first." };
+  if (row.accepted_at) return { error: "This quote was already accepted, so its agreement can't change." };
+  const path = `agency/agreements/${id}-${Date.now()}.pdf`;
+  const { data, error } = await supabaseAdmin().storage.from("artist-files").createSignedUploadUrl(path);
+  if (error) return { error: error.message };
+  return { path, token: data.token };
+}
+
+export async function registerArtistAgreement(artistId, path) {
+  await requireAdmin();
+  const id = String(artistId).replace(/[^a-zA-Z0-9-]/g, "").slice(0, 60);
+  if (!String(path).startsWith(`agency/agreements/${id}-`)) return { error: "bad path" };
+  const { error } = await supabaseAdmin().from("artist_quotes").update({ agreement_path: path }).eq("artist_id", id).is("accepted_at", null);
+  revalidatePath(`/admin/artists/${id}`);
+  return error ? { error: error.message } : { ok: true };
+}
+
+// Go back to the general agreement from Settings. The uploaded file stays in storage.
+export async function removeArtistAgreement(artistId) {
+  await requireAdmin();
+  const id = String(artistId).replace(/[^a-zA-Z0-9-]/g, "").slice(0, 60);
+  const { error } = await supabaseAdmin().from("artist_quotes").update({ agreement_path: null }).eq("artist_id", id).is("accepted_at", null);
+  revalidatePath(`/admin/artists/${id}`);
+  return error ? { error: error.message } : { ok: true };
 }
 
 // Agency settings: payment instructions shown after an artist accepts a quote.

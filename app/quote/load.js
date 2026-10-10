@@ -4,7 +4,7 @@ import { supabaseAdmin } from "../../lib/supabase";
 export async function loadQuoteByToken(token) {
   if (!token || typeof token !== "string" || token.length < 20 || token.length > 80) return { state: "missing" };
   const admin = supabaseAdmin();
-  const { data: q } = await admin.from("artist_quotes").select("artist_id, sent_data, sent_lang, expires_at, accepted_at, accepted_name, accepted_choice").eq("token", token).maybeSingle();
+  const { data: q } = await admin.from("artist_quotes").select("artist_id, sent_data, sent_lang, expires_at, accepted_at, accepted_name, accepted_choice, sent_agreement").eq("token", token).maybeSingle();
   if (!q?.sent_data) return { state: "missing" };
   const { data: artist } = await admin.from("artists").select("id, name, email, lang").eq("id", q.artist_id).maybeSingle();
   if (!artist) return { state: "missing" };

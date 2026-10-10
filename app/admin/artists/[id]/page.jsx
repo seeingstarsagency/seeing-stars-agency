@@ -8,6 +8,7 @@ import { ProgressSummary, StepsTable } from "../../../progress";
 import { fmtDate } from "../../../ui";
 import UploadForm from "./UploadForm";
 import PriceCalculator from "./PriceCalculator";
+import ArtistAgreement from "./ArtistAgreement";
 import { startingQuote, normalizeQuote } from "../../../../lib/pricing";
 import SongPicker from "../../../SongPicker";
 import PhotoUpload from "../../../PhotoUpload";
@@ -45,7 +46,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
   const owed = payments.filter((p) => p.status !== "paid").reduce((a, p) => a + Number(p.amount), 0);
   const hidden = <input type="hidden" name="artist_id" value={artist.id} />;
   // Launchpad price calculator: the saved quote, or a first version built from the checklist.
-  const { data: savedQuote } = await supabase.from("artist_quotes").select("data, updated_at, token, sent_at, expires_at, accepted_at, accepted_name, accepted_choice").eq("artist_id", id).maybeSingle();
+  const { data: savedQuote } = await supabase.from("artist_quotes").select("data, updated_at, token, sent_at, expires_at, accepted_at, accepted_name, accepted_choice, agreement_path").eq("artist_id", id).maybeSingle();
   const { projects, current: song, songRows, artistRows, allRows } = songScope(artist, songs, rows, sp?.song);
   const statusSelect = (r) => (
     <select name={`status_${r.id}`} defaultValue={r.status} className="select-sm" aria-label="Status">
@@ -191,6 +192,14 @@ export default async function ArtistAdmin({ params, searchParams }) {
           savedAt={savedQuote?.updated_at || null}
           saved={!!savedQuote}
           lang={artist.lang}
+        />
+        <ArtistAgreement
+          artistId={artist.id}
+          artistName={artist.name}
+          current={!!savedQuote?.agreement_path}
+          saved={!!savedQuote}
+          accepted={!!savedQuote?.accepted_at}
+          sb={browserConfig()}
         />
       </section>
 

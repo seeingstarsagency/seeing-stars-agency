@@ -324,3 +324,11 @@ drop policy if exists "admin all" on public.agency_settings;
 create policy "admin all" on public.agency_settings for all using (public.is_admin()) with check (public.is_admin());
 grant select, insert, update, delete on public.agency_settings to authenticated;
 grant all on public.agency_settings to service_role;
+
+-- ============ SERVICE AGREEMENT PER ARTIST (October 2026) ============
+-- Optional agreement written for one artist (their name, song and price). When set, it is sent
+-- with their quote instead of the general one in Settings.
+alter table public.artist_quotes add column if not exists agreement_path text;
+-- The exact agreement file that went out with the quote, so the quote page shows (and the record keeps)
+-- the version the artist accepted, even if a newer file is uploaded later.
+alter table public.artist_quotes add column if not exists sent_agreement text;
