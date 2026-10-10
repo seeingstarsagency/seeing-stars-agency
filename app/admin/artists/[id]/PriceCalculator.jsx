@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { FIXED_ITEMS, ARTIST_ITEMS, SONG_ITEMS, computeQuote, quoteGroups, quoteText } from "../../../../lib/pricing";
 import { saveQuote, quoteToPayments } from "../../actions";
 import { Star } from "../../../components";
@@ -8,7 +8,11 @@ import { PACKAGES as PKG_INFO } from "../../../content";
 
 const LAUNCHPAD_COLOR = PKG_INFO.find((p) => p.name === "Launchpad")?.color || "#9CCBE0";
 
-const money = (v) => "$" + (Math.round(v * 100) / 100).toLocaleString("en-US", { maximumFractionDigits: 2 });
+const money = (v) => {
+  const n = Math.round(v * 100) / 100;
+  const cents = Math.abs(n % 1) > 0.001;
+  return "$" + n.toLocaleString("en-US", { minimumFractionDigits: cents ? 2 : 0, maximumFractionDigits: 2 });
+};
 const cell = { padding: "8px 6px", borderBottom: "1px solid var(--line)", verticalAlign: "middle" };
 const num = { ...cell, textAlign: "center", fontVariantNumeric: "tabular-nums" };
 const priceInput = { width: 64, minHeight: 34, padding: "4px 6px", border: "1.5px solid #1E1B2E", borderRadius: 8, font: "14px var(--body)", textAlign: "right" };
@@ -77,6 +81,37 @@ export default function PriceCalculator({ artistId, artistName = "", initial, sa
     catch { setMsg({ bad: true, text: "Could not copy. Select the text below instead." }); setShowText(true); }
   }
   const [showText, setShowText] = useState(false);
+
+  // Download the quote box as a PDF that looks exactly like it does here.
+  const boxRef = useRef(null);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  async function downloadPdf() {
+    if (!boxRef.current) return;
+    setPdfBusy(true);
+    setMsg(null);
+    try {
+      const [{ toPng }, { jsPDF }] = await Promise.all([import("html-to-image"), import("jspdf")]);
+      if (document.fonts?.ready) await document.fonts.ready;
+      const node = boxRef.current;
+      const png = await toPng(node, { pixelRatio: 3, cacheBust: true, style: { position: "static", top: "auto" } });
+      const img = new Image();
+      img.src = png;
+      await img.decode();
+      const pdf = new jsPDF({ unit: "pt", format: "letter" });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const margin = 54;
+      let w = Math.min(420, pageW - margin * 2);
+      let h = (img.height / img.width) * w;
+      if (h > pageH - margin * 2) { h = pageH - margin * 2; w = (img.width / img.height) * h; }
+      pdf.addImage(png, "PNG", (pageW - w) / 2, margin, w, h);
+      const safe = String(artistName || "artist").replace(/[^\p{L}\p{N}\- ]+/gu, "").trim() || "artist";
+      pdf.save(`Artist Quote - ${safe}.pdf`);
+    } catch (e) {
+      setMsg({ bad: true, text: "Could not create the PDF. Try again, or take a screenshot of the box." });
+    }
+    setPdfBusy(false);
+  }
 
   return (
     <div className="stack" style={{ gap: 22 }}>
@@ -163,7 +198,7 @@ export default function PriceCalculator({ artistId, artistName = "", initial, sa
 
         <div className="stack" style={{ gap: 14, flexBasis: 300, position: "sticky", top: 16 }}>
           {/* The quote box: only what the artist should see, in their language, ready to send. */}
-          <aside className="panel stack" aria-label="Artist quote" style={{ background: "#FFF6D6", gap: 10 }}>
+          <aside ref={boxRef} className="panel stack" aria-label="Artist quote" style={{ background: "#FFF6D6", gap: 10 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
               <strong className="disp" style={{ fontSize: 22, lineHeight: 1.15 }}>Artist Quote - {artistName}</strong>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 600 }}>
@@ -199,6 +234,7 @@ export default function PriceCalculator({ artistId, artistName = "", initial, sa
           <div className="stack" style={{ gap: 8, padding: "4px 2px" }}>
             <div className="muted" style={{ fontSize: 13 }}>Full Launchpad for these songs: {money(c.full)}</div>
             <button type="button" className="small-btn small-btn--dark" onClick={save} disabled={busy || !dirty}>{dirty ? "Save quote" : "Saved"}</button>
+            <button type="button" className="small-btn small-btn--dark" onClick={downloadPdf} disabled={pdfBusy}>{pdfBusy ? "Creating PDF…" : "Download PDF"}</button>
             <button type="button" className="small-btn" onClick={copyText}>{copied ? "Copied ✓" : `Copy for email (${lang === "es" ? "Spanish" : "English"})`}</button>
             {showText && <textarea readOnly className="input" aria-label="Quote text" style={{ minHeight: 180, fontSize: 13 }} value={quoteText(q, c, lang)} onFocus={(e) => e.target.select()} />}
             <div className="inline" style={{ gap: 8 }}>
