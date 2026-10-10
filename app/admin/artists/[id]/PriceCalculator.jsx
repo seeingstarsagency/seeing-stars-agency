@@ -57,9 +57,18 @@ export default function PriceCalculator({ artistId, artistName = "", initial, sa
   }
 
   const groups = quoteGroups(q, c);
+  const L = lang === "es" ? "es" : "en";
+  const TX = {
+    en: { nothing: "Nothing to do on this song.", disc: "Includes a {p}% discount", rush: "Rush (release in less than 21 days)", min: "Adjustment to the minimum price",
+      dash: "Includes access to your own artist dashboard, where you can manage all your information in one place.",
+      fees: "Third-party fees (Copyright Office, distributor) are paid directly by the artist." },
+    es: { nothing: "Nada que hacer en esta canción.", disc: "Incluye un descuento del {p}%", rush: "Urgencia (lanzamiento en menos de 21 días)", min: "Ajuste al precio mínimo",
+      dash: "Incluye acceso a tu propio panel de artista, donde puedes manejar toda tu información en un solo lugar.",
+      fees: "Las tarifas de terceros (Copyright Office, distribuidora) las paga el artista directamente." },
+  }[L];
   const extras = [
-    ...(c.rush ? [["Rush fee", c.rush]] : []),
-    ...(c.minApplied ? [["Adjustment to the minimum", c.min - c.sub]] : []),
+    ...(c.rush ? [[TX.rush, c.rush]] : []),
+    ...(c.minApplied ? [[TX.min, c.min - c.sub]] : []),
   ];
   const [copied, setCopied] = useState(false);
   async function copyText() {
@@ -152,47 +161,55 @@ export default function PriceCalculator({ artistId, artistName = "", initial, sa
           </div>
         </div>
 
-        <aside className="panel stack" style={{ background: "#FFF6D6", gap: 10, flexBasis: 280, position: "sticky", top: 16 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <strong className="disp" style={{ fontSize: 22, lineHeight: 1.15 }}>Artist Quote - {artistName}</strong>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 600 }}>
-              <Star size={22} fill={LAUNCHPAD_COLOR} stroke="#1E1B2E" strokeWidth={4} />
-              Launchpad
-            </span>
-          </div>
-          {groups.map((g, j) => (
-            <div key={j} style={{ display: "flex", flexDirection: "column", gap: 3, paddingBottom: 8, borderBottom: "1px solid rgba(30,27,46,.15)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontWeight: 600, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>
-                <span>{g.title.en}</span><span>{money(g.amount)}</span>
+        <div className="stack" style={{ gap: 14, flexBasis: 300, position: "sticky", top: 16 }}>
+          {/* The quote box: only what the artist should see, in their language, ready to send. */}
+          <aside className="panel stack" aria-label="Artist quote" style={{ background: "#FFF6D6", gap: 10 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <strong className="disp" style={{ fontSize: 22, lineHeight: 1.15 }}>Artist Quote - {artistName}</strong>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 600 }}>
+                <Star size={22} fill={LAUNCHPAD_COLOR} stroke="#1E1B2E" strokeWidth={4} />
+                Launchpad
+              </span>
+            </div>
+            {groups.map((g, j) => (
+              <div key={j} style={{ display: "flex", flexDirection: "column", gap: 3, paddingBottom: 8, borderBottom: "1px solid rgba(30,27,46,.15)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontWeight: 600, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>
+                  <span>{g.title[L]}</span><span>{money(g.amount)}</span>
+                </div>
+                {g.areas.length ? g.areas.map((a) => (
+                  <div key={a.key} style={{ fontSize: 14, paddingLeft: 16, position: "relative" }}><span style={{ position: "absolute", left: 0 }}>✓</span>{a[L]}</div>
+                )) : <div className="muted" style={{ fontSize: 14 }}>{TX.nothing}</div>}
+                {g.discount > 0 && <div style={{ fontSize: 13, color: "#C2457E" }}>{TX.disc.replace("{p}", g.discountPct)}</div>}
               </div>
-              {g.areas.length ? g.areas.map((a) => (
-                <div key={a.key} style={{ fontSize: 14, paddingLeft: 16, position: "relative" }}><span style={{ position: "absolute", left: 0 }}>✓</span>{a.en}</div>
-              )) : <div className="muted" style={{ fontSize: 14 }}>Nothing to do on this song.</div>}
-              {g.discount > 0 && <div style={{ fontSize: 13, color: "#C2457E" }}>Includes a {g.discountPct}% discount</div>}
+            ))}
+            {extras.map(([t, v]) => (
+              <div key={t} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>
+                <span>{t}</span><span>{v < 0 ? "−" : ""}{money(Math.abs(v))}</span>
+              </div>
+            ))}
+            <div style={{ borderTop: "2px dashed #1E1B2E", paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <span>Total</span>
+              <span className="disp" style={{ fontSize: 40, fontWeight: 900, fontVariantNumeric: "tabular-nums" }}>{money(c.total)}</span>
             </div>
-          ))}
-          {extras.map(([t, v]) => (
-            <div key={t} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>
-              <span>{t}</span><span>{v < 0 ? "−" : ""}{money(Math.abs(v))}</span>
+            <div style={{ fontSize: 14, display: "flex", gap: 8 }}><span aria-hidden="true">✦</span><span>{TX.dash}</span></div>
+            <div className="muted" style={{ fontSize: 13 }}>{TX.fees}</div>
+          </aside>
+
+          {/* Internal tools: not part of what the artist sees. */}
+          <div className="stack" style={{ gap: 8, padding: "4px 2px" }}>
+            <div className="muted" style={{ fontSize: 13 }}>Full Launchpad for these songs: {money(c.full)}</div>
+            <button type="button" className="small-btn small-btn--dark" onClick={save} disabled={busy || !dirty}>{dirty ? "Save quote" : "Saved"}</button>
+            <button type="button" className="small-btn" onClick={copyText}>{copied ? "Copied ✓" : `Copy for email (${lang === "es" ? "Spanish" : "English"})`}</button>
+            {showText && <textarea readOnly className="input" aria-label="Quote text" style={{ minHeight: 180, fontSize: 13 }} value={quoteText(q, c, lang)} onFocus={(e) => e.target.select()} />}
+            <div className="inline" style={{ gap: 8 }}>
+              <button type="button" className="small-btn" onClick={() => toPayments(true)} disabled={busy || dirty}>Pay in 2 installments</button>
+              <button type="button" className="small-btn" onClick={() => toPayments(false)} disabled={busy || dirty}>Pay in full</button>
             </div>
-          ))}
-          <div style={{ borderTop: "2px dashed #1E1B2E", paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-            <span>Total</span>
-            <span className="disp" style={{ fontSize: 40, fontWeight: 900, fontVariantNumeric: "tabular-nums" }}>{money(c.total)}</span>
+            {dirty && <div className="muted" style={{ fontSize: 13 }}>Save the quote before adding it to payments.</div>}
+            {savedAt && !dirty && <div className="muted" style={{ fontSize: 13 }}>Last saved {new Date(savedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>}
+            {msg && <div className={msg.bad ? "alert" : "alert alert--ok"} role="status" style={{ fontSize: 14 }}>{msg.text}</div>}
           </div>
-          <div style={{ fontSize: 14, display: "flex", gap: 8 }}><span aria-hidden="true">✦</span><span>Includes access to your own artist dashboard, where you can manage all your information in one place.</span></div>
-          <div className="muted" style={{ fontSize: 13 }}>Full Launchpad for these songs: {money(c.full)}. Third-party fees (Copyright Office, distributor) are paid by the artist.</div>
-          <button type="button" className="small-btn small-btn--dark" onClick={save} disabled={busy || !dirty}>{dirty ? "Save quote" : "Saved"}</button>
-          <button type="button" className="small-btn" onClick={copyText}>{copied ? "Copied ✓" : `Copy for email (${lang === "es" ? "Spanish" : "English"})`}</button>
-          {showText && <textarea readOnly className="input" aria-label="Quote text" style={{ minHeight: 180, fontSize: 13 }} value={quoteText(q, c, lang)} onFocus={(e) => e.target.select()} />}
-          <div className="inline" style={{ gap: 8 }}>
-            <button type="button" className="small-btn" onClick={() => toPayments(true)} disabled={busy || dirty}>Pay in 2 installments</button>
-            <button type="button" className="small-btn" onClick={() => toPayments(false)} disabled={busy || dirty}>Pay in full</button>
-          </div>
-          {dirty && <div className="muted" style={{ fontSize: 13 }}>Save the quote before adding it to payments.</div>}
-          {savedAt && !dirty && <div className="muted" style={{ fontSize: 13 }}>Last saved {new Date(savedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>}
-          {msg && <div className={msg.bad ? "alert" : "alert alert--ok"} role="status" style={{ fontSize: 14 }}>{msg.text}</div>}
-        </aside>
+        </div>
       </div>
     </div>
   );
