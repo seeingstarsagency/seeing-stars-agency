@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getViewer } from "../../../lib/supabase";
 import { loadArtist } from "../../../lib/artist-data";
 import { loadBrandbook } from "../../../lib/brandbook-data";
-import { brandbookTemplate, FONTS_URL } from "../../../lib/brandbook";
+import { brandbookTemplate, epkTemplate, FONTS_URL } from "../../../lib/brandbook";
 import { getLang, T } from "../../../lib/i18n";
 import { STEPS } from "../../../lib/steps";
 import { songScope } from "../../../lib/song-scope";
@@ -39,6 +39,9 @@ export default async function AstroPage({ searchParams }) {
   // The admin preview shows exactly what the artist sees: visible pages only.
   const book = locked ? { pages: [], urls: {} } : await loadBrandbook(supabase, artist.id);
   const pages = book.pages.filter((p) => p.visible);
+  const epk = locked ? { pages: [], urls: {} } : await loadBrandbook(supabase, artist.id, "epk");
+  const epkPages = epk.pages.filter((p) => p.visible);
+  const epkTeaser = epkTemplate(artist.name, lang).slice(0, 3);
   const teaser = brandbookTemplate(artist.name, lang).slice(0, 3);
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 
@@ -100,6 +103,27 @@ export default async function AstroPage({ searchParams }) {
             </div>
           ) : (
             <Viewer pages={pages} urls={book.urls} labels={{ open: t.bookOpen, close: t.bookClose, prev: t.bookPrev, next: t.bookNext }} />
+          )}
+        </section>
+
+        <section className="panel panel--pink astro__book" id="epk" style={{ borderRadius: 24, padding: 30 }}>
+          <div className="songs__head no-print">
+            <h2 className="h2" style={{ fontSize: 28, margin: 0 }}>{t.epkTitle}</h2>
+          </div>
+          <p className="no-print" style={{ margin: "0 0 18px", fontSize: 15 }}>{t.epkLead}</p>
+          {locked ? (
+            <Locked locked pkg="Astro" text={t.lockedEpk} t={t}>
+              <div className="bkview">
+                {epkTeaser.map((p) => <figure key={p.id} className="bkview__page"><BookPage page={p} urls={{}} /></figure>)}
+              </div>
+            </Locked>
+          ) : epkPages.length === 0 ? (
+            <div className="astro__empty">
+              <span aria-hidden="true">✦</span>
+              <p>{t.epkEmpty}</p>
+            </div>
+          ) : (
+            <Viewer pages={epkPages} urls={epk.urls} labels={{ open: t.bookOpen, close: t.bookClose, prev: t.bookPrev, next: t.bookNext }} />
           )}
         </section>
 

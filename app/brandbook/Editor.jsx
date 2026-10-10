@@ -3,16 +3,20 @@
 // Brandbook editor for the admin: pages, drag/resize/rotate, text, shapes, color swatches,
 // images, layers, undo/redo, snapping guides and autosave. Pages are 1600 × 900.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { W, H, FONTS, FONTS_URL, BRAND_DEFAULTS, make, uid, brandbookTemplate, blankPage } from "../../lib/brandbook";
+import { W, H, FONTS, FONTS_URL, BRAND_DEFAULTS, make, uid, brandbookTemplate, epkTemplate, blankPage } from "../../lib/brandbook";
 import BookPage, { ElementView, boxStyle, textStyle } from "./BookPage";
 import { saveBrandbook, getBrandbookImageTicket, signBrandbookImage } from "./actions";
 import { supabaseBrowser } from "../../lib/supabase-browser";
 
 const clone = (x) => JSON.parse(JSON.stringify(x));
+// With two editors on one page (brandbook + EPK), keyboard shortcuts go to the one last clicked.
+let activeEditor = null;
 const HANDLES = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 const isTyping = (t) => t && (t.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName));
 
-export default function Editor({ artistId, artistName, lang, sb, initialPages, initialUrls }) {
+export default function Editor({ artistId, artistName, lang, sb, initialPages, initialUrls, book = "brandbook" }) {
+  // Same editor for the brandbook and the EPK; only the template and where it saves change.
+  const template = book === "epk" ? epkTemplate : brandbookTemplate;
   const [pages, setPagesState] = useState(initialPages || []);
   const [urls, setUrls] = useState(initialUrls || {});
   const [cur, setCur] = useState(0);
@@ -108,11 +112,11 @@ export default function Editor({ artistId, artistName, lang, sb, initialPages, i
     apply(next);
     goPage(at);
   };
-  const templateNames = useMemo(() => brandbookTemplate(artistName, lang).map((p) => p.title), [artistName, lang]);
+  const templateNames = useMemo(() => template(artistName, lang).map((p) => p.title), [artistName, lang]);
   const addPage = (choice) => {
     if (choice === "blank") return insertPages([blankPage("New page")]);
-    if (choice === "all") return insertPages(brandbookTemplate(artistName, lang));
-    const t = brandbookTemplate(artistName, lang)[Number(choice)];
+    if (choice === "all") return insertPages(template(artistName, lang));
+    const t = template(artistName, lang)[Number(choice)];
     if (t) insertPages([t]);
   };
   const movePage = (dir) => {
@@ -147,13 +151,13 @@ export default function Editor({ artistId, artistName, lang, sb, initialPages, i
     saving.current = true;
     setSave("saving");
     const snap = pagesRef.current;
-    const res = await saveBrandbook(artistId, snap).catch(() => ({ error: "network" }));
+    const res = await saveBrandbook(artistId, snap, book).catch(() => ({ error: "network" }));
     saving.current = false;
     if (res?.error) { setSave("error"); setMsg(`Could not save: ${res.error}`); return; }
     setMsg(null);
     if (again.current || pagesRef.current !== snap) { again.current = false; doSave(); return; }
     setSave("saved");
-  }, [artistId]);
+  }, [artistId, book]);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
     setSave("dirty");
@@ -297,7 +301,11 @@ export default function Editor({ artistId, artistName, lang, sb, initialPages, i
 
   // ---------- Keyboard ----------
   const keyRef = useRef();
+  const myId = useRef(Symbol("editor"));
+  if (activeEditor === null) activeEditor = myId.current;
+  const claim = () => { activeEditor = myId.current; };
   keyRef.current = (ev) => {
+    if (activeEditor !== myId.current) return;
     if (isTyping(ev.target)) return;
     const mod = ev.metaKey || ev.ctrlKey;
     if (mod && ev.key.toLowerCase() === "z") { ev.preventDefault(); return ev.shiftKey ? redo() : undo(); }
@@ -349,12 +357,14 @@ export default function Editor({ artistId, artistName, lang, sb, initialPages, i
       <div className="bed bed--empty">
         <link rel="stylesheet" href={FONTS_URL} precedence="default" />
         <div className="bed__start">
-          <BookPage page={brandbookTemplate(artistName, lang)[0]} urls={{}} className="bed__startprev" />
+          <BookPage page={template(artistName, lang)[0]} urls={{}} className="bed__startprev" />
           <div>
-            <h3 className="h3" style={{ margin: "0 0 6px" }}>Start {artistName}&rsquo;s brandbook</h3>
-            <p style={{ margin: "0 0 14px", fontSize: 15 }}>The template has 11 pages: cover, contents, essence, logo, colors, typography, photos, moodboard, voice & tone, social media and a closing page. Pages start hidden from the artist; you choose which ones they see.</p>
+            <h3 className="h3" style={{ margin: "0 0 6px" }}>Start {artistName}&rsquo;s {book === "epk" ? "EPK" : "brandbook"}</h3>
+            <p style={{ margin: "0 0 14px", fontSize: 15 }}>{book === "epk"
+              ? "The template has 8 pages: cover, bio, music, highlights, press photos, press quotes, videos and contact. Pages start hidden from the artist; you choose which ones they see."
+              : "The template has 11 pages: cover, contents, essence, logo, colors, typography, photos, moodboard, voice & tone, social media and a closing page. Pages start hidden from the artist; you choose which ones they see."}</p>
             <div className="inline">
-              <button type="button" className="btn btn--dark btn--sm" onClick={() => addPage("all")}>Use the brandbook template</button>
+              <button type="button" className="btn btn--dark btn--sm" onClick={() => addPage("all")}>Use the {book === "epk" ? "EPK" : "brandbook"} template</button>
               <button type="button" className="small-btn" onClick={() => addPage("blank")}>Start from a blank page</button>
             </div>
           </div>
@@ -364,7 +374,7 @@ export default function Editor({ artistId, artistName, lang, sb, initialPages, i
   }
 
   return (
-    <div className="bed">
+    <div className="bed" onPointerDownCapture={claim} onFocusCapture={claim}>
       <link rel="stylesheet" href={FONTS_URL} precedence="default" />
       <input ref={fileInput} type="file" accept="image/*" hidden onChange={(e) => { upload(e.target.files?.[0], replaceTarget.current); e.target.value = ""; }} />
 

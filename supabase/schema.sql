@@ -238,3 +238,7 @@ revoke all on public.brandbook_pages from anon;
 -- Content calendar: what exactly will be done, and the script for it
 alter table public.calendar_items add column if not exists description text;
 alter table public.calendar_items add column if not exists script text;
+
+-- EPK: same table and editor as the brandbook, told apart by `book`
+alter table public.brandbook_pages add column if not exists book text not null default 'brandbook';
+create index if not exists brandbook_pages_book on public.brandbook_pages(artist_id, book, position);

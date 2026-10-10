@@ -21,6 +21,7 @@ export default async function AdminAstro({ params, searchParams }) {
   const { artist, rows, songs } = data;
   const { artistRows } = songScope(artist, songs, rows, null);
   const book = await loadBrandbook(supabase, artist.id);
+  const epk = await loadBrandbook(supabase, artist.id, "epk");
   const hasAstro = artist.monthly_member || (artist.packages || []).includes("Astro");
   const statusSelect = (r) => (
     <select name={`status_${r.id}`} defaultValue={r.status} className="select-sm" aria-label="Status">
@@ -35,7 +36,7 @@ export default async function AdminAstro({ params, searchParams }) {
         <div>
           <div className="kicker">Astro · Artist branding</div>
           <h1 className="h1">{artist.name}</h1>
-          <p className="lead" style={{ margin: 0 }}>The brand steps and the brandbook. The artist only sees the pages you mark as shown.</p>
+          <p className="lead" style={{ margin: 0 }}>The brand steps, the brandbook and the EPK. The artist only sees the pages you mark as shown.</p>
         </div>
         <a href={`/dashboard/astro?artist=${artist.id}`} className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>See what the artist sees</a>
       </div>
@@ -70,6 +71,24 @@ export default async function AdminAstro({ params, searchParams }) {
             sb={browserConfig()}
             initialPages={book.pages}
             initialUrls={book.urls}
+          />
+        )}
+      </section>
+
+      <section className="panel" id="epk" style={{ padding: 20 }}>
+        <h2 className="h2" style={{ marginBottom: 4 }}>EPK</h2>
+        <p style={{ margin: "0 0 16px", fontSize: 15 }}>The electronic press kit. Same editor as the brandbook; use &ldquo;Shown / Hidden&rdquo; on each page to decide what {artist.name} can see.</p>
+        {epk.missing ? (
+          <div className="alert" role="alert">The EPK couldn&rsquo;t load. Reload the page.</div>
+        ) : (
+          <Editor
+            book="epk"
+            artistId={artist.id}
+            artistName={artist.name}
+            lang={artist.lang === "es" ? "es" : "en"}
+            sb={browserConfig()}
+            initialPages={epk.pages}
+            initialUrls={epk.urls}
           />
         )}
       </section>

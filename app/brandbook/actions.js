@@ -27,7 +27,8 @@ function cleanElement(e, artistId) {
 }
 
 // Saves the whole brandbook (order, titles, which pages the artist sees, every element).
-export async function saveBrandbook(artistId, pages) {
+export async function saveBrandbook(artistId, pages, book = "brandbook") {
+  book = book === "epk" ? "epk" : "brandbook";
   const supabase = await adminOnly();
   if (!supabase || !UUID.test(String(artistId))) return { error: "not allowed" };
   if (!Array.isArray(pages) || pages.length > 60) return { error: "too many pages" };
@@ -36,6 +37,7 @@ export async function saveBrandbook(artistId, pages) {
     id: p.id,
     artist_id: artistId,
     position: i,
+    book,
     title: String(p.title || "").slice(0, 120),
     visible: !!p.visible,
     data: {
@@ -49,7 +51,7 @@ export async function saveBrandbook(artistId, pages) {
     const { error } = await supabase.from("brandbook_pages").upsert(rows);
     if (error) return { error: error.message };
   }
-  let del = supabase.from("brandbook_pages").delete().eq("artist_id", artistId);
+  let del = supabase.from("brandbook_pages").delete().eq("artist_id", artistId).eq("book", book);
   if (rows.length) del = del.not("id", "in", `(${rows.map((r) => r.id).join(",")})`);
   const { error: delErr } = await del;
   if (delErr) return { error: delErr.message };
