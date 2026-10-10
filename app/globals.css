@@ -1271,25 +1271,30 @@ button.btn { cursor: pointer; }
 .steps__unlock:hover, .steps__unlock:focus-visible { color: var(--ink); background: var(--yellow); box-shadow: 2px 2px 0 var(--ink); }
 @media (max-width: 640px) { .steps__unlock { margin: 6px 0 0; } }
 
-/* "Artist Login": a lined index card held by a big paperclip, special next to the paper scraps */
-.nav-item--artist { margin-left: 6px; }
+/* "Artist Login": a pink sticky note pinned on top of a little stack of notes */
+.nav-item--artist { margin-left: 10px; isolation: isolate; }
 .nav-item--artist a,
 .nav-item--artist:nth-child(n) a {
-  padding: 11px 20px 10px 30px; font-weight: 800; clip-path: none; border-radius: 2px;
-  background-color: #FDF8F6;
-  background-image:
-    linear-gradient(to bottom, transparent 9px, rgba(226, 120, 140, .7) 9px, rgba(226, 120, 140, .7) 10px, transparent 10px),
-    repeating-linear-gradient(to bottom, transparent 0 15px, rgba(120, 150, 220, .45) 15px 16px);
-  background-size: 100% 100%, 100% 100%;
-  background-position: 0 0, 0 6px;
-  box-shadow: 0 1px 1px rgba(0,0,0,.08), 2px 4px 8px -2px rgba(30,27,46,.28);
-  transform: rotate(2deg);
+  position: relative; z-index: 1; padding: 13px 22px 11px; font-weight: 800; clip-path: none; border-radius: 1px;
+  background: linear-gradient(160deg, #F8BCD3 0%, #F4A6C4 60%, #EE97B9 100%);
+  box-shadow: 0 1px 1px rgba(0,0,0,.08), 2px 5px 8px -3px rgba(30,27,46,.35);
+  transform: rotate(-2deg);
 }
+/* The notes underneath: yellow, lavender and blue edges peeking out */
+.nav-item--artist::before {
+  content: ""; position: absolute; inset: 2px -2px -1px 2px; z-index: 0; border-radius: 1px; pointer-events: none;
+  background: #F1D58F;
+  box-shadow: 4px 3px 0 #D6D0EE, 7px 6px 0 #8E9BD8, 1px 2px 6px rgba(30,27,46,.18);
+  transform: rotate(5deg);
+  transition: transform .25s ease;
+}
+/* Blue push pin */
 .nav-item--artist::after {
-  right: auto; left: 2px; top: -9px; bottom: auto; width: 16px; height: 40px; z-index: 2;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 40'%3E%3Cpath d='M11 13V31a4 4 0 0 1-8 0V7a5 5 0 0 1 10 0v26a6.5 6.5 0 0 1-13 0V12' fill='none' stroke='%239a9aa3' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M11 13V31a4 4 0 0 1-8 0V7a5 5 0 0 1 10 0v26a6.5 6.5 0 0 1-13 0V12' fill='none' stroke='%23e8e8ee' stroke-width='.7' stroke-linecap='round' transform='translate(.4 -.4)'/%3E%3C/svg%3E") no-repeat center / contain;
-  transform: rotate(-14deg);
+  right: auto; bottom: auto; left: 50%; top: -9px; width: 22px; height: 26px; margin-left: -11px; z-index: 2;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Cellipse cx='12.5' cy='15' rx='5' ry='2.2' fill='rgba(0,0,0,.22)'/%3E%3Cpath d='M6 3h8l-1 5 3 3v2H4v-2l3-3z' fill='%232f5fd0'/%3E%3Cellipse cx='10' cy='3' rx='4.5' ry='2.6' fill='%234a7ae8'/%3E%3Cellipse cx='8.6' cy='2.4' rx='1.6' ry='.9' fill='%23b9ccff'/%3E%3C/svg%3E") no-repeat center / contain;
+  transform: none;
 }
-.nav-item--artist:hover a, .nav-item--artist:nth-child(n):hover a { transform: translateY(-3px) rotate(-2deg); }
-.nav-item--artist:hover::after { transform: translateY(-3px) rotate(-20deg); }
-.mnav__panel .nav-item--artist { margin: 6px 0 0; }
+.nav-item--artist:hover a, .nav-item--artist:nth-child(n):hover a { transform: translateY(-3px) rotate(1deg); }
+.nav-item--artist:hover::before { transform: translateY(-1px) rotate(8deg); }
+.nav-item--artist:hover::after { transform: translateY(-3px); }
+.mnav__panel .nav-item--artist { margin: 10px 0 4px; }
