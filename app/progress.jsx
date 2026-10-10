@@ -91,12 +91,12 @@ function PillarRows({ pillar, byKey, lang, t, renderStatus, lockedPkgs }) {
           return (
             <tr key={s.key} className={`steps__row steps__row--${pillar.key} steps__row--locked`}>
               <td className="steps__name">
-                <span className="steps__blur" aria-hidden="true"><StepName text={pick(lang, s)} /></span>
+                <StepName text={pick(lang, s)} />
                 <a href="/#contact" className="steps__unlock">✦ {t.lockedCta.replace("{pkg}", s.pkg)}</a>
               </td>
               <td className="muted" data-label={t.colStart}><span className="steps__blur" aria-hidden="true">{t.no}</span></td>
               <td data-label={t.colToday}><span className="steps__blur chip" aria-hidden="true" style={{ background: STATUS.pending.bg }}>{STATUS.pending[lang]}</span></td>
-              <td className="muted" data-label={t.colPkg}>{s.pkg}</td>
+              <td className="muted" data-label={t.colPkg}><span className="steps__blur" aria-hidden="true">{s.pkg}</span></td>
             </tr>
           );
         }
