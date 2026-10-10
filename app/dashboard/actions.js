@@ -117,8 +117,16 @@ export async function sendHelpMessage(formData) {
   const body = String(formData.get("body") || "").trim().slice(0, 4000);
   if (!body) return { error: "empty" };
   const topic = TOPICS.includes(formData.get("topic")) ? formData.get("topic") : "other";
-  const { error } = await supabaseAdmin().from("help_messages").insert({ artist_id: profile.artist_id, email: user.email || null, topic, body });
+  const { error } = await supabaseAdmin().from("help_messages").insert({ artist_id: profile.artist_id, email: user.email || null, topic, body, sender: "artist", status: "open" });
   if (error) return { error: error.message };
   revalidatePath("/admin");
+  return { ok: true };
+}
+
+// The artist opened the Help chat: the agency's replies count as read.
+export async function markHelpSeen() {
+  const { user, profile } = await getViewer();
+  if (!user || !profile?.artist_id) return { error: "not allowed" };
+  await supabaseAdmin().from("help_messages").update({ seen_by_artist: true }).eq("artist_id", profile.artist_id).eq("sender", "agency").eq("seen_by_artist", false);
   return { ok: true };
 }

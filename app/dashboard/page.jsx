@@ -7,7 +7,7 @@ import { songScope } from "../../lib/song-scope";
 import SongPicker from "../SongPicker";
 import { browserConfig } from "../../lib/env";
 import PhotoUpload from "../PhotoUpload";
-import { setListenPlatform, addCalendarItem, setCalendarStatus, deleteCalendarItem, sendHelpMessage } from "./actions";
+import { setListenPlatform, addCalendarItem, setCalendarStatus, deleteCalendarItem, sendHelpMessage, markHelpSeen } from "./actions";
 import Calendar from "../Calendar";
 import { Star } from "../components";
 import { AppHeader, LogoutButton, fmtDate } from "../ui";
@@ -34,6 +34,11 @@ export default async function Dashboard({ searchParams }) {
   if (isAdmin && !artistId) redirect("/admin");
 
   const data = artistId ? await loadArtist(supabase, artistId) : null;
+  // The artist's Help chat with the agency (oldest first).
+  const { data: helpMsgs } = data && !isAdmin
+    ? await supabase.from("help_messages").select("id, sender, body, created_at, seen_by_artist").eq("artist_id", artistId).order("created_at").limit(200)
+    : { data: [] };
+  const helpUnread = (helpMsgs || []).filter((m) => m.sender === "agency" && !m.seen_by_artist).length;
   const lang = await getLang(data?.artist?.lang);
   const t = T[lang];
   const path = isAdmin ? `/dashboard?artist=${artistId}` : "/dashboard";
@@ -49,7 +54,11 @@ export default async function Dashboard({ searchParams }) {
           {data && !isAdmin && (
             <HelpButton
               send={sendHelpMessage}
-              labels={{ button: t.helpBtn, kicker: t.helpKicker, title: t.helpTitle, lead: t.helpLead, topic: t.helpTopic, topics: t.helpTopics, message: t.helpMessage, placeholder: t.helpPh, send: t.helpSend, sending: t.helpSending, error: t.helpError, sentTitle: t.helpSentTitle, sentText: t.helpSentText, close: t.roadClose }}
+              markSeen={markHelpSeen}
+              messages={helpMsgs || []}
+              unread={helpUnread}
+              lang={lang}
+              labels={{ empty: t.helpEmpty, you: t.helpYou, newReplies: t.helpNew, button: t.helpBtn, kicker: t.helpKicker, title: t.helpTitle, lead: t.helpLead, topic: t.helpTopic, topics: t.helpTopics, message: t.helpMessage, placeholder: t.helpPh, send: t.helpSend, sending: t.helpSending, error: t.helpError, sentTitle: t.helpSentTitle, sentText: t.helpSentText, close: t.roadClose }}
             />
           )}
           {data && <span>{data.artist.name}</span>}

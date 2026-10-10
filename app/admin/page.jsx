@@ -15,7 +15,7 @@ export default async function Admin({ searchParams }) {
     supabase.from("artist_steps").select("artist_id, status, start_status"),
     supabase.from("intake_submissions").select("id").eq("status", "new"),
     supabase.from("next_steps").select("artist_id, owner, body").eq("done", false),
-    supabase.from("help_messages").select("id").eq("status", "open"),
+    supabase.from("help_messages").select("artist_id").eq("status", "open").eq("sender", "artist"),
   ]);
 
   const stepsBy = {};
@@ -37,7 +37,7 @@ export default async function Admin({ searchParams }) {
       </div>
 
       {(help?.length || 0) > 0 && (
-        <a href="/admin/help" className="alert helpalert" role="status">✦ You have {help.length} open help {help.length === 1 ? "message" : "messages"} from artists. <strong>Read {help.length === 1 ? "it" : "them"} →</strong></a>
+        <a href="/admin/help" className="alert helpalert" role="status">✦ You have {help.length} new help {help.length === 1 ? "message" : "messages"} from artists. <strong>Answer →</strong></a>
       )}
       <div className="stats">
         <a href="/admin/requests" className="stat stat--link" style={{ background: "#FFF6D6" }} aria-label={`New requests: ${subs?.length || 0}. Open the list`}><div className="stat__v">{subs?.length || 0}</div><div>New requests →</div></a>

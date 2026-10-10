@@ -360,11 +360,25 @@ export async function markSubmissionWithUs(formData) {
   redirect(`/admin/requests?ok=${undo ? "restored" : "checked"}`);
 }
 
-// Help inbox: mark a message as solved (or reopen it).
+// Help inbox: mark an artist's open messages as solved.
 export async function setHelpStatus(formData) {
   const supabase = await requireAdmin();
-  const status = formData.get("status") === "resolved" ? "resolved" : "open";
-  await supabase.from("help_messages").update({ status }).eq("id", str(formData, "id", 60));
+  const artistId = str(formData, "artist_id", 60);
+  await supabase.from("help_messages").update({ status: "resolved" }).eq("artist_id", artistId).eq("sender", "artist").eq("status", "open");
   revalidatePath("/admin");
-  redirect("/admin/help");
+  redirect(`/admin/help#t-${artistId}`);
+}
+
+// Help inbox: answer an artist inside the website. Their open messages count as answered.
+export async function replyHelp(formData) {
+  const supabase = await requireAdmin();
+  const artistId = str(formData, "artist_id", 60);
+  const body = String(formData.get("body") || "").trim().slice(0, 4000);
+  if (body) {
+    await supabaseAdmin().from("help_messages").insert({ artist_id: artistId, sender: "agency", body, status: "resolved", seen_by_artist: false });
+    await supabase.from("help_messages").update({ status: "resolved" }).eq("artist_id", artistId).eq("sender", "artist").eq("status", "open");
+  }
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+  redirect(`/admin/help?ok=sent#t-${artistId}`);
 }

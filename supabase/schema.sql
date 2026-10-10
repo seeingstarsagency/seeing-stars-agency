@@ -278,3 +278,8 @@ alter table public.help_messages enable row level security;
 create policy "admin all" on public.help_messages for all using (public.is_admin()) with check (public.is_admin());
 grant select, update, delete on public.help_messages to authenticated;
 grant all on public.help_messages to service_role;
+-- Help becomes a chat: who wrote each message, and whether the artist has seen the agency's replies
+alter table public.help_messages add column if not exists sender text not null default 'artist';
+alter table public.help_messages add column if not exists seen_by_artist boolean not null default true;
+create policy "read own" on public.help_messages for select using (artist_id = public.my_artist_id());
+create index if not exists help_messages_artist on public.help_messages(artist_id, created_at);
