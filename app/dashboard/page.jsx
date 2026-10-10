@@ -174,7 +174,6 @@ export default async function Dashboard({ searchParams }) {
                   ) : daysLeft > 0 ? (
                     <>
                       <div className="countdown__num">{daysLeft}</div>
-                      <div className="countdown__note">{daysLeft === 1 ? t.dayToRelease : t.daysToRelease}</div>
                       <div className="countdown__date">{fmtDate(songDate, lang)}</div>
                     </>
                   ) : daysLeft === 0 ? (
