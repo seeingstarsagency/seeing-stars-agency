@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getViewer, supabaseAdmin } from "../../lib/supabase";
+import { emailAdmin, helpEmail } from "../../lib/notify";
 
 // The artist picks where their songs open: Spotify or Apple Music.
 export async function setListenPlatform(formData) {
@@ -117,8 +118,18 @@ export async function sendHelpMessage(formData) {
   const body = String(formData.get("body") || "").trim().slice(0, 4000);
   if (!body) return { error: "empty" };
   const topic = TOPICS.includes(formData.get("topic")) ? formData.get("topic") : "other";
-  const { error } = await supabaseAdmin().from("help_messages").insert({ artist_id: profile.artist_id, email: user.email || null, topic, body, sender: "artist", status: "open" });
+  const db = supabaseAdmin();
+  // Email the admin, but not for every line of a quick back-and-forth: skip if this artist
+  // already has an unanswered message from the last 30 minutes (one reminder is enough).
+  const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+  const { data: recent } = await db.from("help_messages").select("id").eq("artist_id", profile.artist_id).eq("sender", "artist").eq("status", "open").gte("created_at", since).limit(1);
+  const { error } = await db.from("help_messages").insert({ artist_id: profile.artist_id, email: user.email || null, topic, body, sender: "artist", status: "open" });
   if (error) return { error: error.message };
+  if (!recent?.length) {
+    const { data: a } = await db.from("artists").select("name").eq("id", profile.artist_id).maybeSingle();
+    const TOPIC_NAME = { question: "A question", problem: "Something isn't working", payment: "Payments", other: "Other" };
+    await emailAdmin(helpEmail({ artistName: a?.name || "An artist", topic: TOPIC_NAME[topic] || "Other", body }));
+  }
   revalidatePath("/admin");
   return { ok: true };
 }
