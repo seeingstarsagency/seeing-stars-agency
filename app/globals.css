@@ -1299,9 +1299,8 @@ button.btn { cursor: pointer; }
 .nav-item--artist:hover::after { transform: translateY(-3px); }
 .mnav__panel .nav-item--artist { margin: 10px 0 4px; }
 
-/* Dashboard: a few shooting stars crossing the page now and then, behind the panels */
-.dash-sky { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
-.dash-main { position: relative; z-index: 1; }
+/* Dashboard: a few shooting stars crossing the page now and then (in front, but never in the way of clicks) */
+.dash-sky { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 30; }
 .shoot--slow { animation-duration: 11s; animation-delay: 6s; }
 .shoot--late { animation-duration: 13s; animation-delay: 9s; }
 @media (prefers-reduced-motion: reduce) { .dash-sky { display: none; } }

@@ -134,12 +134,12 @@ export default async function Dashboard({ searchParams }) {
   return (
     <div className="app">
       {header}
-      {/* Shooting stars now and then, like on the home page (behind the content) */}
+      {/* Shooting stars now and then, like on the home page */}
       <div className="dash-sky" aria-hidden="true">
-        <div className="shoot" style={{ left: "-8%", top: "38%" }} />
-        <div className="shoot shoot--pink" style={{ left: "20%", top: "72%" }} />
-        <div className="shoot shoot--slow" style={{ left: "45%", top: "30%" }} />
-        <div className="shoot shoot--pink shoot--late" style={{ left: "5%", top: "95%" }} />
+        <div className="shoot" style={{ left: "-8%", top: "45%" }} />
+        <div className="shoot shoot--pink" style={{ left: "30%", top: "80%" }} />
+        <div className="shoot shoot--slow" style={{ left: "55%", top: "40%" }} />
+        <div className="shoot shoot--pink shoot--late" style={{ left: "8%", top: "100%" }} />
       </div>
       <main className="container dash-main">
         <div className="dash-l">
