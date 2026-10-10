@@ -196,7 +196,7 @@ export default function PriceCalculator({ artistId, artistName = "", initial, sa
           </div>
         </div>
 
-        <div className="stack" style={{ gap: 14, flexBasis: 300, position: "sticky", top: 16 }}>
+        <div className="stack" style={{ gap: 14, flexBasis: 340, position: "sticky", top: 16 }}>
           {/* The quote box: only what the artist should see, in their language, ready to send. */}
           <aside ref={boxRef} className="panel stack" aria-label="Artist quote" style={{ background: "#FFF6D6", gap: 10 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -208,11 +208,12 @@ export default function PriceCalculator({ artistId, artistName = "", initial, sa
             </div>
             {groups.map((g, j) => (
               <div key={j} style={{ display: "flex", flexDirection: "column", gap: 3, paddingBottom: 8, borderBottom: "1px solid rgba(30,27,46,.15)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontWeight: 600, fontSize: 15, fontVariantNumeric: "tabular-nums" }}>
-                  <span>{g.title[L]}</span><span>{money(g.amount)}</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 12, fontWeight: 600, fontSize: 15, lineHeight: 1.35, fontVariantNumeric: "tabular-nums" }}>
+                  <span style={{ flex: "1 1 auto", minWidth: 0, overflowWrap: "anywhere" }}>{g.title[L]}</span>
+                  <span style={{ flex: "0 0 auto", whiteSpace: "nowrap" }}>{money(g.amount)}</span>
                 </div>
                 {g.areas.length ? g.areas.map((a) => (
-                  <div key={a.key} style={{ fontSize: 14, paddingLeft: 16, position: "relative" }}><span style={{ position: "absolute", left: 0 }}>✓</span>{a[L]}</div>
+                  <div key={a.key} style={{ fontSize: 14, lineHeight: 1.4, paddingLeft: 18, position: "relative" }}><span style={{ position: "absolute", left: 0 }}>✓</span>{a[L]}</div>
                 )) : <div className="muted" style={{ fontSize: 14 }}>{TX.nothing}</div>}
                 {g.discount > 0 && <div style={{ fontSize: 13, color: "#C2457E" }}>{TX.disc.replace("{p}", g.discountPct)}</div>}
               </div>
