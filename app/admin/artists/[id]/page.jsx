@@ -45,7 +45,7 @@ export default async function ArtistAdmin({ params, searchParams }) {
   const owed = payments.filter((p) => p.status !== "paid").reduce((a, p) => a + Number(p.amount), 0);
   const hidden = <input type="hidden" name="artist_id" value={artist.id} />;
   // Launchpad price calculator: the saved quote, or a first version built from the checklist.
-  const { data: savedQuote } = await supabase.from("artist_quotes").select("data, updated_at").eq("artist_id", id).maybeSingle();
+  const { data: savedQuote } = await supabase.from("artist_quotes").select("data, updated_at, token, sent_at, expires_at, accepted_at, accepted_name, accepted_choice").eq("artist_id", id).maybeSingle();
   const { projects, current: song, songRows, artistRows, allRows } = songScope(artist, songs, rows, sp?.song);
   const statusSelect = (r) => (
     <select name={`status_${r.id}`} defaultValue={r.status} className="select-sm" aria-label="Status">
@@ -185,6 +185,8 @@ export default async function ArtistAdmin({ params, searchParams }) {
         <PriceCalculator
           artistId={artist.id}
           artistName={artist.name}
+          hasEmail={!!artist.email}
+          sent={savedQuote?.sent_at ? { sentAt: savedQuote.sent_at, expiresAt: savedQuote.expires_at, acceptedAt: savedQuote.accepted_at, acceptedName: savedQuote.accepted_name, acceptedChoice: savedQuote.accepted_choice, link: savedQuote.token ? `/quote/${savedQuote.token}` : null } : null}
           initial={normalizeQuote(savedQuote?.data, startingQuote(projects, rows))}
           savedAt={savedQuote?.updated_at || null}
           saved={!!savedQuote}

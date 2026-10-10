@@ -10,6 +10,11 @@ import { SECTIONS, readAnswers, cleanUrl } from "../../lib/questions";
 import { applyIntake } from "../../lib/intake";
 import { appleArtistSongs } from "../../lib/apple-music";
 import { spotifyArtistSongs } from "../../lib/spotify";
+import { randomBytes } from "node:crypto";
+import { normalizeQuote, startingQuote } from "../../lib/pricing";
+import { quoteSnapshot, quoteEmail, QUOTE_DAYS } from "../../lib/quote-send";
+import { sendEmail } from "../../lib/mail";
+import { ADMIN_EMAIL } from "../../lib/env";
 
 async function requireAdmin() {
   const v = await getViewer();
@@ -227,6 +232,22 @@ export async function togglePayment(formData) {
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
   await supabase.from("payments").update({ status: paid ? "paid" : "pending", paid_on: paid ? today : null }).eq("id", str(formData, "id", 60)).eq("artist_id", id);
   revalidatePath("/dashboard");
+  // An artist who accepted their quote gets the dashboard invitation when their first payment comes in.
+  if (paid) {
+    const admin = supabaseAdmin();
+    const { data: artist } = await admin.from("artists").select("id, email, lang, name, packages, user_id").eq("id", id).maybeSingle();
+    if (artist && !artist.user_id && artist.email) {
+      const { data: quote } = await admin.from("artist_quotes").select("accepted_at").eq("artist_id", id).maybeSingle();
+      if (quote?.accepted_at) {
+        const res = await invite(artist.email, artist.lang, artist.name, artist.packages?.length ? artist.packages : ["Launchpad"]);
+        if (res.userId) {
+          await admin.from("profiles").upsert({ id: res.userId, role: "artist", artist_id: artist.id });
+          await admin.from("artists").update({ user_id: res.userId }).eq("id", artist.id);
+        }
+        redirect(`/admin/artists/${id}?ok=${res.userId ? "paid_invited" : "invite_failed"}#payments`);
+      }
+    }
+  }
   redirect(`/admin/artists/${id}#payments`);
 }
 
@@ -417,5 +438,84 @@ export async function quoteToPayments(artistId, total, halves, lang = "en") {
     : [{ artist_id: id, description: "Launchpad", amount, due_on: start }];
   const { error } = await supabase.from("payments").insert(rows);
   revalidatePath(`/admin/artists/${id}`);
+  return error ? { error: error.message } : { ok: true };
+}
+
+// Send the saved quote to the artist: a branded email with the Service Agreement attached
+// and a private link (no login) where they accept it. Sending again replaces the old link.
+export async function sendQuote(artistId) {
+  await requireAdmin();
+  const admin = supabaseAdmin();
+  const id = String(artistId).slice(0, 60);
+  const { data: artist } = await admin.from("artists").select("id, name, email, lang").eq("id", id).maybeSingle();
+  if (!artist) return { error: "Artist not found." };
+  if (!artist.email) return { error: "Add the artist's email in Artist details first." };
+  const { data: row } = await admin.from("artist_quotes").select("data, accepted_at").eq("artist_id", id).maybeSingle();
+  if (!row) return { error: "Save the quote first." };
+  if (row.accepted_at) return { error: "This quote was already accepted." };
+
+  const lang = artist.lang === "es" ? "es" : "en";
+  const { data: setting } = await admin.from("agency_settings").select("value").eq("key", `agreement_${lang}`).maybeSingle();
+  if (!setting?.value) return { error: `Upload the Service Agreement PDF (${lang === "es" ? "Spanish" : "English"}) in Settings first.` };
+  const file = await admin.storage.from("artist-files").download(setting.value);
+  if (file.error) return { error: "Could not read the Service Agreement PDF. Upload it again in Settings." };
+  const pdf = Buffer.from(await file.data.arrayBuffer()).toString("base64");
+
+  const q = normalizeQuote(row.data, startingQuote([], []));
+  const snap = quoteSnapshot(q, lang);
+  const token = randomBytes(24).toString("base64url");
+  const link = `${siteUrl()}/quote/${token}`;
+  const mail = quoteEmail({ snap, artistName: artist.name, link });
+  const res = await sendEmail({
+    to: artist.email,
+    bcc: ADMIN_EMAIL(),
+    replyTo: ADMIN_EMAIL(),
+    ...mail,
+    attachments: [{ filename: lang === "es" ? "Contrato de Servicio Launchpad.pdf" : "Launchpad Service Agreement.pdf", content: pdf }],
+  });
+  if (res.error) return { error: res.error };
+
+  const now = new Date();
+  const { error } = await admin
+    .from("artist_quotes")
+    .update({
+      token,
+      sent_at: now.toISOString(),
+      expires_at: new Date(now.getTime() + QUOTE_DAYS * 864e5).toISOString(),
+      sent_lang: lang,
+      sent_data: snap,
+      sent_total: snap.total,
+    })
+    .eq("artist_id", id);
+  revalidatePath(`/admin/artists/${id}`);
+  return error ? { error: "The email was sent, but saving the link failed: " + error.message } : { ok: true, sentAt: now.toISOString() };
+}
+
+// Agency settings: payment instructions shown after an artist accepts a quote.
+export async function saveSettings(formData) {
+  await requireAdmin();
+  const admin = supabaseAdmin();
+  const rows = ["payment_en", "payment_es"].map((key) => ({ key, value: str(formData, key, 2000), updated_at: new Date().toISOString() }));
+  await admin.from("agency_settings").upsert(rows);
+  revalidatePath("/admin/settings");
+  redirect("/admin/settings?ok=saved");
+}
+
+// Service Agreement PDFs go straight from the browser to storage.
+export async function getAgreementTicket(lang) {
+  await requireAdmin();
+  const L = lang === "es" ? "es" : "en";
+  const path = `agency/service-agreement-${L}-${Date.now()}.pdf`;
+  const { data, error } = await supabaseAdmin().storage.from("artist-files").createSignedUploadUrl(path);
+  if (error) return { error: error.message };
+  return { path, token: data.token };
+}
+
+export async function registerAgreement(lang, path) {
+  await requireAdmin();
+  const L = lang === "es" ? "es" : "en";
+  if (!String(path).startsWith(`agency/service-agreement-${L}-`)) return { error: "bad path" };
+  const { error } = await supabaseAdmin().from("agency_settings").upsert({ key: `agreement_${L}`, value: path, updated_at: new Date().toISOString() });
+  revalidatePath("/admin/settings");
   return error ? { error: error.message } : { ok: true };
 }

@@ -300,3 +300,27 @@ drop policy if exists "admin all" on public.artist_quotes;
 create policy "admin all" on public.artist_quotes for all using (public.is_admin()) with check (public.is_admin());
 grant select, insert, update, delete on public.artist_quotes to authenticated;
 grant all on public.artist_quotes to service_role;
+
+-- ============ SENDING QUOTES ============
+-- A sent quote gets a private link (token) the artist opens without logging in, and records their acceptance.
+alter table public.artist_quotes add column if not exists token text unique;
+alter table public.artist_quotes add column if not exists sent_at timestamptz;
+alter table public.artist_quotes add column if not exists expires_at timestamptz;
+alter table public.artist_quotes add column if not exists sent_lang text;
+alter table public.artist_quotes add column if not exists sent_data jsonb;
+alter table public.artist_quotes add column if not exists sent_total numeric(10,2);
+alter table public.artist_quotes add column if not exists accepted_at timestamptz;
+alter table public.artist_quotes add column if not exists accepted_name text;
+alter table public.artist_quotes add column if not exists accepted_choice text;
+
+-- Agency-wide settings (payment instructions, Service Agreement files). Admin only.
+create table if not exists public.agency_settings (
+  key text primary key,
+  value text not null default '',
+  updated_at timestamptz not null default now()
+);
+alter table public.agency_settings enable row level security;
+drop policy if exists "admin all" on public.agency_settings;
+create policy "admin all" on public.agency_settings for all using (public.is_admin()) with check (public.is_admin());
+grant select, insert, update, delete on public.agency_settings to authenticated;
+grant all on public.agency_settings to service_role;

@@ -25,6 +25,7 @@ export function AdminShell({ children }) {
             <a href="/admin/requests">New requests</a>
             <a href="/admin/help">Help messages</a>
             <a href="/admin/artists/new">+ New artist</a>
+            <a href="/admin/settings">Settings</a>
             <a href="/questionnaire" target="_blank" rel="noopener noreferrer">Find your package ↗</a>
             <a href="/" target="_blank" rel="noopener noreferrer">View site</a>
             <form action="/auth/logout" method="post"><button type="submit" className="linkbtn">Log out</button></form>
@@ -42,6 +43,7 @@ export const OK_MSG = {
   invite_failed: "The artist was created, but the invitation failed (does that email already have an account?). You can resend it below.",
   saved: "Changes saved.",
   uploaded: "File uploaded.",
+  paid_invited: "Payment marked as paid. Their quote was accepted, so we sent them the dashboard invitation.",
   intake: "Questionnaire saved. The starting point and progress were updated from the answers.",
   no_email: "This artist has no email yet. Add it in \u201cArtist details\u201d to send the invitation.",
 };

@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { FIXED_ITEMS, ARTIST_ITEMS, SONG_ITEMS, computeQuote, quoteGroups, quoteText } from "../../../../lib/pricing";
-import { saveQuote, quoteToPayments } from "../../actions";
+import { saveQuote, quoteToPayments, sendQuote } from "../../actions";
 import { Star } from "../../../components";
 import { PACKAGES as PKG_INFO } from "../../../content";
 
@@ -27,7 +27,7 @@ function Name({ i }) {
   );
 }
 
-export default function PriceCalculator({ artistId, artistName = "", initial, savedAt, saved, lang = "en" }) {
+export default function PriceCalculator({ artistId, artistName = "", hasEmail = false, sent = null, initial, savedAt, saved, lang = "en" }) {
   const [q, setQ] = useState(initial);
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -81,6 +81,22 @@ export default function PriceCalculator({ artistId, artistName = "", initial, sa
     catch { setMsg({ bad: true, text: "Could not copy. Select the text below instead." }); setShowText(true); }
   }
   const [showText, setShowText] = useState(false);
+
+  const [sentInfo, setSentInfo] = useState(sent);
+  const [sending, setSending] = useState(false);
+  const [confirmSend, setConfirmSend] = useState(false);
+  const accepted = !!sentInfo?.acceptedAt;
+  const fmtDay = (d) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  async function send() {
+    setSending(true);
+    setMsg(null);
+    const res = await sendQuote(artistId);
+    setSending(false);
+    setConfirmSend(false);
+    if (res.error) return setMsg({ bad: true, text: res.error });
+    setSentInfo({ sentAt: res.sentAt });
+    setMsg({ text: `Quote sent to ${artistName}. A copy went to your inbox.` });
+  }
 
   // Download the quote box as a PDF that looks exactly like it does here.
   const boxRef = useRef(null);
@@ -234,13 +250,35 @@ export default function PriceCalculator({ artistId, artistName = "", initial, sa
           {/* Internal tools: not part of what the artist sees. */}
           <div className="stack" style={{ gap: 8, padding: "4px 2px" }}>
             <div className="muted" style={{ fontSize: 13 }}>Full Launchpad for these songs: {money(c.full)}</div>
+
+            {/* Sending the quote to the artist */}
+            {accepted ? (
+              <div className="alert alert--ok" role="status" style={{ fontSize: 14 }}>
+                <strong>Accepted</strong> by {sentInfo.acceptedName} on {fmtDay(sentInfo.acceptedAt)} · {sentInfo.acceptedChoice === "two" ? "Pay in 2 installments" : "Pay in full"}. Their payments were created below.
+                {sentInfo.link && <> <a href={sentInfo.link} target="_blank" rel="noopener noreferrer">See what they accepted</a></>}
+              </div>
+            ) : confirmSend ? (
+              <div className="stack" style={{ gap: 8, border: "1.5px solid #1E1B2E", borderRadius: 12, padding: 12, background: "#fff" }}>
+                <div style={{ fontSize: 14 }}>Send this quote to {artistName} by email, with the Service Agreement attached{sentInfo?.sentAt ? ". The link from the earlier email will stop working" : ""}?</div>
+                <div className="inline" style={{ gap: 8 }}>
+                  <button type="button" className="small-btn small-btn--dark" onClick={send} disabled={sending}>{sending ? "Sending…" : "Yes, send it"}</button>
+                  <button type="button" className="small-btn" onClick={() => setConfirmSend(false)} disabled={sending}>Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <button type="button" className="small-btn small-btn--dark" style={{ background: "#F2C94C", color: "#1E1B2E" }} onClick={() => setConfirmSend(true)} disabled={busy || dirty || !hasEmail}>
+                {sentInfo?.sentAt ? "Send quote again" : "Send quote to artist"}
+              </button>
+            )}
+            {!accepted && !hasEmail && <div className="muted" style={{ fontSize: 13 }}>Add the artist&apos;s email in Artist details to send the quote.</div>}
+            {!accepted && sentInfo?.sentAt && <div className="muted" style={{ fontSize: 13 }}>Sent {fmtDay(sentInfo.sentAt)}{sentInfo.expiresAt ? ` · link open until ${fmtDay(sentInfo.expiresAt)}` : ""}{sentInfo.link ? <> · <a href={sentInfo.link} target="_blank" rel="noopener noreferrer">open their page</a></> : ""}</div>}
             <button type="button" className="small-btn small-btn--dark" onClick={save} disabled={busy || !dirty}>{dirty ? "Save quote" : "Saved"}</button>
             <button type="button" className="small-btn small-btn--dark" onClick={downloadPdf} disabled={pdfBusy}>{pdfBusy ? "Creating PDF…" : "Download PDF"}</button>
             <button type="button" className="small-btn" onClick={copyText}>{copied ? "Copied ✓" : `Copy for email (${lang === "es" ? "Spanish" : "English"})`}</button>
             {showText && <textarea readOnly className="input" aria-label="Quote text" style={{ minHeight: 180, fontSize: 13 }} value={quoteText(q, c, lang)} onFocus={(e) => e.target.select()} />}
             <div className="inline" style={{ gap: 8 }}>
-              <button type="button" className="small-btn" onClick={() => toPayments(true)} disabled={busy || dirty}>Pay in 2 installments</button>
-              <button type="button" className="small-btn" onClick={() => toPayments(false)} disabled={busy || dirty}>Pay in full</button>
+              <button type="button" className="small-btn" onClick={() => toPayments(true)} disabled={busy || dirty || accepted}>Pay in 2 installments</button>
+              <button type="button" className="small-btn" onClick={() => toPayments(false)} disabled={busy || dirty || accepted}>Pay in full</button>
             </div>
             {dirty && <div className="muted" style={{ fontSize: 13 }}>Save the quote before adding it to payments.</div>}
             {savedAt && !dirty && <div className="muted" style={{ fontSize: 13 }}>Last saved {new Date(savedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>}
