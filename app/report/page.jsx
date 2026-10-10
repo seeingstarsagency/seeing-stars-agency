@@ -97,7 +97,7 @@ export default async function Report({ searchParams }) {
             <ul style={{ margin: 0, paddingLeft: 20, fontSize: 15, lineHeight: 1.8 }}>
               {open.map((r) => {
                 const st = byKey[r.step_key];
-                const outside = r.status === "pending" && !packages.includes(st.pkg);
+                const outside = r.status === "pending" && st.pkg && !packages.includes(st.pkg);
                 return (
                   <li key={r.step_key}>
                     <strong>{pick(lang, st)}:</strong>{" "}
