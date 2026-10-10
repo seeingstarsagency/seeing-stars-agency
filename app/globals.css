@@ -1300,8 +1300,8 @@ button.btn { cursor: pointer; }
 .mnav__panel .nav-item--artist { margin: 10px 0 4px; }
 
 /* Dashboard: a few shooting stars crossing the page now and then (in front, but never in the way of clicks) */
-/* `.app > .dash-sky` beats the ".app > *" rule that made every child position: relative (that hid the stars). */
-.dash-sky, .app > .dash-sky { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 30; }
+/* Above the notebook paper (and its pink margin), behind the boxes (z-index 1) and the header (2). `.app > .dash-sky` beats the ".app > *" rule. */
+.dash-sky, .app > .dash-sky { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
 @media (prefers-reduced-motion: reduce) { .dash-sky { display: none; } }
 .dshoot {
   position: absolute; left: 0; width: 200px; height: 3px; margin-top: -1.5px; border-radius: 3px; opacity: 0;
