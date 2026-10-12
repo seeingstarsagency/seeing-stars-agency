@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { supabaseAdmin } from "../../lib/supabase";
 import { FINDER, readAnswers, recommendPackages } from "../../lib/questions";
+import { emailAdmin, finderEmail } from "../../lib/notify";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -27,6 +28,7 @@ export async function submitFinder(formData) {
       answers: { ...answers, recommended },
     });
     if (error) ok = false;
+    else await emailAdmin(finderEmail({ artistName: answers.artist_name.slice(0, 200), email: answers.email, lang, recommended }));
   } catch {
     ok = false;
   }
