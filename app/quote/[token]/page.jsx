@@ -32,7 +32,7 @@ export default async function QuotePage({ params }) {
           <StarIcon size={64} fill="#F4A6C9" />
           <h1 className="h1">{r.state === "expired" ? t.expiredTitle : t.missingTitle}</h1>
           <p className="lead" style={{ maxWidth: 520 }}>{r.state === "expired" ? t.expiredText : t.missingText}</p>
-          <p style={{ margin: 0 }}>seeingstarsagency@gmail.com</p>
+          <p style={{ margin: 0 }}>hello@seeingstarsagency.com</p>
         </main>
       </div>
     );

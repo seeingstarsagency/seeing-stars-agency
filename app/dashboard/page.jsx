@@ -431,7 +431,7 @@ export default async function Dashboard({ searchParams }) {
                     </li>
                   ))}
                 </ul>
-                <p className="payhelp">{t.payHelp} <a href="mailto:seeingstarsagency@gmail.com">seeingstarsagency@gmail.com</a></p>
+                <p className="payhelp">{t.payHelp} <a href="mailto:hello@seeingstarsagency.com">hello@seeingstarsagency.com</a></p>
               </>
             )}
           </section>
@@ -483,7 +483,7 @@ export default async function Dashboard({ searchParams }) {
                 </div>
               ))}
             </div>
-            <a href={`mailto:seeingstarsagency@gmail.com?subject=${encodeURIComponent(recs.map((r) => r.pkg).join(" + "))}`} className="btn btn--accent" style={{ alignSelf: "flex-start", borderColor: "#F2C94C" }}>
+            <a href={`mailto:hello@seeingstarsagency.com?subject=${encodeURIComponent(recs.map((r) => r.pkg).join(" + "))}`} className="btn btn--accent" style={{ alignSelf: "flex-start", borderColor: "#F2C94C" }}>
               {t.talkAbout} {recs.map((r) => r.pkg).join(" + ")}
             </a>
           </section>
