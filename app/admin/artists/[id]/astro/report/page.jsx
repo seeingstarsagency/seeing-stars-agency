@@ -27,6 +27,7 @@ export default async function AstroReport({ params }) {
 
   const parts = [
     { name: "Astro questionnaire", state: artist.astro_done_at ? `Saved ${fmtDate(artist.astro_done_at, "en")}` : "Pending" },
+    { name: "Artist DNA", state: artist.artist_dna_updated_at ? `Saved ${fmtDate(artist.artist_dna_updated_at, "en")}` : "Pending" },
     { name: "Brandbook", state: book.missing ? "Not set up" : `${(book.pages || []).length} pages · ${shown(book)} shown to the artist` },
     { name: "EPK", state: epk.missing ? "Not set up" : `${(epk.pages || []).length} pages · ${shown(epk)} shown to the artist` },
     { name: "Astro price", state: artist.astro_quote ? `$${Number(artist.astro_quote.total || 0).toLocaleString("en-US")} · saved ${fmtDate(artist.astro_quote_updated_at, "en")}` : "Not saved yet" },

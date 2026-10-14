@@ -59,3 +59,17 @@ export async function astroQuoteToPayments(artistId, total, halves, lang = "en")
   revalidatePath(`/admin/artists/${id}`);
   return error ? { error: error.message } : { ok: true };
 }
+
+// Admin saves the Artist DNA: the curated source for every Astro deliverable.
+export async function saveArtistDna(formData) {
+  const supabase = await requireAdmin();
+  const id = String(formData.get("artist_id") || "").slice(0, 60);
+  const { readDna } = await import("../../lib/artist-dna");
+  const { error } = await supabase
+    .from("artists")
+    .update({ artist_dna: readDna(formData), artist_dna_updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) redirect(`/admin/artists/${id}/astro/dna?error=${encodeURIComponent(error.message)}`);
+  revalidatePath(`/admin/artists/${id}/astro`);
+  redirect(`/admin/artists/${id}/astro/dna?ok=saved`);
+}

@@ -27,6 +27,7 @@ export default function AstroHeader({ artist, photoUrl, current = "astro", back 
           <a href={`/dashboard?artist=${artist.id}`} className="small-btn" style={btn}>View their dashboard</a>
           <a href={`/dashboard/astro?artist=${artist.id}`} className="small-btn" style={btn}>View their Astro page</a>
           <a href={`${base}/questionnaire`} className="small-btn" style={{ ...btn, background: "#E3F1F8", ...on("questionnaire") }}>{artist.astro_done_at ? "Astro questionnaire" : "Astro questionnaire · pending"}</a>
+          <a href={`${base}/dna`} className="small-btn" style={{ ...btn, background: "#F2C94C", ...on("dna") }}>{artist.artist_dna_updated_at ? "✦ Artist DNA" : "✦ Artist DNA · pending"}</a>
           <a href={`${base}#astro-price`} className="small-btn" style={{ ...btn, background: "#FCE4EF" }}>$ Astro price</a>
           <a href={`${base}/report`} className="small-btn small-btn--dark" style={{ ...btn, ...on("report") }}>Astro final report</a>
         </div>
