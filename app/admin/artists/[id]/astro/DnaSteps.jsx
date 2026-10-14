@@ -152,13 +152,14 @@ export default function DnaSteps({ artist }) {
         {UNLOCKS.map((u) => {
           const miss = u.needs.filter((k) => !isOk(byKey[k].state));
           return (
-            <div key={u.name} style={{ border: `2px solid ${ink}`, borderRadius: 14, padding: 12, background: miss.length ? "#fff" : "#F2C94C", display: "grid", gap: 4, alignContent: "start" }}>
+            <a key={u.name} href={u.page ? `${base}/${u.page}` : undefined} style={{ border: `2px solid ${ink}`, borderRadius: 14, padding: 12, background: miss.length ? "#fff" : "#F2C94C", display: "grid", gap: 4, alignContent: "start", color: "inherit", textDecoration: "none", cursor: u.page ? "pointer" : "default" }}>
               <strong className="disp" style={{ fontSize: 17 }}>{u.name}</strong>
               <span style={{ fontSize: 13 }}>{u.sub}</span>
               <span style={{ fontSize: 13 }} className={miss.length ? "muted" : undefined}>
                 {miss.length ? `Waiting for: ${miss.map((k) => byKey[k].title.toLowerCase()).join(", ")}` : "✓ Ready to build"}
               </span>
-            </div>
+              <span style={{ fontSize: 13, fontWeight: 600, marginTop: 4 }}>{u.page ? "Open →" : "Coming next"}</span>
+            </a>
           );
         })}
       </div>
