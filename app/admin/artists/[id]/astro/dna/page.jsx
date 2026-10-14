@@ -78,7 +78,7 @@ export default async function ArtistDna({ params, searchParams }) {
       <form action={saveArtistDna} className="stack" style={{ gap: 28 }}>
         <input type="hidden" name="artist_id" value={artist.id} />
         {DNA_SECTIONS.map((s) => (
-          <section key={s.key} className="panel" style={{ background: s.bg }}>
+          <section key={s.key} id={s.key} className="panel" style={{ background: s.bg }}>
             <h2 className="h2" style={{ marginBottom: 2 }}>{s.en}</h2>
             <p className="muted" style={{ margin: "0 0 16px", fontSize: 14 }}>Feeds: {s.feeds}</p>
             <div className="fgrid">

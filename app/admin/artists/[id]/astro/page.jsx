@@ -9,6 +9,7 @@ import { StepsTable } from "../../../../progress";
 import { updateSteps } from "../../../actions";
 import Editor from "../../../../brandbook/Editor";
 import AstroHeader from "../AstroHeader";
+import DnaSteps from "./DnaSteps";
 import AstroPriceCalculator from "../AstroPriceCalculator";
 import { astroStartingQuote, normalizeAstroQuote } from "../../../../../lib/astro-pricing";
 
@@ -42,6 +43,9 @@ export default async function AdminAstro({ params, searchParams }) {
           {artist.name} doesn&rsquo;t have Astro or the monthly membership yet, so their Astro page is locked. You can still prepare the brandbook: they&rsquo;ll see the shown pages once you add the package.
         </div>
       )}
+
+      {sp?.step_error && <div className="alert" role="alert">Could not save the step: {sp.step_error}</div>}
+      <DnaSteps artist={artist} />
 
       <section className="panel" id="brand">
         <h2 className="h2">Your brand</h2>

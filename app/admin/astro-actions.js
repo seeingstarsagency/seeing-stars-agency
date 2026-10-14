@@ -73,3 +73,34 @@ export async function saveArtistDna(formData) {
   revalidatePath(`/admin/artists/${id}/astro`);
   redirect(`/admin/artists/${id}/astro/dna?ok=saved`);
 }
+
+// Admin marks a manual Artist DNA step (and, for "vn", the voice note or live meeting details).
+export async function saveAstroStep(formData) {
+  const supabase = await requireAdmin();
+  const id = String(formData.get("artist_id") || "").slice(0, 60);
+  const key = String(formData.get("step") || "").slice(0, 20);
+  const { DNA_STEPS, STATUSES } = await import("../../lib/astro-dna-steps");
+  const step = DNA_STEPS.find((s) => s.key === key && !s.auto);
+  if (!step) redirect(`/admin/artists/${id}/astro#dna-steps`);
+  const g = (k, max = 300) => String(formData.get(k) ?? "").trim().slice(0, max);
+  const status = STATUSES[g("status", 10)] ? g("status", 10) : "pend";
+  const entry = { status, updated_at: new Date().toISOString() };
+  if (key === "vn") {
+    entry.mode = g("mode", 10) === "live" ? "live" : "note";
+    entry.link = g("link", 500);
+    entry.date = /^\d{4}-\d{2}-\d{2}$/.test(g("date", 10)) ? g("date", 10) : "";
+    entry.format = g("format", 20);
+    entry.minutes = g("minutes", 5);
+    entry.recorded = formData.get("recorded") === "on";
+    entry.notes = g("notes", 4000);
+    entry.quotes = g("quotes", 2000);
+  } else {
+    entry.note = g("note", 500);
+  }
+  const { data: row } = await supabase.from("artists").select("astro_steps").eq("id", id).maybeSingle();
+  const steps = { ...(row?.astro_steps || {}), [key]: entry };
+  const { error } = await supabase.from("artists").update({ astro_steps: steps }).eq("id", id);
+  if (error) redirect(`/admin/artists/${id}/astro?step_error=${encodeURIComponent(error.message)}#dna-steps`);
+  revalidatePath(`/admin/artists/${id}/astro`);
+  redirect(`/admin/artists/${id}/astro?ok=saved#step-${key}`);
+}

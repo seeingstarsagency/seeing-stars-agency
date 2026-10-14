@@ -113,6 +113,8 @@ alter table public.artists add column if not exists astro_quote_updated_at times
 -- Artist DNA: the agency's curated source for the Brand Guide, Voice Guide, Visual Direction, bios and EPK.
 alter table public.artists add column if not exists artist_dna jsonb;
 alter table public.artists add column if not exists artist_dna_updated_at timestamptz;
+-- Artist DNA steps the agency marks by hand (listen, follow-up, voice note or live meeting, logo, photos).
+alter table public.artists add column if not exists astro_steps jsonb;
 alter table public.songs add column if not exists spotify_url text;
 
 create index if not exists artist_steps_artist on public.artist_steps(artist_id);
