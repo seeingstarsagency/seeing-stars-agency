@@ -65,9 +65,11 @@ export async function saveArtistDna(formData) {
   const supabase = await requireAdmin();
   const id = String(formData.get("artist_id") || "").slice(0, 60);
   const { readDna } = await import("../../lib/artist-dna");
+  // Merge: keep what lives in the DNA but isn't on this form (e.g. the bios).
+  const { data: row } = await supabase.from("artists").select("artist_dna").eq("id", id).maybeSingle();
   const { error } = await supabase
     .from("artists")
-    .update({ artist_dna: readDna(formData), artist_dna_updated_at: new Date().toISOString() })
+    .update({ artist_dna: { ...(row?.artist_dna || {}), ...readDna(formData) }, artist_dna_updated_at: new Date().toISOString() })
     .eq("id", id);
   if (error) redirect(`/admin/artists/${id}/astro/dna?error=${encodeURIComponent(error.message)}`);
   revalidatePath(`/admin/artists/${id}/astro`);
@@ -103,4 +105,20 @@ export async function saveAstroStep(formData) {
   if (error) redirect(`/admin/artists/${id}/astro?step_error=${encodeURIComponent(error.message)}#dna-steps`);
   revalidatePath(`/admin/artists/${id}/astro`);
   redirect(`/admin/artists/${id}/astro?ok=saved#step-${key}`);
+}
+
+// Admin saves the bios (one line, short, long; English and Spanish) inside the Artist DNA.
+export async function saveBios(formData) {
+  const supabase = await requireAdmin();
+  const id = String(formData.get("artist_id") || "").slice(0, 60);
+  const { BIO_KEYS } = await import("../../lib/bios");
+  const bios = Object.fromEntries(BIO_KEYS.map((k) => [k, String(formData.get(k) ?? "").trim().slice(0, 4000)]));
+  const { data: row } = await supabase.from("artists").select("artist_dna").eq("id", id).maybeSingle();
+  const { error } = await supabase
+    .from("artists")
+    .update({ artist_dna: { ...(row?.artist_dna || {}), ...bios }, artist_dna_updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) redirect(`/admin/artists/${id}/astro/bios?error=${encodeURIComponent(error.message)}`);
+  revalidatePath(`/admin/artists/${id}/astro`);
+  redirect(`/admin/artists/${id}/astro/bios?ok=saved`);
 }
