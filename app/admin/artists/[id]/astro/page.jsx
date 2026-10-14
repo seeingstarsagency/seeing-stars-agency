@@ -8,6 +8,9 @@ import { browserConfig } from "../../../../../lib/env";
 import { StepsTable } from "../../../../progress";
 import { updateSteps } from "../../../actions";
 import Editor from "../../../../brandbook/Editor";
+import AstroHeader from "../AstroHeader";
+import AstroPriceCalculator from "../AstroPriceCalculator";
+import { astroStartingQuote, normalizeAstroQuote } from "../../../../../lib/astro-pricing";
 
 export const metadata = { title: "Astro · Admin | Seeing Stars Agency" };
 export const dynamic = "force-dynamic";
@@ -18,7 +21,7 @@ export default async function AdminAstro({ params, searchParams }) {
   const sp = await searchParams;
   const data = await loadArtist(supabase, id);
   if (!data) notFound();
-  const { artist, rows, songs } = data;
+  const { artist, rows, songs, photoUrl } = data;
   const { artistRows } = songScope(artist, songs, rows, null);
   const book = await loadBrandbook(supabase, artist.id);
   const epk = await loadBrandbook(supabase, artist.id, "epk");
@@ -31,15 +34,8 @@ export default async function AdminAstro({ params, searchParams }) {
 
   return (
     <AdminShell>
-      <a href={`/admin/artists/${artist.id}`}>← {artist.name}</a>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-end", justifyContent: "space-between" }}>
-        <div>
-          <div className="kicker">Astro · Artist branding</div>
-          <h1 className="h1">{artist.name}</h1>
-          <p className="lead" style={{ margin: 0 }}>The brand steps, the brandbook and the EPK. The artist only sees the pages you mark as shown.</p>
-        </div>
-        <a href={`/dashboard/astro?artist=${artist.id}`} className="small-btn" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>See what the artist sees</a>
-      </div>
+      <AstroHeader artist={artist} photoUrl={photoUrl} />
+      <p className="lead" style={{ margin: 0 }}>The brand steps, the brandbook, the EPK and the Astro price. The artist only sees the pages you mark as shown.</p>
       {sp?.ok && OK_MSG[sp.ok] && <div className="alert alert--ok" role="status">{OK_MSG[sp.ok]}</div>}
       {!hasAstro && (
         <div className="alert" role="status">
@@ -91,6 +87,20 @@ export default async function AdminAstro({ params, searchParams }) {
             initialUrls={epk.urls}
           />
         )}
+      </section>
+      <section className="panel" id="astro-price">
+        <h2 className="h2">Astro price</h2>
+        <p style={{ margin: "0 0 16px", fontSize: 15 }}>
+          Only you see this. Untick what the artist already has (the first version already leaves out what their brand steps mark as done), adjust the prices and save. Each artist keeps their own Astro quote.
+        </p>
+        <AstroPriceCalculator
+          artistId={artist.id}
+          artistName={artist.name}
+          initial={normalizeAstroQuote(artist.astro_quote, astroStartingQuote(rows))}
+          savedAt={artist.astro_quote_updated_at || null}
+          saved={!!artist.astro_quote}
+          lang={artist.lang}
+        />
       </section>
     </AdminShell>
   );

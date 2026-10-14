@@ -105,6 +105,11 @@ create unique index if not exists songs_artist_source on public.songs(artist_id,
 alter table public.artists add column if not exists apple_artist_id text;
 alter table public.artists add column if not exists spotify_artist_id text;
 alter table public.artists add column if not exists listen_platform text not null default 'spotify';
+-- Astro: questionnaire answers and the Astro price quote (admin only).
+alter table public.artists add column if not exists astro_answers jsonb;
+alter table public.artists add column if not exists astro_done_at timestamptz;
+alter table public.artists add column if not exists astro_quote jsonb;
+alter table public.artists add column if not exists astro_quote_updated_at timestamptz;
 alter table public.songs add column if not exists spotify_url text;
 
 create index if not exists artist_steps_artist on public.artist_steps(artist_id);
